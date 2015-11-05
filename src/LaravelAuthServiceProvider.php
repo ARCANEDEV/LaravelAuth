@@ -64,6 +64,10 @@ class LaravelAuthServiceProvider extends ServiceProvider
         $this->publishes([
             $this->getConfigFile() => config_path("{$this->package}.php"),
         ], 'config');
+
+        $this->publishes([
+            $this->getBasePath() . DS . 'database/migrations' => database_path('migrations'),
+        ], 'migrations');
     }
 
     /**
