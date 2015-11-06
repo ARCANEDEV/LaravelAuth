@@ -1,17 +1,25 @@
 <?php
 
 return [
-    'database' => [
-        'connection' => null,
+    'database'  => [
+        'connection'  => null,
     ],
 
-    'models' => [
-        'role'       => Arcanedev\LaravelAuth\Models\Role::class,
+    'models'    => [
+        'role'        => Arcanedev\LaravelAuth\Models\Role::class,
 
-        'permission' => Arcanedev\LaravelAuth\Models\Permission::class,
+        'permission'  => Arcanedev\LaravelAuth\Models\Permission::class,
     ],
 
-    'confirm-users' => true,
+    'tables'    => [
+        'roles'       => 'roles',
 
-    'throttles'     => false,
+        'permissions' => 'permissions',
+
+        'throttles'   => 'throttles',
+    ],
+
+    'confirm-users'   => true,
+
+    'throttles'       => false,
 ];
