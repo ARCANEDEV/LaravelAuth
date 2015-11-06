@@ -31,7 +31,7 @@ class UpdateUsersTable extends Migration
      */
     public function __construct()
     {
-        $this->table = config('laravel-auth.tables.users');
+        $this->table = config('laravel-auth.users.table', 'users');
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ class UpdateUsersTable extends Migration
             $table->rememberToken();
             $table->boolean('active')->after('remember_token');
 
-            if (config('laravel-auth.confirm-users')) {
+            if (config('laravel-auth.users.confirm', false)) {
                 $this->addConfirmationColumns($table);
             }
 

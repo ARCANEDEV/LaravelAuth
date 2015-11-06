@@ -31,7 +31,7 @@ class CreateThrottlesTable extends Migration
      */
     public function __construct()
     {
-        //
+        $this->table = config('laravel-auth.throttles.table', 'throttles');
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -77,6 +77,6 @@ class CreateThrottlesTable extends Migration
      */
     private function isThrottlable()
     {
-        return config('laravel-auth.throttles', false);
+        return config('laravel-auth.throttles.enabled', false);
     }
 }

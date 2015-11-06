@@ -57,7 +57,7 @@ class User
      */
     public function __construct(array $attributes = [])
     {
-        $this->setTable(config('laravel-auth.tables.users'));
+        $this->setTable(config('laravel-auth.users.table', 'users'));
 
         parent::__construct($attributes);
     }
@@ -73,7 +73,7 @@ class User
      */
     public function roles()
     {
-        $model = config('laravel-auth.models.permission');
+        $model = config('laravel-auth.roles.model', Role::class);
 
         return $this->belongsToMany($model, 'role_user', 'user_id', 'role_id')
             ->withTimestamps();

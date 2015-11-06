@@ -32,7 +32,7 @@ class Permission extends Model
      */
     public function __construct(array $attributes = [])
     {
-        $this->setTable(config('laravel-auth.tables.roles'));
+        $this->setTable(config('laravel-auth.permissions.table', 'permissions'));
 
         parent::__construct($attributes);
     }
@@ -48,10 +48,10 @@ class Permission extends Model
      */
     public function roles()
     {
-        $model = config('laravel-auth.models.role', Role::class);
+        $model = config('laravel-auth.roles.model', Role::class);
 
         return $this
-            ->belongsToMany($model, 'permission_role', 'role_id', 'permission_id')
+            ->belongsToMany($model, 'permission_role', 'permission_id', 'role_id')
             ->withTimestamps();
     }
 }

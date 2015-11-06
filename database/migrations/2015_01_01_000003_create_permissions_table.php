@@ -31,7 +31,7 @@ class CreatePermissionsTable extends Migration
      */
     public function __construct()
     {
-        $this->table = config('laravel-auth.tables.permissions');
+        $this->table = config('laravel-auth.permissions.table');
     }
 
     /* ------------------------------------------------------------------------------------------------

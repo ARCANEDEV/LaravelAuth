@@ -5,23 +5,24 @@ return [
         'connection'  => null,
     ],
 
-    'models'    => [
-        'role'        => Arcanedev\LaravelAuth\Models\Role::class,
-
-        'permission'  => Arcanedev\LaravelAuth\Models\Permission::class,
+    'users'     => [
+        'table'     => 'users',
+        'model'     => config('auth.model', Arcanedev\LaravelAuth\Models\User::class),
+        'confirm'   => false,
     ],
 
-    'tables'    => [
-        'users'       => 'users',
-
-        'roles'       => 'roles',
-
-        'permissions' => 'permissions',
-
-        'throttles'   => 'throttles',
+    'roles'       => [
+        'table' => 'roles',
+        'model' => Arcanedev\LaravelAuth\Models\Role::class,
     ],
 
-    'confirm-users'   => true,
+    'permissions'    => [
+        'table'  => 'permissions',
+        'model'  => Arcanedev\LaravelAuth\Models\Permission::class,
+    ],
 
-    'throttles'       => false,
+    'throttles'       => [
+        'enabled' => true,
+        'table'   => 'throttles',
+    ],
 ];

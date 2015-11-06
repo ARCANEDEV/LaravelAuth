@@ -31,7 +31,7 @@ class CreateRolesTable extends Migration
      */
     public function __construct()
     {
-        $this->table = config('laravel-auth.tables.roles');
+        $this->table = config('laravel-auth.roles.table', 'roles');
     }
 
     /* ------------------------------------------------------------------------------------------------
