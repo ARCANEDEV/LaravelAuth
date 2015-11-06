@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreatePermissionsTable extends Migration
 {
+    /* ------------------------------------------------------------------------------------------------
+     |  Main Functions
+     | ------------------------------------------------------------------------------------------------
+     */
     /**
      * Run the migrations.
      */
