@@ -22,6 +22,22 @@ class Permission extends Model
     protected $fillable = ['name', 'slug', 'description', 'model'];
 
     /* ------------------------------------------------------------------------------------------------
+     |  Constructor
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Create a new Eloquent model instance.
+     *
+     * @param  array  $attributes
+     */
+    public function __construct(array $attributes = [])
+    {
+        $this->setTable(config('laravel-auth.tables.roles'));
+
+        parent::__construct($attributes);
+    }
+
+    /* ------------------------------------------------------------------------------------------------
      |  Relationships
      | ------------------------------------------------------------------------------------------------
      */
