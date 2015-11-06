@@ -8,6 +8,12 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 
+/**
+ * Class     User
+ *
+ * @package  Arcanedev\LaravelAuth\Models
+ * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ */
 class User
     extends Model
     implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
@@ -69,6 +75,7 @@ class User
     {
         $model = config('laravel-auth.models.permission');
 
-        return $this->belongsToMany($model)->withTimestamps();
+        return $this->belongsToMany($model, 'role_user', 'user_id', 'role_id')
+            ->withTimestamps();
     }
 }

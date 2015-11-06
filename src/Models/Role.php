@@ -50,7 +50,8 @@ class Role extends Model
     {
         $model = config('auth.model');
 
-        return $this->belongsToMany($model)->withTimestamps();
+        return $this->belongsToMany($model, 'role_user', 'role_id', 'user_id')
+            ->withTimestamps();
     }
 
     /**
@@ -62,6 +63,7 @@ class Role extends Model
     {
         $model = config('laravel-auth.models.permission', Permission::class);
 
-        return $this->belongsToMany($model)->withTimestamps();
+        return $this->belongsToMany($model, 'permission_role', 'role_id', 'permission_id')
+            ->withTimestamps();
     }
 }
