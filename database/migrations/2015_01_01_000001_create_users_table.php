@@ -20,20 +20,22 @@ class UpdateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->renameColumn('name', 'username');
-        });
-
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('first_name', 30)->after('username');
+        Schema::create('users', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('username');
+            $table->string('first_name', 30);
             $table->string('last_name', 30)->after('first_name');
+            $table->string('email')->unique();
+            $table->string('password', 60);
+            $table->rememberToken();
             $table->boolean('active')->after('remember_token');
 
             if (config('laravel-auth.confirm-users')) {
                 $this->addConfirmationColumns($table);
             }
 
-            $table->softDeletes()->after('updated_at');
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -42,18 +44,7 @@ class UpdateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->renameColumn('username', 'name');
-            $table->dropColumn('first_name')->after('username');
-            $table->dropColumn('last_name')->after('first_name');
-            $table->dropColumn('active');
-
-            if (config('laravel-auth.confirm-users')) {
-                $this->dropConfirmationColumns($table);
-            }
-
-            $table->dropSoftDeletes();
-        });
+        Schema::dropIfExists('users');
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -70,17 +61,5 @@ class UpdateUsersTable extends Migration
         $table->boolean('confirmed')->default(false)->after('active');
         $table->string('confirmation_code', 30)->nullable()->after('confirmed');
         $table->timestamp('confirmed_at')->nullable()->after('confirmation_code');
-    }
-
-    /**
-     * Drop confirmation columns.
-     *
-     * @param  Blueprint  $table
-     */
-    private function dropConfirmationColumns(Blueprint $table)
-    {
-        $table->dropColumn('confirmed');
-        $table->dropColumn('confirmation_code');
-        $table->dropColumn('confirmed_at');
     }
 }
