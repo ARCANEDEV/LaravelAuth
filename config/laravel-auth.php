@@ -1,28 +1,28 @@
 <?php
 
 return [
-    'database'  => [
-        'connection'  => null,
+    'database' => [
+        'connection' => config('database.default'),
     ],
 
-    'users'     => [
+    'users' => [
         'table'     => 'users',
         'model'     => config('auth.model', Arcanedev\LaravelAuth\Models\User::class),
         'confirm'   => false,
     ],
 
-    'roles'       => [
-        'table' => 'roles',
-        'model' => Arcanedev\LaravelAuth\Models\Role::class,
+    'roles' => [
+        'table'     => 'roles',
+        'model'     => Arcanedev\LaravelAuth\Models\Role::class,
     ],
 
-    'permissions'    => [
-        'table'  => 'permissions',
-        'model'  => Arcanedev\LaravelAuth\Models\Permission::class,
+    'permissions' => [
+        'table'     => 'permissions',
+        'model'     => Arcanedev\LaravelAuth\Models\Permission::class,
     ],
 
-    'throttles'       => [
-        'enabled' => true,
-        'table'   => 'throttles',
+    'throttles' => [
+        'enabled'   => true,
+        'table'     => 'throttles',
     ],
 ];
