@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class UpdateUsersTable extends Migration
+class CreateUsersTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -47,11 +47,11 @@ class UpdateUsersTable extends Migration
             $table->increments('id');
             $table->string('username');
             $table->string('first_name', 30);
-            $table->string('last_name', 30)->after('first_name');
+            $table->string('last_name', 30);
             $table->string('email')->unique();
             $table->string('password', 60);
             $table->rememberToken();
-            $table->boolean('active')->after('remember_token');
+            $table->boolean('active');
 
             if (config('laravel-auth.users.confirm', false)) {
                 $this->addConfirmationColumns($table);
@@ -81,8 +81,8 @@ class UpdateUsersTable extends Migration
      */
     public function addConfirmationColumns(Blueprint $table)
     {
-        $table->boolean('confirmed')->default(false)->after('active');
-        $table->string('confirmation_code', 30)->nullable()->after('confirmed');
-        $table->timestamp('confirmed_at')->nullable()->after('confirmation_code');
+        $table->boolean('confirmed')->default(false);
+        $table->string('confirmation_code', 30)->nullable();
+        $table->timestamp('confirmed_at')->nullable();
     }
 }

@@ -44,8 +44,6 @@ class CreateRoleUserPivotTable extends Migration
     public function up()
     {
         Schema::create($this->table, function (Blueprint $table) {
-            $table->increments('id');
-
             $table->integer('role_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->primary(['user_id', 'role_id']);
