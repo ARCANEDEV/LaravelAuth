@@ -20,4 +20,20 @@ class Permission extends Model
      * @var array
      */
     protected $fillable = ['name', 'slug', 'description', 'model'];
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Relationships
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Permission belongs to many roles.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function roles()
+    {
+        $model = config('laravel-auth.models.role', Role::class);
+
+        return $this->belongsToMany($model)->withTimestamps();
+    }
 }
