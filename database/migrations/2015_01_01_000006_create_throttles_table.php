@@ -12,6 +12,29 @@ use Illuminate\Support\Facades\Schema;
 class CreateThrottlesTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
+     |  Properties
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Table name.
+     *
+     * @var string
+     */
+    protected $table = 'throttles';
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Constructor
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Make a migration instance.
+     */
+    public function __construct()
+    {
+        //
+    }
+
+    /* ------------------------------------------------------------------------------------------------
      |  Main Functions
      | ------------------------------------------------------------------------------------------------
      */
@@ -21,12 +44,12 @@ class CreateThrottlesTable extends Migration
     public function up()
     {
         if ($this->isThrottlable()) {
-            Schema::create('throttles', function (Blueprint $table) {
+            Schema::create($this->table, function (Blueprint $table) {
                 $table->increments('id');
 
-                $table->string('ip_address')->nullable();
-                $table->string('email', 255);
-                $table->timestamp('last_attempt_at')->nullable();
+                $table->integer('user_id')->unsigned()->nullable();
+                $table->string('type');
+                $table->string('ip')->nullable();
 
                 $table->timestamps();
             });
@@ -39,7 +62,7 @@ class CreateThrottlesTable extends Migration
     public function down()
     {
         if ($this->isThrottlable()) {
-            Schema::dropIfExists('throttles');
+            Schema::dropIfExists($this->table);
         }
     }
 

@@ -12,6 +12,29 @@ use Illuminate\Support\Facades\Schema;
 class CreatePermissionRolePivotTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
+     |  Properties
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Table name.
+     *
+     * @var string
+     */
+    protected $table = 'permission_role';
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Constructor
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Make a migration instance.
+     */
+    public function __construct()
+    {
+        //
+    }
+
+    /* ------------------------------------------------------------------------------------------------
      |  Main Functions
      | ------------------------------------------------------------------------------------------------
      */
@@ -20,14 +43,12 @@ class CreatePermissionRolePivotTable extends Migration
      */
     public function up()
     {
-        Schema::create('permission_role', function (Blueprint $table) {
+        Schema::create($this->table, function (Blueprint $table) {
             $table->increments('id');
 
-            $table->integer('permission_id')->unsigned()->index();
-            $table->integer('role_id')->unsigned()->index();
-
-            $table->foreign('permission_id')->references('id')->on('permissions')->onDelete('cascade');
-            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
+            $table->integer('permission_id')->unsigned();
+            $table->integer('role_id')->unsigned();
+            $table->primary(['permission_id', 'role_id']);
 
             $table->timestamps();
         });
@@ -38,6 +59,6 @@ class CreatePermissionRolePivotTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('permission_role');
+        Schema::dropIfExists($this->table);
     }
 }

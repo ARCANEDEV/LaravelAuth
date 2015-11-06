@@ -12,6 +12,29 @@ use Illuminate\Support\Facades\Schema;
 class CreatePermissionsTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
+     |  Properties
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Table name.
+     *
+     * @var string
+     */
+    protected $table = '';
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Constructor
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Make a migration instance.
+     */
+    public function __construct()
+    {
+        $this->table = config('laravel-auth.tables.permissions');
+    }
+
+    /* ------------------------------------------------------------------------------------------------
      |  Main Functions
      | ------------------------------------------------------------------------------------------------
      */
@@ -20,7 +43,7 @@ class CreatePermissionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('permissions', function (Blueprint $table) {
+        Schema::create($this->table, function (Blueprint $table) {
             $table->increments('id');
 
             $table->string('name');
@@ -37,6 +60,6 @@ class CreatePermissionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('permissions');
+        Schema::dropIfExists($this->table);
     }
 }

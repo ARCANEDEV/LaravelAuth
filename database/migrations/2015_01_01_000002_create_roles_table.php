@@ -12,6 +12,29 @@ use Illuminate\Support\Facades\Schema;
 class CreateRolesTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
+     |  Properties
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Table name.
+     *
+     * @var string
+     */
+    protected $table = '';
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Constructor
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Make a migration instance.
+     */
+    public function __construct()
+    {
+        $this->table = config('laravel-auth.tables.roles');
+    }
+
+    /* ------------------------------------------------------------------------------------------------
      |  Main Functions
      | ------------------------------------------------------------------------------------------------
      */
@@ -20,7 +43,7 @@ class CreateRolesTable extends Migration
      */
     public function up()
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create($this->table, function (Blueprint $table) {
             $table->increments('id');
 
             $table->string('name');
@@ -38,6 +61,6 @@ class CreateRolesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists($this->table);
     }
 }

@@ -12,6 +12,29 @@ use Illuminate\Support\Facades\Schema;
 class UpdateUsersTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
+     |  Properties
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Table name.
+     *
+     * @var string
+     */
+    protected $table = '';
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Constructor
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Make a migration instance.
+     */
+    public function __construct()
+    {
+        $this->table = config('laravel-auth.tables.users');
+    }
+
+    /* ------------------------------------------------------------------------------------------------
      |  Main Functions
      | ------------------------------------------------------------------------------------------------
      */
@@ -20,7 +43,7 @@ class UpdateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create($this->table, function (Blueprint $table) {
             $table->increments('id');
             $table->string('username');
             $table->string('first_name', 30);
@@ -44,7 +67,7 @@ class UpdateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists($this->table);
     }
 
     /* ------------------------------------------------------------------------------------------------

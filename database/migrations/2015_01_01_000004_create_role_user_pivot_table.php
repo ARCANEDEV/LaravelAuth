@@ -12,6 +12,29 @@ use Illuminate\Support\Facades\Schema;
 class CreateRoleUserPivotTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
+     |  Properties
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Table name.
+     *
+     * @var string
+     */
+    protected $table = 'role_user';
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Constructor
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Make a migration instance.
+     */
+    public function __construct()
+    {
+        //
+    }
+
+    /* ------------------------------------------------------------------------------------------------
      |  Main Functions
      | ------------------------------------------------------------------------------------------------
      */
@@ -20,14 +43,12 @@ class CreateRoleUserPivotTable extends Migration
      */
     public function up()
     {
-        Schema::create('role_user', function (Blueprint $table) {
+        Schema::create($this->table, function (Blueprint $table) {
             $table->increments('id');
 
-            $table->integer('role_id')->unsigned()->index();
-            $table->integer('user_id')->unsigned()->index();
-
-            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->integer('role_id')->unsigned();
+            $table->integer('user_id')->unsigned();
+            $table->primary(['user_id', 'role_id']);
 
             $table->timestamps();
         });
@@ -38,6 +59,6 @@ class CreateRoleUserPivotTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('role_user');
+        Schema::dropIfExists($this->table);
     }
 }
