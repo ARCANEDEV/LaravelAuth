@@ -12,4 +12,6 @@ return [
     ],
 
     'confirm-users' => true,
+
+    'throttles'     => false,
 ];
