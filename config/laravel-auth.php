@@ -12,6 +12,8 @@ return [
     ],
 
     'tables'    => [
+        'users'       => 'users',
+
         'roles'       => 'roles',
 
         'permissions' => 'permissions',
