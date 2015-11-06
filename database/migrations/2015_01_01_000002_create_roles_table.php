@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateRolesTable extends Migration
 {
+    /* ------------------------------------------------------------------------------------------------
+     |  Main Functions
+     | ------------------------------------------------------------------------------------------------
+     */
     /**
      * Run the migrations.
      */
@@ -22,6 +26,8 @@ class CreateRolesTable extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('description')->nullable();
+            $table->boolean('active')->default(true);
+            $table->boolean('locked')->default(false);
 
             $table->timestamps();
         });

@@ -24,6 +24,7 @@ class UpdateUsersTable extends Migration
             $table->renameColumn('name', 'username');
             $table->string('first_name');
             $table->string('last_name');
+            $table->boolean('active');
 
             if (config('laravel-auth.confirm-users')) {
                 $this->addConfirmationColumns($table);
