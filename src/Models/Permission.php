@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
 use Arcanedev\LaravelAuth\Bases\Model;
+use Arcanedev\LaravelAuth\Contracts\Permission as PermissionContract;
 
 /**
  * Class     Permission
@@ -8,7 +9,7 @@ use Arcanedev\LaravelAuth\Bases\Model;
  * @package  Arcanedev\LaravelAuth\Models
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class Permission extends Model
+class Permission extends Model implements PermissionContract
 {
     /* ------------------------------------------------------------------------------------------------
      |  Properties

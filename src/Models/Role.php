@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
 use Arcanedev\LaravelAuth\Bases\Model;
+use Arcanedev\LaravelAuth\Contracts\Role as RoleContract;
 
 /**
  * Class     Role
@@ -8,7 +9,7 @@ use Arcanedev\LaravelAuth\Bases\Model;
  * @package  Arcanedev\LaravelAuth\Models
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class Role extends Model
+class Role extends Model implements RoleContract
 {
     /* ------------------------------------------------------------------------------------------------
      |  Properties

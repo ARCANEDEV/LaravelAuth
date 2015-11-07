@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
 use Arcanedev\LaravelAuth\Bases\Model;
+use Arcanedev\LaravelAuth\Contracts\User as UserContract;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -16,7 +17,7 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
  */
 class User
     extends Model
-    implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
+    implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, UserContract
 {
     /* ------------------------------------------------------------------------------------------------
      |  Traits
