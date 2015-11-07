@@ -41,8 +41,8 @@ class MigrationsTest extends TestCase
         $this->publishMigrations();
 
         $this->assertEquals(
-            $filesystem->allFiles($src),
-            $filesystem->allFiles($dest)
+            count($filesystem->allFiles($src)),
+            count($filesystem->allFiles($dest))
         );
 
         $filesystem->cleanDirectory($dest);
