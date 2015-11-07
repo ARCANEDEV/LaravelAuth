@@ -53,11 +53,82 @@ abstract class TestCase extends BaseTestCase
         $config = $app['config'];
 
         // Setup default database to use sqlite :memory:
-        $config->set('database.default', 'test');
-        $config->set('database.connections.test', [
+        $config->set('database.default', 'testing');
+        $config->set('database.connections.testing', [
             'driver'   => 'sqlite',
             'database' => ':memory:',
             'prefix'   => '',
+        ]);
+    }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Other Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Get table names.
+     *
+     * @return array
+     */
+    public function getTablesNames()
+    {
+        return [
+            'users',
+            'roles',
+            'permissions',
+            'role_user',
+            'permission_role',
+            'throttles',
+            'password_resets',
+        ];
+    }
+
+    /**
+     * Get the migrations source path.
+     *
+     * @return string
+     */
+    protected function getMigrationsSrcPath()
+    {
+        return realpath(dirname(__DIR__) . '/database/migrations');
+    }
+
+    /**
+     * Get the migrations destination path.
+     *
+     * @return string
+     */
+    protected function getMigrationsDestPath()
+    {
+        return realpath(database_path('migrations'));
+    }
+
+    /**
+     * Migrate the migrations.
+     */
+    protected function migrate()
+    {
+        $this->artisan('migrate', [
+            '--database' => 'testing',
+            '--realpath' => $this->getMigrationsSrcPath(),
+        ]);
+    }
+
+    /**
+     * Reset all migrations.
+     */
+    protected function resetMigration()
+    {
+        $this->artisan('migrate:reset');
+    }
+
+    /**
+     * Publish the migrations.
+     */
+    protected function publishMigrations()
+    {
+        $this->artisan('vendor:publish', [
+            '--tag' => ['migrations'],
         ]);
     }
 }
