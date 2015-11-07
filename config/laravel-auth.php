@@ -6,7 +6,7 @@ return [
     ],
 
     'users' => [
-        'table'     => 'users',
+        'table'     => config('auth.table', 'users'),
         'model'     => config('auth.model', Arcanedev\LaravelAuth\Models\User::class),
     ],
 
