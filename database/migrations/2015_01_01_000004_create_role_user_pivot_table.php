@@ -1,7 +1,7 @@
 <?php
 
+use Arcanedev\LaravelAuth\Bases\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -16,23 +16,11 @@ class CreateRoleUserPivotTable extends Migration
      | ------------------------------------------------------------------------------------------------
      */
     /**
-     * Table name.
+     * The table name
      *
      * @var string
      */
     protected $table = 'role_user';
-
-    /* ------------------------------------------------------------------------------------------------
-     |  Constructor
-     | ------------------------------------------------------------------------------------------------
-     */
-    /**
-     * Make a migration instance.
-     */
-    public function __construct()
-    {
-        //
-    }
 
     /* ------------------------------------------------------------------------------------------------
      |  Main Functions
@@ -43,20 +31,12 @@ class CreateRoleUserPivotTable extends Migration
      */
     public function up()
     {
-        Schema::create($this->table, function (Blueprint $table) {
+        Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
             $table->integer('role_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->primary(['user_id', 'role_id']);
 
             $table->timestamps();
         });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down()
-    {
-        Schema::dropIfExists($this->table);
     }
 }

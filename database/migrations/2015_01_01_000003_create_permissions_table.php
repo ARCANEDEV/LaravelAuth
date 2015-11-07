@@ -1,7 +1,7 @@
 <?php
 
+use Arcanedev\LaravelAuth\Bases\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -12,17 +12,6 @@ use Illuminate\Support\Facades\Schema;
 class CreatePermissionsTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
-     |  Properties
-     | ------------------------------------------------------------------------------------------------
-     */
-    /**
-     * Table name.
-     *
-     * @var string
-     */
-    protected $table = '';
-
-    /* ------------------------------------------------------------------------------------------------
      |  Constructor
      | ------------------------------------------------------------------------------------------------
      */
@@ -31,7 +20,11 @@ class CreatePermissionsTable extends Migration
      */
     public function __construct()
     {
-        $this->table = config('laravel-auth.permissions.table');
+        parent::__construct();
+
+        $this->setTable(
+            config('laravel-auth.permissions.table')
+        );
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -43,7 +36,7 @@ class CreatePermissionsTable extends Migration
      */
     public function up()
     {
-        Schema::create($this->table, function (Blueprint $table) {
+        Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
             $table->increments('id');
 
             $table->string('name');
@@ -53,13 +46,5 @@ class CreatePermissionsTable extends Migration
 
             $table->timestamps();
         });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down()
-    {
-        Schema::dropIfExists($this->table);
     }
 }

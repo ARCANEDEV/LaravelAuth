@@ -1,7 +1,7 @@
 <?php
 
+use Arcanedev\LaravelAuth\Bases\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -12,17 +12,6 @@ use Illuminate\Support\Facades\Schema;
 class CreateThrottlesTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
-     |  Properties
-     | ------------------------------------------------------------------------------------------------
-     */
-    /**
-     * Table name.
-     *
-     * @var string
-     */
-    protected $table = 'throttles';
-
-    /* ------------------------------------------------------------------------------------------------
      |  Constructor
      | ------------------------------------------------------------------------------------------------
      */
@@ -31,7 +20,11 @@ class CreateThrottlesTable extends Migration
      */
     public function __construct()
     {
-        $this->table = config('laravel-auth.throttles.table', 'throttles');
+        parent::__construct();
+
+        $this->setTable(
+            config('laravel-auth.throttles.table', 'throttles')
+        );
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -44,7 +37,7 @@ class CreateThrottlesTable extends Migration
     public function up()
     {
         if ($this->isThrottlable()) {
-            Schema::create($this->table, function (Blueprint $table) {
+            Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
                 $table->increments('id');
 
                 $table->integer('user_id')->unsigned()->nullable();
@@ -62,7 +55,7 @@ class CreateThrottlesTable extends Migration
     public function down()
     {
         if ($this->isThrottlable()) {
-            Schema::dropIfExists($this->table);
+            parent::down();
         }
     }
 
