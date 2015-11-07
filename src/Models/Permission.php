@@ -3,12 +3,21 @@
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Contracts\Permission as PermissionContract;
 use Arcanedev\LaravelAuth\Traits\AuthPermissionRelationships;
+use Carbon\Carbon;
 
 /**
  * Class     Permission
  *
  * @package  Arcanedev\LaravelAuth\Models
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @property  int     id
+ * @property  string  name
+ * @property  string  slug
+ * @property  string  description
+ * @property  string  model
+ * @property  Carbon  created_at
+ * @property  Carbon  updated_at
  */
 class Permission extends Model implements PermissionContract
 {
