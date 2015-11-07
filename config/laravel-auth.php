@@ -8,7 +8,6 @@ return [
     'users' => [
         'table'     => 'users',
         'model'     => config('auth.model', Arcanedev\LaravelAuth\Models\User::class),
-        'confirm'   => false,
     ],
 
     'roles' => [
@@ -19,6 +18,10 @@ return [
     'permissions' => [
         'table'     => 'permissions',
         'model'     => Arcanedev\LaravelAuth\Models\Permission::class,
+    ],
+
+    'user-confirmation' => [
+        'enabled'   => false,
     ],
 
     'throttles' => [

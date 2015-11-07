@@ -53,7 +53,7 @@ class CreateUsersTable extends Migration
             $table->rememberToken();
             $table->boolean('active');
 
-            if (config('laravel-auth.users.confirm', false)) {
+            if (config('laravel-auth.user-confirmation.enabled', false)) {
                 $this->addConfirmationColumns($table);
             }
 
