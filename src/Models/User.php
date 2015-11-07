@@ -2,6 +2,7 @@
 
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Contracts\User as UserContract;
+use Arcanedev\LaravelAuth\Traits\AuthUserRelationships;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -23,7 +24,7 @@ class User
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use Authenticatable, Authorizable, CanResetPassword;
+    use Authenticatable, Authorizable, AuthUserRelationships, CanResetPassword;
 
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -61,22 +62,5 @@ class User
         $this->setTable(config('laravel-auth.users.table', 'users'));
 
         parent::__construct($attributes);
-    }
-
-    /* ------------------------------------------------------------------------------------------------
-     |  Relationships
-     | ------------------------------------------------------------------------------------------------
-     */
-    /**
-     * User belongs to many roles.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function roles()
-    {
-        $model = config('laravel-auth.roles.model', Role::class);
-
-        return $this->belongsToMany($model, 'role_user', 'user_id', 'role_id')
-            ->withTimestamps();
     }
 }

@@ -2,6 +2,7 @@
 
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Contracts\Permission as PermissionContract;
+use Arcanedev\LaravelAuth\Traits\AuthPermissionRelationships;
 
 /**
  * Class     Permission
@@ -11,6 +12,12 @@ use Arcanedev\LaravelAuth\Contracts\Permission as PermissionContract;
  */
 class Permission extends Model implements PermissionContract
 {
+    /* ------------------------------------------------------------------------------------------------
+     |  Traits
+     | ------------------------------------------------------------------------------------------------
+     */
+    use AuthPermissionRelationships;
+
     /* ------------------------------------------------------------------------------------------------
      |  Properties
      | ------------------------------------------------------------------------------------------------
@@ -36,23 +43,5 @@ class Permission extends Model implements PermissionContract
         $this->setTable(config('laravel-auth.permissions.table', 'permissions'));
 
         parent::__construct($attributes);
-    }
-
-    /* ------------------------------------------------------------------------------------------------
-     |  Relationships
-     | ------------------------------------------------------------------------------------------------
-     */
-    /**
-     * Permission belongs to many roles.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function roles()
-    {
-        $model = config('laravel-auth.roles.model', Role::class);
-
-        return $this
-            ->belongsToMany($model, 'permission_role', 'permission_id', 'role_id')
-            ->withTimestamps();
     }
 }
