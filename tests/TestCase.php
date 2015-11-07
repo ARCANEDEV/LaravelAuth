@@ -53,6 +53,7 @@ abstract class TestCase extends BaseTestCase
         $config = $app['config'];
 
         // Setup default database to use sqlite :memory:
+        $config->set('auth.model', \Arcanedev\LaravelAuth\Models\User::class);
         $config->set('database.default', 'testing');
         $config->set('database.connections.testing', [
             'driver'   => 'sqlite',

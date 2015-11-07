@@ -2,6 +2,7 @@
 
 use Arcanedev\LaravelAuth\Models\Role;
 use Arcanedev\LaravelAuth\Tests\TestCase;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Class     RoleTest
@@ -40,6 +41,7 @@ class RoleTest extends TestCase
     public function it_can_be_instantiated()
     {
         $expectations = [
+            \Illuminate\Database\Eloquent\Model::class,
             \Arcanedev\LaravelAuth\Contracts\Role::class,
             \Arcanedev\LaravelAuth\Models\Role::class,
         ];
@@ -47,5 +49,25 @@ class RoleTest extends TestCase
         foreach ($expectations as $expected) {
             $this->assertInstanceOf($expected, $this->role);
         }
+    }
+
+    /** @test */
+    public function it_has_relationships()
+    {
+        $usersRelationship       = $this->role->users();
+        $permissionsRelationship = $this->role->permissions();
+
+        $this->assertInstanceOf(BelongsToMany::class, $usersRelationship);
+        $this->assertInstanceOf(BelongsToMany::class, $permissionsRelationship);
+
+        /**
+         * @var  \Arcanedev\LaravelAuth\Models\User        $user
+         * @var  \Arcanedev\LaravelAuth\Models\Permission  $permission
+         */
+        $user       = $usersRelationship->getRelated();
+        $permission = $permissionsRelationship->getRelated();
+
+        $this->assertInstanceOf(\Arcanedev\LaravelAuth\Models\User::class,       $user);
+        $this->assertInstanceOf(\Arcanedev\LaravelAuth\Models\Permission::class, $permission);
     }
 }
