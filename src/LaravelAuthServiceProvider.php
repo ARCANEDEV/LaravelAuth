@@ -61,13 +61,7 @@ class LaravelAuthServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        $this->publishes([
-            $this->getConfigFile() => config_path("{$this->package}.php"),
-        ], 'config');
-
-        $this->publishes([
-            $this->getBasePath() . DS . 'database/migrations' => database_path('migrations'),
-        ], 'migrations');
+        $this->registerPublishes();
     }
 
     /**
@@ -80,5 +74,23 @@ class LaravelAuthServiceProvider extends ServiceProvider
         return [
             //
         ];
+    }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Other Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Register all publishable stuff.
+     */
+    private function registerPublishes()
+    {
+        $this->publishes([
+            $this->getConfigFile() => config_path("{$this->package}.php"),
+        ], 'config');
+
+        $this->publishes([
+            $this->getBasePath() . DS . 'database/migrations' => database_path('migrations'),
+        ], 'migrations');
     }
 }
