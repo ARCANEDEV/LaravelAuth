@@ -51,7 +51,11 @@ class LaravelAuthServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerConfig();
+        // @codeCoverageIgnoreStart
+        if ( ! $this->isTesting()) {
+            $this->registerConfig();
+        }
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -60,6 +64,10 @@ class LaravelAuthServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
+
+        if ($this->isTesting()) {
+            $this->registerConfig();
+        }
 
         $this->registerPublishes();
     }
@@ -92,5 +100,15 @@ class LaravelAuthServiceProvider extends ServiceProvider
         $this->publishes([
             $this->getBasePath() . DS . 'database/migrations' => database_path('migrations'),
         ], 'migrations');
+    }
+
+    /**
+     * Check if the environment is testing.
+     *
+     * @return bool
+     */
+    private function isTesting()
+    {
+        return $this->app->environment() == 'testing';
     }
 }
