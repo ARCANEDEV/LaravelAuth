@@ -22,6 +22,7 @@ return [
 
     'user-confirmation' => [
         'enabled'   => false,
+        'length'    => 30,
     ],
 
     'throttles' => [
