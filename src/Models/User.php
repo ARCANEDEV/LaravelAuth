@@ -126,6 +126,28 @@ class User
      | ------------------------------------------------------------------------------------------------
      */
     /**
+     * Detach a role from a user.
+     *
+     * @param  int|\Arcanedev\LaravelAuth\Models\Role $role
+     *
+     * @return int
+     */
+    public function detachRole($role)
+    {
+        return $this->roles()->detach($role);
+    }
+
+    /**
+     * Detach all roles from a user.
+     *
+     * @return int
+     */
+    public function detachAllRoles()
+    {
+        return $this->roles()->detach();
+    }
+
+    /**
      * Activate the user.
      *
      * @return bool

@@ -39,6 +39,22 @@ interface User
      | ------------------------------------------------------------------------------------------------
      */
     /**
+     * Detach a role from a user.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Role|int  $role
+     *
+     * @return int
+     */
+    public function detachRole($role);
+
+    /**
+     * Detach all roles from a user.
+     *
+     * @return int
+     */
+    public function detachAllRoles();
+
+    /**
      * Update the user model in the database.
      *
      * @param  array  $attributes
@@ -46,4 +62,36 @@ interface User
      * @return bool|int
      */
     public function update(array $attributes = []);
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Check Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Check if user has an activated account.
+     *
+     * @return bool
+     */
+    public function isActive();
+
+    /**
+     * Check if user has a confirmed account.
+     *
+     * @return bool
+     */
+    public function isConfirmed();
+
+    /**
+     * Activate the user.
+     *
+     * @return bool
+     */
+    public function activate();
+
+    /**
+     * Deactivate the user.
+     *
+     * @return bool
+     */
+    public function deactivate();
 }
