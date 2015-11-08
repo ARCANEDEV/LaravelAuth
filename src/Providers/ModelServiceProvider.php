@@ -21,7 +21,7 @@ class ModelServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // TODO: Implement register() method.
+        //
     }
 
     /**
@@ -43,6 +43,20 @@ class ModelServiceProvider extends ServiceProvider
     {
         User::creating(function (User $user) {
             $user->confirmation_code = UserConfirmator::generateCode();
+        });
+
+        User::created(function (User $user) {
+            //
+        });
+
+        User::deleting(function (User $user) {
+            if ($user->trashed()) {
+                $user->detachAllRoles();
+            }
+        });
+
+        User::deleted(function (User $user) {
+            //
         });
     }
 }

@@ -42,8 +42,8 @@ class CreateRolesTable extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('description')->nullable();
-            $table->boolean('active')->default(true);
-            $table->boolean('locked')->default(false);
+            $table->boolean('is_active')->default(1);
+            $table->boolean('is_locked')->default(0);
 
             $table->timestamps();
         });
