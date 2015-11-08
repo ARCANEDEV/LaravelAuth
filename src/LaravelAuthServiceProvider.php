@@ -56,6 +56,8 @@ class LaravelAuthServiceProvider extends ServiceProvider
             $this->registerConfig();
         }
         // @codeCoverageIgnoreEnd
+
+        $this->app->register(Providers\ModelServiceProvider::class);
     }
 
     /**
