@@ -1,6 +1,7 @@
 <?php
 
 use Arcanedev\LaravelAuth\Bases\Migration;
+use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -39,35 +40,17 @@ class CreateUsersTable extends Migration
         Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
             $table->increments('id');
             $table->string('username');
-            $table->string('first_name', 30);
-            $table->string('last_name', 30);
+            $table->string('first_name', 30)->nullable();
+            $table->string('last_name', 30)->nullable();
             $table->string('email')->unique();
             $table->string('password', 60);
             $table->rememberToken();
-            $table->boolean('active');
+            $table->boolean('is_active')->default(0);
 
-            if (config('laravel-auth.user-confirmation.enabled', false)) {
-                $this->addConfirmationColumns($table);
-            }
+            UserConfirmator::addColumns($table);
 
             $table->timestamps();
             $table->softDeletes();
         });
-    }
-
-    /* ------------------------------------------------------------------------------------------------
-     |  Other Functions
-     | ------------------------------------------------------------------------------------------------
-     */
-    /**
-     * Add confirmation columns.
-     *
-     * @param  Blueprint  $table
-     */
-    public function addConfirmationColumns(Blueprint $table)
-    {
-        $table->boolean('confirmed')->default(false);
-        $table->string('confirmation_code', 30)->nullable();
-        $table->timestamp('confirmed_at')->nullable();
     }
 }
