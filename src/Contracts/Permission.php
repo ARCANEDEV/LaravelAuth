@@ -5,6 +5,15 @@
  *
  * @package   Arcanedev\LaravelAuth\Contracts
  * @author    ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @property  int                                       id
+ * @property  string                                    name
+ * @property  string                                    slug
+ * @property  string                                    description
+ * @property  string                                    model
+ * @property  \Carbon\Carbon                            created_at
+ * @property  \Carbon\Carbon                            updated_at
+ * @property  \Illuminate\Database\Eloquent\Collection  roles
  */
 interface Permission
 {

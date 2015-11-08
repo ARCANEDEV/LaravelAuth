@@ -10,14 +10,6 @@ use Carbon\Carbon;
  *
  * @package  Arcanedev\LaravelAuth\Models
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
- *
- * @property  int     id
- * @property  string  name
- * @property  string  slug
- * @property  string  description
- * @property  string  model
- * @property  Carbon  created_at
- * @property  Carbon  updated_at
  */
 class Permission extends Model implements PermissionContract
 {
