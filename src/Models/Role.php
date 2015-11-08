@@ -3,7 +3,6 @@
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Contracts\Role as RoleContract;
 use Arcanedev\LaravelAuth\Traits\AuthRoleRelationships;
-use Carbon\Carbon;
 
 /**
  * Class     Role
@@ -11,13 +10,15 @@ use Carbon\Carbon;
  * @package  Arcanedev\LaravelAuth\Models
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  *
- * @property  int     id
- * @property  string  slug
- * @property  string  description
- * @property  bool    is_active
- * @property  bool    is_locked
- * @property  Carbon  created_at
- * @property  Carbon  updated_at
+ * @property  int                                       id
+ * @property  string                                    slug
+ * @property  string                                    description
+ * @property  bool                                      is_active
+ * @property  bool                                      is_locked
+ * @property  \Carbon\Carbon                            created_at
+ * @property  \Carbon\Carbon                            updated_at
+ * @property  \Illuminate\Database\Eloquent\Collection  users
+ * @property  \Illuminate\Database\Eloquent\Collection  permissions
  */
 class Role extends Model implements RoleContract
 {

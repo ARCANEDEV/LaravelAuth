@@ -9,7 +9,6 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 
@@ -19,7 +18,24 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
  * @package  Arcanedev\LaravelAuth\Models
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  *
- * @method   Builder  unconfirmed(string $code)
+ * @property  int                                       id
+ * @property  string                                    username
+ * @property  string                                    first_name
+ * @property  string                                    last_name
+ * @property  string                                    email
+ * @property  string                                    password
+ * @property  string                                    remember_token
+ * @property  bool                                      is_admin
+ * @property  bool                                      is_active
+ * @property  bool                                      is_confirmed       (Optional)
+ * @property  string                                    confirmation_code  (Optional)
+ * @property  \Carbon\Carbon                            confirmed_at       (Optional)
+ * @property  \Carbon\Carbon                            created_at
+ * @property  \Carbon\Carbon                            updated_at
+ * @property  \Carbon\Carbon                            deleted_at
+ * @property  \Illuminate\Database\Eloquent\Collection  roles
+ *
+ * @method    \Illuminate\Database\Eloquent\Builder     unconfirmed(string $code)
  */
 class User
     extends Model
@@ -101,7 +117,7 @@ class User
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeUnconfirmed(Builder $query, $code)
+    public function scopeUnconfirmed($query, $code)
     {
         return $query->where('is_confirmed', false)
             ->where('confirmation_code', $code)
