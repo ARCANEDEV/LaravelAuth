@@ -1,7 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Tests\Models;
 
 use Arcanedev\LaravelAuth\Models\Permission;
-use Arcanedev\LaravelAuth\Tests\TestCase;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
@@ -10,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @package  Arcanedev\LaravelAuth\Tests\Models
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class PermissionTest extends TestCase
+class PermissionTest extends ModelsTest
 {
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -68,5 +67,19 @@ class PermissionTest extends TestCase
         $role = $rolesRelationship->getRelated();
 
         $this->assertInstanceOf(\Arcanedev\LaravelAuth\Models\Role::class, $role);
+    }
+
+    /** @test */
+    public function it_can_create()
+    {
+        $attributes = [
+            'name'        => 'Create users',
+            'slug'        => 'users.create',
+            'description' => 'Allow to create users',
+        ];
+
+        $this->permission->create($attributes);
+
+        $this->seeInDatabase('permissions', $attributes);
     }
 }

@@ -1,4 +1,5 @@
 <?php namespace Arcanedev\LaravelAuth\Tests;
+
 use Arcanedev\LaravelAuth\LaravelAuthServiceProvider;
 
 /**

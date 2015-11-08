@@ -1,7 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Tests\Models;
 
 use Arcanedev\LaravelAuth\Models\Role;
-use Arcanedev\LaravelAuth\Tests\TestCase;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
@@ -10,8 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @package  Arcanedev\LaravelAuth\Tests\Models
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class RoleTest extends TestCase
+class RoleTest extends ModelsTest
 {
+    /* ------------------------------------------------------------------------------------------------
+     |  Properties
+     | ------------------------------------------------------------------------------------------------
+     */
     /** @var Role */
     protected $role;
 
