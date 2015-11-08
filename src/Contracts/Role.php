@@ -5,6 +5,14 @@
  *
  * @package   Arcanedev\LaravelAuth\Contracts
  * @author    ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @property  int             id
+ * @property  string          slug
+ * @property  string          description
+ * @property  bool            is_active
+ * @property  bool            is_locked
+ * @property  \Carbon\Carbon  created_at
+ * @property  \Carbon\Carbon  updated_at
  */
 interface Role
 {
