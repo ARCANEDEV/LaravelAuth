@@ -74,7 +74,7 @@ class PermissionTest extends ModelsTest
     {
         $attributes = [
             'name'        => 'Create users',
-            'slug'        => 'users.create',
+            'slug'        => 'auth.users.create',
             'description' => 'Allow to create users',
         ];
 

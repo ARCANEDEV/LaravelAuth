@@ -1,5 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Tests\Models;
 
+use Arcanedev\LaravelAuth\Models\Role;
 use Arcanedev\LaravelAuth\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -16,7 +17,7 @@ class UserTest extends ModelsTest
      | ------------------------------------------------------------------------------------------------
      */
     /** @var User */
-    protected $user;
+    protected $userModel;
 
     /* ------------------------------------------------------------------------------------------------
      |  Main Functions
@@ -26,14 +27,14 @@ class UserTest extends ModelsTest
     {
         parent::setUp();
 
-        $this->user = new User;
+        $this->userModel = new User;
     }
 
     public function tearDown()
     {
         parent::tearDown();
 
-        unset($this->user);
+        unset($this->userModel);
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -50,48 +51,43 @@ class UserTest extends ModelsTest
         ];
 
         foreach ($expectations as $expected) {
-            $this->assertInstanceOf($expected, $this->user);
+            $this->assertInstanceOf($expected, $this->userModel);
         }
     }
 
     /** @test */
     public function it_has_relationships()
     {
-        $rolesRelationship = $this->user->roles();
+        $rolesRelationship = $this->userModel->roles();
 
         $this->assertInstanceOf(BelongsToMany::class, $rolesRelationship);
 
-        /** @var  \Arcanedev\LaravelAuth\Models\Role  $role */
-        $role = $rolesRelationship->getRelated();
+        /** @var  Role  $roleModel */
+        $roleModel = $rolesRelationship->getRelated();
 
-        $this->assertInstanceOf(\Arcanedev\LaravelAuth\Models\Role::class, $role);
+        $this->assertInstanceOf(Role::class, $roleModel);
     }
 
     /** @test */
     public function it_can_create_a_user()
     {
-        $attributes = [
-            'username'   => 'john-doe',
-            'first_name' => 'John',
-            'last_name'  => 'DOE',
-            'email'      => 'j.doe@gmail.com',
-            'password'   => 'PaSsWoRd',
-        ];
+        $attributes = $this->getUserAttributes();
+        $user       = $this->createUser();
 
-        /** @var User $user */
-        $user = $this->user->create($attributes);
-        $user = $this->user->where('id', $user->id)->first();
+        $this->assertEquals($attributes['username'],    $user->username);
+        $this->assertEquals($attributes['first_name'],  $user->first_name);
+        $this->assertEquals($attributes['last_name'],   $user->last_name);
+        $this->assertEquals($attributes['email'],       $user->email);
+        $this->assertNotEquals($attributes['password'], $user->password);
 
-        $this->assertEquals($attributes['username'],         $user->username);
-        $this->assertEquals($attributes['first_name'],       $user->first_name);
-        $this->assertEquals($attributes['last_name'],        $user->last_name);
-        $this->assertEquals($attributes['email'],            $user->email);
-        $this->assertNotEquals($attributes['password'],      $user->password);
-
+        $this->assertFalse($user->is_admin);
+        $this->assertFalse($user->isAdmin());
         $this->assertFalse($user->is_active);
         $this->assertFalse($user->isActive());
         $this->assertFalse($user->is_confirmed);
         $this->assertFalse($user->isConfirmed());
+
+        $this->assertCount(0, $user->roles);
     }
 
     /** @test */
@@ -106,8 +102,8 @@ class UserTest extends ModelsTest
         ];
 
         /** @var User $user */
-        $user = $this->user->create($attributes);
-        $user = $this->user->where('id', $user->id)->first();
+        $user = $this->userModel->create($attributes);
+        $user = $this->userModel->where('id', $user->id)->first();
 
         $this->assertFalse($user->is_active);
         $this->assertFalse($user->isActive());
@@ -119,5 +115,100 @@ class UserTest extends ModelsTest
         $this->assertTrue($user->deactivate());
         $this->assertFalse($user->is_active);
         $this->assertFalse($user->isActive());
+    }
+
+    /** @test */
+    public function it_can_attach_and_detach_a_role()
+    {
+        $user          = $this->createUser();
+
+        $this->assertCount(0, $user->roles);
+
+        $adminRole     = Role::create([
+            'name'        => 'Admin',
+            'description' => 'Admin role descriptions.',
+        ]);
+        $moderatorRole = Role::create([
+            'name'        => 'Moderator',
+            'description' => 'Moderator role descriptions.',
+        ]);
+
+        $user->attachRole($adminRole);
+        $this->assertCount(1, $user->roles);
+
+        $user->attachRole($moderatorRole);
+        $this->assertCount(2, $user->roles);
+
+        $user->detachRole($adminRole);
+        $this->assertCount(1, $user->roles);
+
+        $user->detachRole($moderatorRole);
+        $this->assertCount(0, $user->roles);
+
+
+    }
+
+    /** @test */
+    public function it_can_detach_all_roles()
+    {
+        $user          = $this->createUser();
+        $adminRole     = Role::create([
+            'name'        => 'Admin',
+            'description' => 'Admin role descriptions.',
+        ]);
+        $moderatorRole = Role::create([
+            'name'        => 'Moderator',
+            'description' => 'Moderator role descriptions.',
+        ]);
+
+        $this->assertCount(0, $user->roles);
+
+        $user->attachRole($adminRole);
+        $user->attachRole($moderatorRole);
+
+        $this->assertCount(2, $user->roles);
+
+        $user->detachAllRoles();
+
+        $this->assertCount(0, $user->roles);
+    }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Other Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Create a user.
+     *
+     * @param  array  $attributes
+     *
+     * @return User
+     */
+    private function createUser(array $attributes = [])
+    {
+        if (empty($attributes)) {
+            $attributes = $this->getUserAttributes();
+        }
+
+        /** @var User $user */
+        $user = $this->userModel->create($attributes);
+
+        return $this->userModel->find($user->id);
+    }
+
+    /**
+     * Get a dummy user attributes.
+     *
+     * @return array
+     */
+    private function getUserAttributes()
+    {
+        return [
+            'username'   => 'john-doe',
+            'first_name' => 'John',
+            'last_name'  => 'DOE',
+            'email'      => 'j.doe@gmail.com',
+            'password'   => 'PaSsWoRd',
+        ];
     }
 }
