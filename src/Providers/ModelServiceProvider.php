@@ -50,9 +50,15 @@ class ModelServiceProvider extends ServiceProvider
         });
 
         User::deleting(function (User $user) {
+            if ($user->isAdmin()) {
+                return false;
+            }
+
             if ($user->trashed()) {
                 $user->detachAllRoles();
             }
+
+            return true;
         });
 
         User::deleted(function (User $user) {

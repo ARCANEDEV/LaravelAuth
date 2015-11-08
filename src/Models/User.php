@@ -59,6 +59,7 @@ class User
      * @var array
      */
     protected $casts = [
+        'is_admin'     => 'boolean',
         'is_active'    => 'boolean',
         'is_confirmed' => 'boolean',
     ];
@@ -126,6 +127,18 @@ class User
      | ------------------------------------------------------------------------------------------------
      */
     /**
+     * Attach a role to a user.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Role|int  $role
+     */
+    public function attachRole($role)
+    {
+        // Add a check method if role exists.
+        $this->roles()->attach($role);
+        $this->load('roles');
+    }
+
+    /**
      * Detach a role from a user.
      *
      * @param  int|\Arcanedev\LaravelAuth\Models\Role $role
@@ -134,17 +147,22 @@ class User
      */
     public function detachRole($role)
     {
-        return $this->roles()->detach($role);
+        return $this->detachAllRoles($role);
     }
 
     /**
      * Detach all roles from a user.
      *
+     * @param  array  $ids
+     *
      * @return int
      */
-    public function detachAllRoles()
+    public function detachAllRoles($ids = [])
     {
-        return $this->roles()->detach();
+        $results = $this->roles()->detach($ids);
+        $this->load('roles');
+
+        return $results;
     }
 
     /**
@@ -214,6 +232,16 @@ class User
      |  Check Functions
      | ------------------------------------------------------------------------------------------------
      */
+    /**
+     * Check if user is an administrator.
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->is_admin;
+    }
+
     /**
      * Check if user has an activated account.
      *
