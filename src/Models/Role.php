@@ -63,7 +63,7 @@ class Role extends Model implements RoleContract
      *
      * @param  string  $name
      */
-    public function setNameAttributes($name)
+    public function setNameAttribute($name)
     {
         $this->attributes['name'] = $name;
         $this->setSlugAttribute($name);
