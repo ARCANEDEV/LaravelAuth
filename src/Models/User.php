@@ -2,6 +2,7 @@
 
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Contracts\User as UserContract;
+use Arcanedev\LaravelAuth\Exceptions\UserConfirmationException;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Arcanedev\LaravelAuth\Traits\AuthUserRelationships;
 use Illuminate\Auth\Authenticatable;
@@ -244,24 +245,34 @@ class User
      *
      * @param  string  $code
      *
-     * @return self|\Illuminate\Database\Eloquent\Builder
+     * @return \Arcanedev\LaravelAuth\Models\User
      *
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     * @throws \Arcanedev\LaravelAuth\Exceptions\UserConfirmationException
      */
     public function findUnconfirmed($code)
     {
-        return self::unconfirmed($code)->firstOrFail();
+        $unconfirmedUser = self::unconfirmed($code)->first();
+
+        if ( ! $unconfirmedUser instanceof self) {
+            throw (new UserConfirmationException)->setModel(self::class);
+        }
+
+        return $unconfirmedUser;
     }
 
     /**
      * Confirm the new user account.
      *
-     * @param  string  $code
+     * @param  \Arcanedev\LaravelAuth\Models\User|string  $code
      *
-     * @return self
+     * @return \Arcanedev\LaravelAuth\Models\User
      */
     public function confirm($code)
     {
+        if ($code instanceof self) {
+            $code = $code->confirmation_code;
+        }
+
         $user = $this->findUnconfirmed($code);
 
         return (new UserConfirmator)->confirm($user);

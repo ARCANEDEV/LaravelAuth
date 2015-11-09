@@ -57,13 +57,13 @@ interface User
     public function detachAllRoles();
 
     /**
-     * Update the user model in the database.
+     * Save the user model to the database.
      *
-     * @param  array  $attributes
+     * @param  array  $options
      *
-     * @return bool|int
+     * @return bool
      */
-    public function update(array $attributes = []);
+    public function save(array $options = []);
 
     /* ------------------------------------------------------------------------------------------------
      |  Check Functions

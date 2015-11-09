@@ -195,6 +195,96 @@ class UserTest extends ModelsTest
         $this->assertCount(0, $user->roles);
     }
 
+    /** @test */
+    public function it_can_find_an_unconfirmed_user()
+    {
+        $user            = $this->createUser();
+        $unconfirmedUser = $this->userModel->findUnconfirmed($user->confirmation_code);
+
+        $this->assertEquals($user, $unconfirmedUser);
+    }
+
+    /** @test */
+    public function it_must_throw_an_exception_on_not_found_unconfirmed_user()
+    {
+        $expectations = [
+            \Illuminate\Database\Eloquent\ModelNotFoundException::class,
+            \Arcanedev\LaravelAuth\Exceptions\UserConfirmationException::class,
+        ];
+
+        try {
+            $this->userModel->findUnconfirmed(str_random(30));
+        }
+        catch(\Exception $e) {
+            foreach ($expectations as $expected) {
+                $this->assertInstanceOf($expected, $e);
+            }
+
+            $this->assertEquals('Unconfirmed user was not found.', $e->getMessage());
+        }
+    }
+
+    /** @test */
+    public function it_can_confirm_a_user()
+    {
+        $user = $this->createUser();
+
+        $this->assertFalse($user->is_confirmed);
+        $this->assertFalse($user->isConfirmed());
+        $this->assertNotNull($user->confirmation_code);
+        $this->assertNull($user->confirmed_at);
+
+        $user = $this->userModel->confirm($user);
+
+        $this->assertTrue($user->is_confirmed);
+        $this->assertTrue($user->isConfirmed());
+        $this->assertNull($user->confirmation_code);
+        $this->assertInstanceOf(\Carbon\Carbon::class, $user->confirmed_at);
+    }
+
+    /** @test */
+    public function it_can_confirm_a_user_by_code()
+    {
+        $user = $this->createUser();
+
+        $this->assertFalse($user->is_confirmed);
+        $this->assertFalse($user->isConfirmed());
+        $this->assertNotNull($user->confirmation_code);
+        $this->assertNull($user->confirmed_at);
+
+        $user = $this->userModel->confirm($user->confirmation_code);
+
+        $this->assertTrue($user->is_confirmed);
+        $this->assertTrue($user->isConfirmed());
+        $this->assertNull($user->confirmation_code);
+        $this->assertInstanceOf(\Carbon\Carbon::class, $user->confirmed_at);
+    }
+
+    /** @test */
+    public function it_can_delete()
+    {
+        $user   = $this->createUser();
+        $userId = $user->id;
+
+        $this->assertFalse($user->trashed());
+        $this->assertTrue($user->delete());
+
+        $user = $this->userModel->find($userId);
+
+        $this->assertNull($user);
+
+        /** @var User $user */
+        $user = $this->userModel->onlyTrashed()->find($userId);
+
+        $this->assertTrue($user->trashed());
+
+        $user->forceDelete();
+
+        $user = $this->userModel->find($userId);
+
+        $this->assertNull($user);
+    }
+
     /* ------------------------------------------------------------------------------------------------
      |  Other Functions
      | ------------------------------------------------------------------------------------------------
