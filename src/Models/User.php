@@ -149,7 +149,10 @@ class User
      */
     public function attachRole($role)
     {
-        // Add a check method if role exists.
+        if ($this->hasRole($role)) {
+            return;
+        }
+
         $this->roles()->attach($role);
         $this->load('roles');
     }
@@ -157,7 +160,7 @@ class User
     /**
      * Detach a role from a user.
      *
-     * @param  int|\Arcanedev\LaravelAuth\Models\Role $role
+     * @param  \Arcanedev\LaravelAuth\Models\Role|int  $role
      *
      * @return int
      */
@@ -169,7 +172,7 @@ class User
     /**
      * Detach all roles from a user.
      *
-     * @param  array  $ids
+     * @param  array|int  $ids
      *
      * @return int
      */
@@ -179,6 +182,22 @@ class User
         $this->load('roles');
 
         return $results;
+    }
+
+    /**
+     * Check if user has the given role (Role Model or Id).
+     *
+     * @param  mixed  $id
+     *
+     * @return bool
+     */
+    public function hasRole($id)
+    {
+        if ($id instanceof Model) {
+            $id = $id->getKey();
+        }
+
+        return $this->roles->contains($id);
     }
 
     /**
@@ -226,7 +245,6 @@ class User
      */
     public function findUnconfirmed($code)
     {
-        /** @var self $user */
         return self::unconfirmed($code)->firstOrFail();
     }
 

@@ -145,7 +145,11 @@ class UserTest extends ModelsTest
         $user->detachRole($moderatorRole);
         $this->assertCount(0, $user->roles);
 
+        $user->attachRole($adminRole);
+        $this->assertCount(1, $user->roles);
 
+        $user->attachRole($adminRole);       // Prevent the duplication
+        $this->assertCount(1, $user->roles);
     }
 
     /** @test */
