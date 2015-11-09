@@ -121,9 +121,6 @@ class UserTest extends ModelsTest
     public function it_can_attach_and_detach_a_role()
     {
         $user          = $this->createUser();
-
-        $this->assertCount(0, $user->roles);
-
         $adminRole     = Role::create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
@@ -133,23 +130,44 @@ class UserTest extends ModelsTest
             'description' => 'Moderator role descriptions.',
         ]);
 
-        $user->attachRole($adminRole);
-        $this->assertCount(1, $user->roles);
-
-        $user->attachRole($moderatorRole);
-        $this->assertCount(2, $user->roles);
-
-        $user->detachRole($adminRole);
-        $this->assertCount(1, $user->roles);
-
-        $user->detachRole($moderatorRole);
         $this->assertCount(0, $user->roles);
 
         $user->attachRole($adminRole);
         $this->assertCount(1, $user->roles);
+        $this->assertTrue($user->hasRole($adminRole));
 
-        $user->attachRole($adminRole);       // Prevent the duplication
+        $user->attachRole($moderatorRole);
+        $this->assertCount(2, $user->roles);
+        $this->assertTrue($user->hasRole($adminRole));
+        $this->assertTrue($user->hasRole($moderatorRole));
+
+        $user->detachRole($adminRole);
         $this->assertCount(1, $user->roles);
+        $this->assertFalse($user->hasRole($adminRole));
+        $this->assertTrue($user->hasRole($moderatorRole));
+
+        $user->detachRole($moderatorRole);
+        $this->assertCount(0, $user->roles);
+        $this->assertFalse($user->hasRole($adminRole));
+        $this->assertFalse($user->hasRole($moderatorRole));
+    }
+
+    /** @test */
+    public function it_can_prevent_attach_duplicated_roles()
+    {
+        $user          = $this->createUser();
+        $adminRole     = Role::create([
+            'name'        => 'Admin',
+            'description' => 'Admin role descriptions.',
+        ]);
+
+        $this->assertCount(0, $user->roles);
+
+        foreach (range(0, 5) as $time) {
+            $user->attachRole($adminRole);
+            $this->assertCount(1, $user->roles);
+            $this->assertTrue($user->hasRole($adminRole));
+        }
     }
 
     /** @test */
