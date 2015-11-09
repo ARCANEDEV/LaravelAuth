@@ -36,11 +36,10 @@ class UserConfirmator
     {
         event('auth.user.confirming', compact('user'));
 
-        $user->update([
-            'confirmed'         => true,
-            'confirmation_code' => null,
-            'confirmed_at'      => \Carbon\Carbon::now(),
-        ]);
+        $user->is_confirmed      = true;
+        $user->confirmation_code = null;
+        $user->confirmed_at      = \Carbon\Carbon::now();
+        $user->save();
 
         event('auth.user.confirmed', compact('user'));
 
