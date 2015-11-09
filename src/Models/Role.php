@@ -98,7 +98,7 @@ class Role extends Model implements RoleContract
         }
 
         $this->permissions()->attach($permission);
-        $this->load('permission');
+        $this->load('permissions');
     }
 
     /**
@@ -114,7 +114,10 @@ class Role extends Model implements RoleContract
             $permission = (array) $permission->getKey();
         }
 
-        return $this->permissions()->detach($permission);
+        $result = $this->permissions()->detach($permission);
+        $this->load('permissions');
+
+        return $result;
     }
 
     /**
@@ -124,7 +127,10 @@ class Role extends Model implements RoleContract
      */
     public function detachAllPermissions()
     {
-        return $this->permissions()->detach();
+        $result = $this->permissions()->detach();
+        $this->load('permissions');
+
+        return $result;
     }
 
     /**
