@@ -91,7 +91,15 @@ class Role extends Model implements RoleContract
      *
      * @return int|bool
      */
-    //public function attachPermission($permission)
+    public function attachPermission($permission)
+    {
+        if ($this->hasPermission($permission)) {
+            return;
+        }
+
+        $this->permissions()->attach($permission);
+        $this->load('permission');
+    }
 
     /**
      * Detach a permission from a role.
@@ -102,6 +110,10 @@ class Role extends Model implements RoleContract
      */
     public function detachPermission($permission)
     {
+        if ($permission instanceof Permission) {
+            $permission = (array) $permission->getKey();
+        }
+
         return $this->permissions()->detach($permission);
     }
 
@@ -113,5 +125,21 @@ class Role extends Model implements RoleContract
     public function detachAllPermissions()
     {
         return $this->permissions()->detach();
+    }
+
+    /**
+     * Check if role has the given permission (Permission Model or Id).
+     *
+     * @param  mixed  $id
+     *
+     * @return bool
+     */
+    public function hasPermission($id)
+    {
+        if ($id instanceof Permission) {
+            $id = $id->getKey();
+        }
+
+        return $this->permissions->contains($id);
     }
 }

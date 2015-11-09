@@ -166,19 +166,24 @@ class User
      */
     public function detachRole($role)
     {
-        return $this->detachAllRoles($role);
+        if ($role instanceof Role) {
+            $role = (array) $role->getKey();
+        }
+
+        $results = $this->roles()->detach($role);
+        $this->load('roles');
+
+        return $results;
     }
 
     /**
      * Detach all roles from a user.
      *
-     * @param  array|int  $ids
-     *
      * @return int
      */
-    public function detachAllRoles($ids = [])
+    public function detachAllRoles()
     {
-        $results = $this->roles()->detach($ids);
+        $results = $this->roles()->detach();
         $this->load('roles');
 
         return $results;
@@ -193,7 +198,7 @@ class User
      */
     public function hasRole($id)
     {
-        if ($id instanceof Model) {
+        if ($id instanceof Role) {
             $id = $id->getKey();
         }
 
@@ -239,7 +244,7 @@ class User
      *
      * @param  string  $code
      *
-     * @return \Arcanedev\LaravelAuth\Models\User
+     * @return self|\Illuminate\Database\Eloquent\Builder
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
@@ -253,7 +258,7 @@ class User
      *
      * @param  string  $code
      *
-     * @return \Arcanedev\LaravelAuth\Models\User
+     * @return self
      */
     public function confirm($code)
     {

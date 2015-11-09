@@ -45,9 +45,9 @@ class ModelServiceProvider extends ServiceProvider
             $user->confirmation_code = UserConfirmator::generateCode();
         });
 
-        User::created(function (User $user) {
-            //
-        });
+        //User::created(function (User $user) {
+        //    //
+        //});
 
         User::deleting(function (User $user) {
             if ($user->isAdmin()) {
@@ -61,8 +61,8 @@ class ModelServiceProvider extends ServiceProvider
             return true;
         });
 
-        User::deleted(function (User $user) {
-            //
-        });
+        //User::deleted(function (User $user) {
+        //    //
+        //});
     }
 }
