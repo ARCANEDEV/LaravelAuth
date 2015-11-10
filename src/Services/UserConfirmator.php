@@ -1,7 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Services;
 
 use Arcanedev\LaravelAuth\Contracts\User;
-use Illuminate\Database\Schema\Blueprint;
 
 /**
  * Class     UserConfirmator
