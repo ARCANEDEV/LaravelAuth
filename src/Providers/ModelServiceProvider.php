@@ -1,7 +1,11 @@
 <?php namespace Arcanedev\LaravelAuth\Providers;
 
+use Arcanedev\LaravelAuth\Models\Permission;
+use Arcanedev\LaravelAuth\Models\Role;
 use Arcanedev\LaravelAuth\Models\User;
-use Arcanedev\LaravelAuth\Services\UserConfirmator;
+use Arcanedev\LaravelAuth\Observers\PermissionObserver;
+use Arcanedev\LaravelAuth\Observers\RoleObserver;
+use Arcanedev\LaravelAuth\Observers\UserObserver;
 use Arcanedev\Support\ServiceProvider;
 
 /**
@@ -29,40 +33,8 @@ class ModelServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->registerUserModelEvents();
-    }
-
-    /* ------------------------------------------------------------------------------------------------
-     |  Model Events
-     | ------------------------------------------------------------------------------------------------
-     */
-    /**
-     * Register user model events
-     */
-    private function registerUserModelEvents()
-    {
-        User::creating(function (User $user) {
-            $user->confirmation_code = UserConfirmator::generateCode();
-        });
-
-        //User::created(function (User $user) {
-        //    //
-        //});
-
-        User::deleting(function (User $user) {
-            if ($user->isAdmin()) {
-                return false;
-            }
-
-            if ($user->trashed()) {
-                $user->detachAllRoles();
-            }
-
-            return true;
-        });
-
-        //User::deleted(function (User $user) {
-        //    //
-        //});
+        User::observe(new UserObserver);
+        Role::observe(new RoleObserver);
+        Permission::observe(new PermissionObserver);
     }
 }
