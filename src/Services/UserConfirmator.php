@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Services;
 
 use Arcanedev\LaravelAuth\Contracts\User;
+use Carbon\Carbon;
 
 /**
  * Class     UserConfirmator
@@ -35,9 +36,9 @@ class UserConfirmator
     {
         event('auth.users.confirming', compact('user'));
 
-        $user->is_confirmed      = true;
-        $user->confirmation_code = null;
-        $user->confirmed_at      = \Carbon\Carbon::now();
+        $user->setAttribute('is_confirmed',      true);
+        $user->setAttribute('confirmation_code', null);
+        $user->setAttribute('confirmed_at',      Carbon::now());
         $user->save();
 
         event('auth.users.confirmed', compact('user'));

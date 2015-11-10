@@ -37,6 +37,20 @@ interface User
     public function roles();
 
     /* ------------------------------------------------------------------------------------------------
+     |  Getters and Setters
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Set a given attribute on the user model.
+     *
+     * @param  string  $key
+     * @param  mixed   $value
+     *
+     * @return \Arcanedev\LaravelAuth\Contracts\User
+     */
+    public function setAttribute($key, $value);
+
+    /* ------------------------------------------------------------------------------------------------
      |  CRUD Functions
      | ------------------------------------------------------------------------------------------------
      */
