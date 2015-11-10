@@ -11,6 +11,7 @@ use Arcanedev\LaravelAuth\Traits\AuthRoleRelationships;
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  *
  * @property  int                                       id
+ * @property  string                                    name
  * @property  string                                    slug
  * @property  string                                    description
  * @property  bool                                      is_active
@@ -97,35 +98,57 @@ class Role extends Model implements RoleContract
     /**
      * Attach a permission to a role.
      *
-     * @param  \Arcanedev\LaravelAuth\Models\Permission|int  $permission
-     *
-     * @return int|bool
+     * @param  \Arcanedev\LaravelAuth\Models\User|int  $user
+     * @param  bool                                    $reload
      */
-    public function attachPermission($permission)
+    public function attachUser($user, $reload = true)
     {
-        if ($this->hasPermission($permission)) {
+        if ($this->hasUser($user)) {
             return;
         }
 
-        $this->permissions()->attach($permission);
-        $this->load('permissions');
+        $this->users()->attach($user);
+
+        if ($reload) {
+            $this->load('users');
+        }
     }
 
     /**
-     * Detach a permission from a role.
+     * Check if role has the given user (User Model or Id).
      *
-     * @param  \Arcanedev\LaravelAuth\Models\Permission|int  $permission
+     * @param  mixed  $id
+     *
+     * @return bool
+     */
+    public function hasUser($id)
+    {
+        if ($id instanceof User) {
+            $id = $id->getKey();
+        }
+
+        return $this->users->contains($id);
+    }
+
+    /**
+     * Detach a user from a role.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\User|int  $user
+     * @param  bool                                    $reload
      *
      * @return int
      */
-    public function detachPermission($permission)
+    public function detachUser($user, $reload = true)
     {
-        if ($permission instanceof Permission) {
-            $permission = (array) $permission->getKey();
+        if ($user instanceof User) {
+            $user = (array) $user->getKey();
         }
 
-        $result = $this->permissions()->detach($permission);
-        $this->load('permissions');
+        $result = $this->users()->detach($user);
+
+        if ($reload) {
+            $this->load('users');
+        }
 
         return $result;
     }
@@ -133,12 +156,59 @@ class Role extends Model implements RoleContract
     /**
      * Detach all users from a role.
      *
+     * @param  bool  $reload
+     *
      * @return int
      */
-    public function detachAllUsers()
+    public function detachAllUsers($reload = true)
     {
-        $result = $this->permissions()->detach();
-        $this->load('users');
+        $result = $this->users()->detach();
+
+        if ($reload) {
+            $this->load('users');
+        }
+
+        return $result;
+    }
+
+    /**
+     * Attach a permission to a role.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Permission|int  $permission
+     * @param  bool                                          $reload
+     */
+    public function attachPermission($permission, $reload = true)
+    {
+        if ($this->hasPermission($permission)) {
+            return;
+        }
+
+        $this->permissions()->attach($permission);
+
+        if ($reload) {
+            $this->load('permissions');
+        }
+    }
+
+    /**
+     * Detach a permission from a role.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Permission|int  $permission
+     * @param  bool                                          $reload
+     *
+     * @return int
+     */
+    public function detachPermission($permission, $reload = true)
+    {
+        if ($permission instanceof Permission) {
+            $permission = (array) $permission->getKey();
+        }
+
+        $result = $this->permissions()->detach($permission);
+
+        if ($reload) {
+            $this->load('permissions');
+        }
 
         return $result;
     }
@@ -146,12 +216,17 @@ class Role extends Model implements RoleContract
     /**
      * Detach all permissions from a role.
      *
+     * @param  bool  $reload
+     *
      * @return int
      */
-    public function detachAllPermissions()
+    public function detachAllPermissions($reload = true)
     {
         $result = $this->permissions()->detach();
-        $this->load('permissions');
+
+        if ($reload) {
+            $this->load('permissions');
+        }
 
         return $result;
     }
