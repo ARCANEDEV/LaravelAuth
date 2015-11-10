@@ -69,18 +69,4 @@ class UserConfirmator
     {
         return config('laravel-auth.user-confirmation.length', 30);
     }
-
-    /**
-     * Add confirmation columns.
-     *
-     * @param  Blueprint  $table
-     */
-    public static function addColumns(Blueprint $table)
-    {
-        if (self::isEnabled()) {
-            $table->boolean('is_confirmed')->default(0);
-            $table->string('confirmation_code', self::getLength())->nullable();
-            $table->timestamp('confirmed_at')->nullable();
-        }
-    }
 }
