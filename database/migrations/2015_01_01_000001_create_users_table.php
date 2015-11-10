@@ -42,16 +42,34 @@ class CreateUsersTable extends Migration
             $table->string('username');
             $table->string('first_name', 30)->nullable();
             $table->string('last_name', 30)->nullable();
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('password', 60);
             $table->rememberToken();
             $table->boolean('is_admin')->default(0);
             $table->boolean('is_active')->default(0);
-
-            UserConfirmator::addColumns($table);
-
+            if (UserConfirmator::isEnabled()) {
+                $this->addConfirmationColumns($table);
+            }
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique('email');
         });
+    }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Other Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Add confirmation columns.
+     *
+     * @param  Blueprint  $table
+     */
+    private function addConfirmationColumns(Blueprint $table)
+    {
+        $table->boolean('is_confirmed')->default(0);
+        $table->string('confirmation_code', UserConfirmator::getLength())->nullable();
+        $table->timestamp('confirmed_at')->nullable();
     }
 }

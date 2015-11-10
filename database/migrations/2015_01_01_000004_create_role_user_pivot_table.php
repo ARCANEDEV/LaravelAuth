@@ -34,9 +34,9 @@ class CreateRoleUserPivotTable extends Migration
         Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
             $table->integer('role_id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->primary(['user_id', 'role_id']);
-
             $table->timestamps();
+
+            $table->primary(['user_id', 'role_id']);
         });
     }
 }

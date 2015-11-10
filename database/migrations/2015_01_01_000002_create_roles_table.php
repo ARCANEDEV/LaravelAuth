@@ -38,14 +38,14 @@ class CreateRolesTable extends Migration
     {
         Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
             $table->increments('id');
-
             $table->string('name');
-            $table->string('slug')->unique();
+            $table->string('slug');
             $table->string('description')->nullable();
             $table->boolean('is_active')->default(1);
             $table->boolean('is_locked')->default(0);
-
             $table->timestamps();
+
+            $table->unique('slug');
         });
     }
 }

@@ -39,11 +39,9 @@ class CreateThrottlesTable extends Migration
         if ($this->isThrottlable()) {
             Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
                 $table->increments('id');
-
                 $table->integer('user_id')->unsigned()->nullable();
                 $table->string('type');
                 $table->string('ip')->nullable();
-
                 $table->timestamps();
             });
         }
