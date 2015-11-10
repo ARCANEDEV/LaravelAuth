@@ -1,18 +1,17 @@
 <?php namespace Arcanedev\LaravelAuth\Traits;
 
 use Arcanedev\LaravelAuth\Models\Role;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
- * Class     AuthRolable
+ * Trait     AuthRolable
  *
  * @package  Arcanedev\LaravelAuth\Traits
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  *
  * @property  \Illuminate\Database\Eloquent\Collection  roles
  *
- * @method    BelongsToMany  roles()
- * @method    AuthRolable    load(mixed $relations)
+ * @method    \Illuminate\Database\Eloquent\Relations\BelongsToMany  roles()
+ * @method    \Arcanedev\LaravelAuth\Traits\AuthRolable              load(mixed $relations)
  */
 trait AuthRolable
 {
