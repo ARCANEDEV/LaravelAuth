@@ -53,4 +53,21 @@ class Permission extends Model implements PermissionContract
 
         parent::__construct($attributes);
     }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  CRUD Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Detach all roles from a permission.
+     *
+     * @return int
+     */
+    public function detachAllRoles()
+    {
+        $results = $this->roles()->detach();
+        $this->load('roles');
+
+        return $results;
+    }
 }

@@ -121,7 +121,20 @@ class Role extends Model implements RoleContract
     }
 
     /**
-     * Detach all permissions.
+     * Detach all users from a role.
+     *
+     * @return int
+     */
+    public function detachAllUsers()
+    {
+        $result = $this->permissions()->detach();
+        $this->load('users');
+
+        return $result;
+    }
+
+    /**
+     * Detach all permissions from a role.
      *
      * @return int
      */
