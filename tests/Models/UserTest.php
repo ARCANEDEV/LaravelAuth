@@ -288,6 +288,23 @@ class UserTest extends ModelsTest
         $this->assertNull($user);
     }
 
+    /** @test */
+    public function it_can_not_delete_admin()
+    {
+        $user           = $this->createUser();
+        $adminId        = $user->id;
+        $user->is_admin = true;
+        $user->save();
+
+        $this->assertTrue($user->isAdmin());
+        $this->assertFalse($user->trashed());
+        $this->assertFalse($user->delete());
+
+        $user = $this->userModel->find($adminId);
+
+        $this->assertNotNull($user);
+    }
+
     /* ------------------------------------------------------------------------------------------------
      |  Other Functions
      | ------------------------------------------------------------------------------------------------
