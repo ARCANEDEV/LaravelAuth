@@ -27,7 +27,7 @@
 
 *By [ARCANEDEV&copy;](http://www.arcanedev.net/)*
 
-Laravel Authorization package for Laravel v5.1 only.
+Laravel Authorization package for Laravel v5.1.
 
 Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/releases), [license](LICENSE.md), and [contribution guidelines](CONTRIBUTING.md).
 
