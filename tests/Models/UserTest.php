@@ -69,7 +69,7 @@ class UserTest extends ModelsTest
     }
 
     /** @test */
-    public function it_can_create_a_user()
+    public function it_can_create()
     {
         $attributes = $this->getUserAttributes();
         $user       = $this->createUser();
@@ -156,7 +156,7 @@ class UserTest extends ModelsTest
     }
 
     /** @test */
-    public function it_can_prevent_attach_duplicated_roles()
+    public function it_can_prevent_attaching_a_duplicated_role()
     {
         $user          = $this->createUser();
         $adminRole     = Role::create([
@@ -166,7 +166,7 @@ class UserTest extends ModelsTest
 
         $this->assertCount(0, $user->roles);
 
-        foreach (range(0, 5) as $time) {
+        for ($i = 0; $i < 5; $i++) {
             $user->attachRole($adminRole);
             $this->assertCount(1, $user->roles);
             $this->assertTrue($user->hasRole($adminRole));
@@ -228,7 +228,7 @@ class UserTest extends ModelsTest
     }
 
     /** @test */
-    public function it_can_confirm_a_user()
+    public function it_can_confirm()
     {
         $user = $this->createUser();
 
@@ -246,7 +246,7 @@ class UserTest extends ModelsTest
     }
 
     /** @test */
-    public function it_can_confirm_a_user_by_code()
+    public function it_can_confirm_by_code()
     {
         $user = $this->createUser();
 
@@ -303,6 +303,32 @@ class UserTest extends ModelsTest
         $user = $this->userModel->find($adminId);
 
         $this->assertNotNull($user);
+    }
+
+    /** @test */
+    public function it_can_restore()
+    {
+        $user   = $this->createUser();
+        $userId = $user->id;
+
+        $this->assertFalse($user->trashed());
+        $this->assertTrue($user->delete());
+
+        $user = $this->userModel->find($userId);
+
+        $this->assertNull($user);
+
+        /** @var User $user */
+        $user = $this->userModel->onlyTrashed()->find($userId);
+
+        $this->assertTrue($user->trashed());
+
+        $user->restore();
+
+        $user = $this->userModel->find($userId);
+
+        $this->assertNotNull($user);
+        $this->assertFalse($user->trashed());
     }
 
     /* ------------------------------------------------------------------------------------------------

@@ -77,6 +77,182 @@ class RoleTest extends ModelsTest
     }
 
     /** @test */
+    public function it_can_create()
+    {
+        $attributes = [
+            'name'        => 'Custom role',
+            'description' => 'Custom role descriptions.',
+        ];
+
+        $role = $this->createRole($attributes);
+
+        $this->assertEquals($attributes['name'],           $role->name);
+        $this->assertEquals(str_slug($attributes['name']), $role->slug);
+        $this->assertEquals($attributes['description'],    $role->description);
+        $this->assertTrue($role->is_active);
+        $this->assertTrue($role->isActive());
+        $this->assertFalse($role->is_locked);
+        $this->assertFalse($role->isLocked());
+    }
+
+    /** @test */
+    public function it_can_update()
+    {
+        $attributes = $this->getAdminRoleAttributes();
+
+        $role = $this->createRole();
+
+        $this->seeInDatabase('roles', $attributes);
+        $this->seeInDatabase('roles', $role->toArray());
+
+        $this->assertTrue($role->is_active);
+        $this->assertTrue($role->isActive());
+        $this->assertFalse($role->is_locked);
+        $this->assertFalse($role->isLocked());
+
+        $updatedAttributes = [
+            'name'        => 'Custom role',
+            'description' => 'Custom role descriptions.',
+        ];
+
+        $role->update($updatedAttributes);
+
+        $this->dontSeeInDatabase('roles', $attributes);
+        $this->seeInDatabase('roles', $updatedAttributes);
+        $this->seeInDatabase('roles', $role->toArray());
+
+        $this->assertTrue($role->is_active);
+        $this->assertTrue($role->isActive());
+        $this->assertFalse($role->is_locked);
+        $this->assertFalse($role->isLocked());
+    }
+
+    /** @test */
+    public function it_can_delete()
+    {
+        $role = $this->createRole();
+
+        $this->seeInDatabase('roles', $role->toArray());
+
+        $role->delete();
+
+        $this->dontSeeInDatabase('roles', $role->toArray());
+    }
+
+    /** @test */
+    public function it_can_attach_and_detach_user()
+    {
+        $role = $this->createRole([
+            'name'         => 'Custom role',
+            'description'  => 'Custom role description.',
+        ]);
+
+        $admin = User::create([
+            'username'   => 'super-admin',
+            'first_name' => 'Super',
+            'last_name'  => 'Admin',
+            'email'      => 'sys.admin@gmail.com',
+            'password'   => 'SuPeR-PaSsWoRd',
+        ]);
+        $member = User::create([
+            'username'   => 'john-doe',
+            'first_name' => 'John',
+            'last_name'  => 'DOE',
+            'email'      => 'j.doe@gmail.com',
+            'password'   => 'PaSsWoRd',
+        ]);
+
+        $this->assertCount(0, $role->users);
+
+        $role->attachUser($admin);
+
+        $this->assertCount(1, $role->users);
+        $this->assertTrue($role->hasUser($admin));
+
+        $role->attachUser($member);
+
+        $this->assertCount(2, $role->users);
+        $this->assertTrue($role->hasUser($admin));
+        $this->assertTrue($role->hasUser($member));
+
+        $role->detachUser($admin);
+
+        $this->assertCount(1, $role->users);
+        $this->assertFalse($role->hasUser($admin));
+        $this->assertTrue($role->hasUser($member));
+
+        $role->detachUser($member);
+
+        $this->assertCount(0, $role->users);
+        $this->assertFalse($role->hasUser($admin));
+        $this->assertFalse($role->hasUser($member));
+    }
+
+    /** @test */
+    public function it_can_prevent_attaching_a_duplicated_user()
+    {
+        $role = $this->createRole();
+        $user = User::create([
+            'username'   => 'john-doe',
+            'first_name' => 'John',
+            'last_name'  => 'DOE',
+            'email'      => 'j.doe@gmail.com',
+            'password'   => 'PaSsWoRd',
+        ]);
+
+        $this->assertCount(0, $role->users);
+
+        for ($i = 0; $i < 5; $i++) {
+            $role->attachUser($user);
+            $this->assertCount(1, $role->users);
+            $this->assertTrue($role->hasUser($user));
+        }
+    }
+
+    /** @test */
+    public function it_can_detach_all_users()
+    {
+        $role = $this->createRole([
+            'name'         => 'Custom role',
+            'description'  => 'Custom role description.',
+        ]);
+
+        $admin = User::create([
+            'username'   => 'super-admin',
+            'first_name' => 'Super',
+            'last_name'  => 'Admin',
+            'email'      => 'sys.admin@gmail.com',
+            'password'   => 'SuPeR-PaSsWoRd',
+        ]);
+        $member = User::create([
+            'username'   => 'john-doe',
+            'first_name' => 'John',
+            'last_name'  => 'DOE',
+            'email'      => 'j.doe@gmail.com',
+            'password'   => 'PaSsWoRd',
+        ]);
+
+        $this->assertCount(0, $role->users);
+
+        $role->attachUser($admin);
+
+        $this->assertCount(1, $role->users);
+        $this->assertTrue($role->hasUser($admin));
+
+        $role->attachUser($member);
+
+        $this->assertCount(2, $role->users);
+        $this->assertTrue($role->hasUser($admin));
+        $this->assertTrue($role->hasUser($member));
+
+        $role->detachAllUsers();
+
+        $this->assertCount(0, $role->users);
+        $this->assertFalse($role->hasUser($admin));
+        $this->assertFalse($role->hasUser($member));
+    }
+
+    /** @test */
     public function it_can_attach_and_detach_permission()
     {
         $role                 = $this->createRole();
@@ -119,7 +295,7 @@ class RoleTest extends ModelsTest
     }
 
     /** @test */
-    public function it_can_prevent_attach_duplicated_roles()
+    public function it_can_prevent_attaching_a_duplicated_permission()
     {
         $role                 = $this->createRole();
         $createUserPermission = Permission::create([
@@ -130,7 +306,7 @@ class RoleTest extends ModelsTest
 
         $this->assertCount(0, $role->permissions);
 
-        foreach (range(0, 5) as $time) {
+        for ($i = 0; $i < 5; $i++) {
             $role->attachPermission($createUserPermission);
             $this->assertCount(1, $role->permissions);
             $this->assertTrue($role->hasPermission($createUserPermission));
@@ -138,7 +314,7 @@ class RoleTest extends ModelsTest
     }
 
     /** @test */
-    public function it_can_detach_all_roles()
+    public function it_can_detach_all_permissions()
     {
         $role                 = $this->createRole();
         $createUserPermission = Permission::create([
