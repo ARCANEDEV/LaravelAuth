@@ -9,10 +9,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @package  Arcanedev\LaravelAuth\Traits
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  *
- * @method   BelongsToMany  belongsToMany(string $related, string $table = null, string $foreignKey = null, string $otherKey = null, string $relation = null)
+ * @method    BelongsToMany  belongsToMany(string $related, string $table = null, string $foreignKey = null, string $otherKey = null, string $relation = null)
  */
 trait AuthUserRelationships
 {
+    /* ------------------------------------------------------------------------------------------------
+     |  Traits
+     | ------------------------------------------------------------------------------------------------
+     */
+    use AuthRolable;
+
     /* ------------------------------------------------------------------------------------------------
      |  Relationships
      | ------------------------------------------------------------------------------------------------

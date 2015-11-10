@@ -39,6 +39,16 @@ class Role extends Model implements RoleContract
      */
     protected $fillable = ['name', 'slug', 'description'];
 
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'is_active' => 'boolean',
+        'is_locked' => 'boolean',
+    ];
+
     /* ------------------------------------------------------------------------------------------------
      |  Constructor
      | ------------------------------------------------------------------------------------------------
@@ -160,5 +170,29 @@ class Role extends Model implements RoleContract
         }
 
         return $this->permissions->contains($id);
+    }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Check Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Check if the role is active.
+     *
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->is_active;
+    }
+
+    /**
+     * Check if the role is locked.
+     *
+     * @return bool
+     */
+    public function isLocked()
+    {
+        return $this->is_locked;
     }
 }
