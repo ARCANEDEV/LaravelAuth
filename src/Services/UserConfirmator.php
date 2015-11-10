@@ -34,14 +34,14 @@ class UserConfirmator
      */
     public function confirm(User $user)
     {
-        event('auth.user.confirming', compact('user'));
+        event('auth.users.confirming', compact('user'));
 
         $user->is_confirmed      = true;
         $user->confirmation_code = null;
         $user->confirmed_at      = \Carbon\Carbon::now();
         $user->save();
 
-        event('auth.user.confirmed', compact('user'));
+        event('auth.users.confirmed', compact('user'));
 
         return $user;
     }
