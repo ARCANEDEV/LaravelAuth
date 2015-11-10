@@ -23,32 +23,40 @@ trait AuthRolable
      * Attach a role to a user.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Role|int  $role
+     * @param  bool                                    $reload
      */
-    public function attachRole($role)
+    public function attachRole($role, $reload = true)
     {
         if ($this->hasRole($role)) {
             return;
         }
 
         $this->roles()->attach($role);
-        $this->load('roles');
+
+        if ($reload) {
+            $this->load('roles');
+        }
     }
 
     /**
      * Detach a role from a user.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Role|int  $role
+     * @param  bool                                    $reload
      *
      * @return int
      */
-    public function detachRole($role)
+    public function detachRole($role, $reload = true)
     {
         if ($role instanceof Role) {
             $role = (array) $role->getKey();
         }
 
         $results = $this->roles()->detach($role);
-        $this->load('roles');
+
+        if ($reload) {
+            $this->load('roles');
+        }
 
         return $results;
     }
@@ -56,12 +64,17 @@ trait AuthRolable
     /**
      * Detach all roles from a user.
      *
+     * @param  bool  $reload
+     *
      * @return int
      */
-    public function detachAllRoles()
+    public function detachAllRoles($reload = true)
     {
         $results = $this->roles()->detach();
-        $this->load('roles');
+
+        if ($reload) {
+            $this->load('roles');
+        }
 
         return $results;
     }
