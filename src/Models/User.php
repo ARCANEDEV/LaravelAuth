@@ -23,6 +23,7 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
  * @property  string                                    username
  * @property  string                                    first_name
  * @property  string                                    last_name
+ * @property  string                                    full_name
  * @property  string                                    email
  * @property  string                                    password
  * @property  string                                    remember_token
@@ -129,6 +130,16 @@ class User
      |  Getters & Setters
      | ------------------------------------------------------------------------------------------------
      */
+    /**
+     * Get the full name attribute.
+     *
+     * @return string
+     */
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
     /**
      * Set the password attribute.
      *

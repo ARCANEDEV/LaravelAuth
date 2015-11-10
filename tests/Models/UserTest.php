@@ -77,6 +77,9 @@ class UserTest extends ModelsTest
         $this->assertEquals($attributes['username'],    $user->username);
         $this->assertEquals($attributes['first_name'],  $user->first_name);
         $this->assertEquals($attributes['last_name'],   $user->last_name);
+        $this->assertEquals(
+            $attributes['first_name'] . ' ' . $attributes['last_name'], $user->full_name
+        );
         $this->assertEquals($attributes['email'],       $user->email);
         $this->assertNotEquals($attributes['password'], $user->password);
 
