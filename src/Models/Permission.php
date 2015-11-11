@@ -3,6 +3,7 @@
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Contracts\Permission as PermissionContract;
 use Arcanedev\LaravelAuth\Traits\AuthPermissionRelationships;
+use Arcanedev\LaravelAuth\Traits\AuthRoleTrait;
 
 /**
  * Class     Permission
@@ -25,7 +26,7 @@ class Permission extends Model implements PermissionContract
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use AuthPermissionRelationships;
+    use AuthPermissionRelationships, AuthRoleTrait;
 
     /* ------------------------------------------------------------------------------------------------
      |  Properties

@@ -4,6 +4,7 @@ use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Contracts\User as UserContract;
 use Arcanedev\LaravelAuth\Exceptions\UserConfirmationException;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
+use Arcanedev\LaravelAuth\Traits\AuthRoleTrait;
 use Arcanedev\LaravelAuth\Traits\AuthUserRelationships;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -47,7 +48,12 @@ class User
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use Authenticatable, Authorizable, AuthUserRelationships, CanResetPassword, SoftDeletes;
+    use Authenticatable,
+        Authorizable,
+        AuthRoleTrait,
+        AuthUserRelationships,
+        CanResetPassword,
+        SoftDeletes;
 
     /* ------------------------------------------------------------------------------------------------
      |  Properties
