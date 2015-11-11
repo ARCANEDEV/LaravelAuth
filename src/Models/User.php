@@ -38,7 +38,8 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
  * @property  \Carbon\Carbon                            deleted_at
  * @property  \Illuminate\Database\Eloquent\Collection  roles
  *
- * @method    \Illuminate\Database\Eloquent\Builder     unconfirmed(string $code)
+ * @method  static  bool                                   insert(array $values)
+ * @method          \Illuminate\Database\Eloquent\Builder  unconfirmed(string $code)
  */
 class User
     extends Model
