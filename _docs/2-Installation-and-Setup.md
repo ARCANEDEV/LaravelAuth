@@ -31,7 +31,7 @@ Once the package is installed, you can register the service provider in `config/
 
 ### Artisan commands
 
-Publish the package config file and migrations to your application by running this command :
+Publish the package config file, migrations and model factories to your application by running this command :
 
 ```bash
 $ php artisan vendor:publish --provider="Arcanedev\LaravelAuth\LaravelAuthServiceProvider"
@@ -45,6 +45,10 @@ $ php artisan vendor:publish --provider="Arcanedev\LaravelAuth\LaravelAuthServic
 
 ```bash
 $ php artisan vendor:publish --provider="Arcanedev\LaravelAuth\LaravelAuthServiceProvider" --tag=migrations
+```
+
+```bash
+$ php artisan vendor:publish --provider="Arcanedev\LaravelAuth\LaravelAuthServiceProvider" --tag=factories
 ```
 
 And to force the publish command to override the files, you just add the `--force`.
