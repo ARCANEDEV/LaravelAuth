@@ -54,4 +54,18 @@ class Permission extends Model implements PermissionContract
 
         parent::__construct($attributes);
     }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Setters & Getters
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Set the slug attribute.
+     *
+     * @param  string  $slug
+     */
+    public function setSlugAttribute($slug)
+    {
+        $this->attributes['slug'] = str_slug($slug, config('laravel-auth.slug-separator', '.'));
+    }
 }

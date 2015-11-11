@@ -88,7 +88,7 @@ class Role extends Model implements RoleContract
      */
     public function setSlugAttribute($slug)
     {
-        $this->attributes['slug'] = str_slug($slug);
+        $this->attributes['slug'] = str_slug($slug, config('laravel-auth.slug-separator', '.'));
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -251,6 +251,56 @@ class Role extends Model implements RoleContract
      |  Check Functions
      | ------------------------------------------------------------------------------------------------
      */
+    /**
+     * Check if role is associated with a permission by slug.
+     *
+     * @param  string  $slug
+     *
+     * @return bool
+     */
+    public function can($slug)
+    {
+        $permissions = $this->permissions->filter(function(Permission $permission) use ($slug) {
+            return $permission->slug === str_slug($slug, config('laravel-auth.slug-separator', '.'));
+        });
+
+        return $permissions->count() === 1;
+    }
+
+    /**
+     * Check if a role is associated with any of given permissions.
+     *
+     * @param  array  $permissions
+     * @param  array  &$failedPermissions
+     *
+     * @return bool
+     */
+    public function canAny(array $permissions, array &$failedPermissions = [])
+    {
+        foreach ($permissions as $permission) {
+            if ( ! $this->can($permission)) {
+                $failedPermissions[] = $permission;
+            }
+        }
+
+        return count($permissions) !== count($failedPermissions);
+    }
+
+    /**
+     * Check if role is associated with all given permissions.
+     *
+     * @param  array  $permissions
+     * @param  array  &$failedPermissions
+     *
+     * @return bool
+     */
+    public function canAll(array $permissions, array &$failedPermissions = [])
+    {
+        $this->canAny($permissions, $failedPermissions);
+
+        return count($failedPermissions) === 0;
+    }
+
     /**
      * Check if the role is active.
      *
