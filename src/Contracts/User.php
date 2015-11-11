@@ -51,25 +51,9 @@ interface User
     public function setAttribute($key, $value);
 
     /* ------------------------------------------------------------------------------------------------
-     |  CRUD Functions
+     |  User CRUD Functions
      | ------------------------------------------------------------------------------------------------
      */
-    /**
-     * Detach a role from a user.
-     *
-     * @param  \Arcanedev\LaravelAuth\Models\Role|int  $role
-     *
-     * @return int
-     */
-    public function detachRole($role);
-
-    /**
-     * Detach all roles from a user.
-     *
-     * @return int
-     */
-    public function detachAllRoles();
-
     /**
      * Save the user model to the database.
      *
@@ -80,9 +64,78 @@ interface User
     public function save(array $options = []);
 
     /* ------------------------------------------------------------------------------------------------
+     |  Role CRUD Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Attach a role to a user.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Role|int  $role
+     * @param  bool                                    $reload
+     */
+    public function attachRole($role, $reload = true);
+
+    /**
+     * Detach a role from a user.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Role|int  $role
+     * @param  bool                                    $reload
+     *
+     * @return int
+     */
+    public function detachRole($role, $reload = true);
+
+    /**
+     * Detach all roles from a user.
+     *
+     * @param  bool  $reload
+     *
+     * @return int
+     */
+    public function detachAllRoles($reload = true);
+
+    /* ------------------------------------------------------------------------------------------------
      |  Check Functions
      | ------------------------------------------------------------------------------------------------
      */
+    /**
+     * Check if user has the given role (Role Model or Id).
+     *
+     * @param  mixed  $id
+     *
+     * @return bool
+     */
+    public function hasRole($id);
+
+    /**
+     * Check if user has a role by its slug.
+     *
+     * @param  string  $slug
+     *
+     * @return bool
+     */
+    public function is($slug);
+
+    /**
+     * Check if user has any of given roles.
+     *
+     * @param  array  $roles
+     * @param  array  &$failedRoles
+     *
+     * @return bool
+     */
+    public function isAny(array $roles, array &$failedRoles = []);
+
+    /**
+     * Check if user match all the given roles.
+     *
+     * @param  array  $roles
+     * @param  array  &$failedRoles
+     *
+     * @return bool
+     */
+    public function isAll(array $roles, array &$failedRoles = []);
+
     /**
      * Check if user is an administrator.
      *
