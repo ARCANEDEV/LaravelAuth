@@ -126,11 +126,9 @@ trait AuthRoleTrait
     public function isAny(array $roles, array &$failedRoles = [])
     {
         foreach ($roles as $role) {
-            if ($this->is($role)) {
-                continue;
+            if ( ! $this->is($role)) {
+                $failedRoles[] = $role;
             }
-
-            $failedRoles[] = $role;
         }
 
         return count($roles) !== count($failedRoles);
