@@ -9,7 +9,7 @@ Or by adding the package to your `composer.json`.
 ```json
 {
     "require": {
-        "arcanedev/laravel-auth": "~0.4"
+        "arcanedev/laravel-auth": "~0.5"
     }
 }
 ```

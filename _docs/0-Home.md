@@ -4,6 +4,9 @@ Laravel Authorization package for Laravel v5.1.
 
 ### Features
 
+  * CRUD for Roles.
+  * CRUD fot Permissions.
+  * User confirmation system.
   * Easy setup &amp; configuration.
   * Well documented &amp; IDE Friendly.
   * Well tested with maximum code quality.

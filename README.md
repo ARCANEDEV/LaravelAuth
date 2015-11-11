@@ -33,6 +33,9 @@ Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/r
 
 ### Features
 
+  * CRUD for Roles.
+  * CRUD fot Permissions.
+  * User confirmation system.
   * Easy setup &amp; configuration.
   * Well documented &amp; IDE Friendly.
   * Well tested with maximum code quality.
@@ -51,6 +54,7 @@ Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/r
 
 ## DONE
 
+  - [x] User confirmation system.
   - [x] Laravel 5.1 supported.
 
 
