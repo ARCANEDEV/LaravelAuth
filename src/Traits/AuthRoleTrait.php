@@ -3,7 +3,7 @@
 use Arcanedev\LaravelAuth\Models\Role;
 
 /**
- * Trait     AuthRolable
+ * Trait     AuthRoleTrait
  *
  * @package  Arcanedev\LaravelAuth\Traits
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
@@ -11,9 +11,9 @@ use Arcanedev\LaravelAuth\Models\Role;
  * @property  \Illuminate\Database\Eloquent\Collection  roles
  *
  * @method    \Illuminate\Database\Eloquent\Relations\BelongsToMany  roles()
- * @method    \Arcanedev\LaravelAuth\Traits\AuthRolable              load(mixed $relations)
+ * @method    \Arcanedev\LaravelAuth\Traits\AuthRoleTrait            load(mixed $relations)
  */
-trait AuthRolable
+trait AuthRoleTrait
 {
     /* ------------------------------------------------------------------------------------------------
      |  Role CRUD Functions
@@ -79,6 +79,10 @@ trait AuthRolable
         return $results;
     }
 
+    /* ------------------------------------------------------------------------------------------------
+     |  Check Functions
+     | ------------------------------------------------------------------------------------------------
+     */
     /**
      * Check if user has the given role (Role Model or Id).
      *
@@ -93,5 +97,57 @@ trait AuthRolable
         }
 
         return $this->roles->contains($id);
+    }
+
+    /**
+     * Check if user has a role by its slug.
+     *
+     * @param  string  $slug
+     *
+     * @return bool
+     */
+    public function is($slug)
+    {
+        $roles = $this->roles->filter(function(Role $role) use ($slug) {
+            return $role->slug === str_slug($slug);
+        });
+
+        return $roles->count() === 1;
+    }
+
+    /**
+     * Check if user has any of given roles.
+     *
+     * @param  array  $roles
+     * @param  array  &$failedRoles
+     *
+     * @return bool
+     */
+    public function isAny(array $roles, array &$failedRoles = [])
+    {
+        foreach ($roles as $role) {
+            if ($this->is($role)) {
+                continue;
+            }
+
+            $failedRoles[] = $role;
+        }
+
+        return count($roles) !== count($failedRoles);
+    }
+
+    /**
+     * Check if user match all the given roles.
+     *
+     * @param  array  $roles
+     * @param  array  &$failedRoles
+     *
+     * @return bool
+     */
+    public function isAll(array $roles, array &$failedRoles = [])
+    {
+        $this->isAny($roles, $failedRoles);
+
+        return count($failedRoles) === 0;
     }
 }
