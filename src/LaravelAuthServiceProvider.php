@@ -102,6 +102,10 @@ class LaravelAuthServiceProvider extends ServiceProvider
         $this->publishes([
             $this->getBasePath() . DS . 'database/migrations' => database_path('migrations'),
         ], 'migrations');
+
+        $this->publishes([
+            $this->getBasePath() . DS . 'database/factories' => database_path('factories'),
+        ], 'factories');
     }
 
     /**
