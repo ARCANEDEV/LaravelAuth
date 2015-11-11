@@ -331,6 +331,85 @@ class UserTest extends ModelsTest
         $this->assertFalse($user->trashed());
     }
 
+    /** @test */
+    public function it_can_check_user_has_same_role()
+    {
+        $user      = $this->createUser();
+
+        $this->assertFalse($user->is('admin'));
+
+        $adminRole = Role::create([
+            'name'        => 'Admin',
+            'slug'        => 'admin',
+            'description' => 'Admin role descriptions.',
+        ]);
+
+        $user->attachRole($adminRole);
+
+        $this->assertTrue($user->is('Admin'));
+        $this->assertTrue($user->is('admin'));
+    }
+
+    /** @test */
+    public function it_can_check_has_any_role()
+    {
+        $user         = $this->createUser();
+
+        $failedRoles  = [];
+        $this->assertFalse($user->isAny(['admin', 'member'], $failedRoles));
+        $this->assertCount(2, $failedRoles);
+        $this->assertEquals(['admin', 'member'], $failedRoles);
+
+        $adminRole = Role::create([
+            'name'        => 'Admin',
+            'slug'        => 'admin',
+            'description' => 'Admin role descriptions.',
+        ]);
+
+        $user->attachRole($adminRole);
+
+        $failedRoles = [];
+        $this->assertTrue($user->isAny(['admin', 'member'], $failedRoles));
+        $this->assertCount(1, $failedRoles);
+        $this->assertEquals(['member'], $failedRoles);
+    }
+
+    /** @test */
+    public function it_can_check_has_all_roles()
+    {
+        $user      = $this->createUser();
+
+        $failedRoles  = [];
+        $this->assertFalse($user->isAll(['admin', 'member'], $failedRoles));
+        $this->assertCount(2, $failedRoles);
+        $this->assertEquals(['admin', 'member'], $failedRoles);
+
+        $adminRole = Role::create([
+            'name'        => 'Admin',
+            'slug'        => 'admin',
+            'description' => 'Admin role descriptions.',
+        ]);
+
+        $user->attachRole($adminRole);
+
+        $failedRoles = [];
+        $this->assertFalse($user->isAll(['admin', 'member'], $failedRoles));
+        $this->assertCount(1, $failedRoles);
+        $this->assertEquals(['member'], $failedRoles);
+
+        $memberRole = Role::create([
+            'name'        => 'Member',
+            'slug'        => 'member',
+            'description' => 'Member role descriptions.',
+        ]);
+
+        $user->attachRole($memberRole);
+
+        $failedRoles = [];
+        $this->assertTrue($user->isAll(['admin', 'member'], $failedRoles));
+        $this->assertEmpty($failedRoles);
+    }
+
     /* ------------------------------------------------------------------------------------------------
      |  Other Functions
      | ------------------------------------------------------------------------------------------------
