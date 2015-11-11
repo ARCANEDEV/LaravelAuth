@@ -332,7 +332,7 @@ class UserTest extends ModelsTest
     }
 
     /** @test */
-    public function it_can_check_user_has_same_role()
+    public function it_can_check_has_same_role()
     {
         $user      = $this->createUser();
 

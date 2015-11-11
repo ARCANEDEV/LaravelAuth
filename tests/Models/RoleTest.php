@@ -81,14 +81,15 @@ class RoleTest extends ModelsTest
     {
         $attributes = [
             'name'        => 'Custom role',
+            'slug'        => str_slug('Custom role', config('laravel-auth.slug-separator')),
             'description' => 'Custom role descriptions.',
         ];
 
         $role = $this->createRole($attributes);
 
-        $this->assertEquals($attributes['name'],           $role->name);
-        $this->assertEquals(str_slug($attributes['name']), $role->slug);
-        $this->assertEquals($attributes['description'],    $role->description);
+        $this->assertEquals($attributes['name'],        $role->name);
+        $this->assertEquals($attributes['slug'],        $role->slug);
+        $this->assertEquals($attributes['description'], $role->description);
         $this->assertTrue($role->is_active);
         $this->assertTrue($role->isActive());
         $this->assertFalse($role->is_locked);
@@ -340,6 +341,144 @@ class RoleTest extends ModelsTest
         $role->detachAllPermissions();
 
         $this->assertCount(0, $role->permissions);
+    }
+
+    /** @test */
+    public function it_can_check_has_same_permission()
+    {
+        $role                 = $this->createRole();
+
+        $this->assertFalse($role->can('auth.users.create'));
+
+        $createUserPermission = Permission::create([
+            'name'        => 'Create users',
+            'slug'        => 'auth.users.create',
+            'description' => 'Create users permission description.',
+        ]);
+
+        $role->attachPermission($createUserPermission);
+
+        $this->assertTrue($role->can('auth.users.create'));
+    }
+
+    /** @test */
+    public function it_can_check_if_has_any_permissions()
+    {
+        $role               = $this->createRole();
+        $failedPermissions  = [];
+        $permissionsToCheck = [
+            'auth.users.create',
+            'auth.users.update',
+            'auth.users.delete',
+        ];
+
+        $this->assertFalse($role->canAny($permissionsToCheck, $failedPermissions));
+        $this->assertCount(3, $failedPermissions);
+        $this->assertEquals($permissionsToCheck, $failedPermissions);
+
+        $createUserPermission = Permission::create([
+            'name'        => 'Create users',
+            'slug'        => 'auth.users.create',
+            'description' => 'Create users permission description.',
+        ]);
+
+        $role->attachPermission($createUserPermission);
+
+        $failedPermissions  = [];
+
+        $this->assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
+        $this->assertCount(2, $failedPermissions);
+        $this->assertEquals([
+            'auth.users.update',
+            'auth.users.delete',
+        ], $failedPermissions);
+
+        $updateUserPermission = Permission::create([
+            'name'        => 'Update users',
+            'slug'        => 'auth.users.update',
+            'description' => 'Update users permission description.',
+        ]);
+
+        $role->attachPermission($updateUserPermission);
+
+        $failedPermissions  = [];
+
+        $this->assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
+        $this->assertCount(1, $failedPermissions);
+        $this->assertEquals(['auth.users.delete'], $failedPermissions);
+
+        $deleteUserPermission = Permission::create([
+            'name'        => 'Delete users',
+            'slug'        => 'auth.users.delete',
+            'description' => 'Delete users permission description.',
+        ]);
+
+        $role->attachPermission($deleteUserPermission);
+
+        $failedPermissions  = [];
+
+        $this->assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
+        $this->assertEmpty($failedPermissions);
+    }
+
+    /** @test */
+    public function it_can_check_if_has_all_permissions()
+    {
+        $role               = $this->createRole();
+        $failedPermissions  = [];
+        $permissionsToCheck = [
+            'auth.users.create',
+            'auth.users.update',
+            'auth.users.delete',
+        ];
+
+        $this->assertFalse($role->canAll($permissionsToCheck, $failedPermissions));
+        $this->assertCount(3, $failedPermissions);
+        $this->assertEquals($permissionsToCheck, $failedPermissions);
+
+        $createUserPermission = Permission::create([
+            'name'        => 'Create users',
+            'slug'        => 'auth.users.create',
+            'description' => 'Create users permission description.',
+        ]);
+
+        $role->attachPermission($createUserPermission);
+
+        $failedPermissions  = [];
+
+        $this->assertFalse($role->canAll($permissionsToCheck, $failedPermissions));
+        $this->assertCount(2, $failedPermissions);
+        $this->assertEquals([
+            'auth.users.update',
+            'auth.users.delete',
+        ], $failedPermissions);
+
+        $updateUserPermission = Permission::create([
+            'name'        => 'Update users',
+            'slug'        => 'auth.users.update',
+            'description' => 'Update users permission description.',
+        ]);
+
+        $role->attachPermission($updateUserPermission);
+
+        $failedPermissions  = [];
+
+        $this->assertFalse($role->canAll($permissionsToCheck, $failedPermissions));
+        $this->assertCount(1, $failedPermissions);
+        $this->assertEquals(['auth.users.delete'], $failedPermissions);
+
+        $deleteUserPermission = Permission::create([
+            'name'        => 'Delete users',
+            'slug'        => 'auth.users.delete',
+            'description' => 'Delete users permission description.',
+        ]);
+
+        $role->attachPermission($deleteUserPermission);
+
+        $failedPermissions  = [];
+
+        $this->assertTrue($role->canAll($permissionsToCheck, $failedPermissions));
+        $this->assertEmpty($failedPermissions);
     }
 
     /* ------------------------------------------------------------------------------------------------

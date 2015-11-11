@@ -229,4 +229,95 @@ class PermissionTest extends ModelsTest
         $this->assertFalse($permission->hasRole($adminRole));
         $this->assertFalse($permission->hasRole($moderatorRole));
     }
+
+    /** @test */
+    public function it_can_check_has_same_role()
+    {
+        $permission    = Permission::create([
+            'name'        => 'Custom permission',
+            'slug'        => 'permissions.custom',
+            'description' => 'Custom permission description.',
+        ]);
+
+        $this->assertFalse($permission->is('admin'));
+
+        $adminRole = Role::create([
+            'name'        => 'Admin',
+            'slug'        => 'admin',
+            'description' => 'Admin role descriptions.',
+        ]);
+
+        $permission->attachRole($adminRole);
+
+        $this->assertTrue($permission->is('Admin'));
+        $this->assertTrue($permission->is('admin'));
+    }
+
+    /** @test */
+    public function it_can_check_has_any_role()
+    {
+        $permission    = Permission::create([
+            'name'        => 'Custom permission',
+            'slug'        => 'permissions.custom',
+            'description' => 'Custom permission description.',
+        ]);
+
+        $failedRoles  = [];
+        $this->assertFalse($permission->isAny(['admin', 'member'], $failedRoles));
+        $this->assertCount(2, $failedRoles);
+        $this->assertEquals(['admin', 'member'], $failedRoles);
+
+        $adminRole = Role::create([
+            'name'        => 'Admin',
+            'slug'        => 'admin',
+            'description' => 'Admin role descriptions.',
+        ]);
+
+        $permission->attachRole($adminRole);
+
+        $failedRoles = [];
+        $this->assertTrue($permission->isAny(['admin', 'member'], $failedRoles));
+        $this->assertCount(1, $failedRoles);
+        $this->assertEquals(['member'], $failedRoles);
+    }
+
+    /** @test */
+    public function it_can_check_has_all_roles()
+    {
+        $permission    = Permission::create([
+            'name'        => 'Custom permission',
+            'slug'        => 'permissions.custom',
+            'description' => 'Custom permission description.',
+        ]);
+
+        $failedRoles  = [];
+        $this->assertFalse($permission->isAll(['admin', 'member'], $failedRoles));
+        $this->assertCount(2, $failedRoles);
+        $this->assertEquals(['admin', 'member'], $failedRoles);
+
+        $adminRole = Role::create([
+            'name'        => 'Admin',
+            'slug'        => 'admin',
+            'description' => 'Admin role descriptions.',
+        ]);
+
+        $permission->attachRole($adminRole);
+
+        $failedRoles = [];
+        $this->assertFalse($permission->isAll(['admin', 'member'], $failedRoles));
+        $this->assertCount(1, $failedRoles);
+        $this->assertEquals(['member'], $failedRoles);
+
+        $memberRole = Role::create([
+            'name'        => 'Member',
+            'slug'        => 'member',
+            'description' => 'Member role descriptions.',
+        ]);
+
+        $permission->attachRole($memberRole);
+
+        $failedRoles = [];
+        $this->assertTrue($permission->isAll(['admin', 'member'], $failedRoles));
+        $this->assertEmpty($failedRoles);
+    }
 }
