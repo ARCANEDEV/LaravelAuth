@@ -16,14 +16,13 @@
     "type":    "library",
     "license": "MIT",
     "require": {
-        "php":                   ">=5.5.9",
-        "arcanedev/support":     "~3.0",
-        "doctrine/dbal":         "~2.5"
+        "php":                 ">=5.5.9",
+        "arcanedev/support":   "~3.0"
     },
     "require-dev": {
-        "orchestra/testbench":   "~3.1",
-        "phpunit/phpcov":        "~2.0",
-        "phpunit/phpunit":       "~4.0|~5.0"
+        "orchestra/testbench": "~3.1",
+        "phpunit/phpcov":      "~2.0",
+        "phpunit/phpunit":     "~4.0|~5.0"
     },
     "autoload": {
         "psr-4": {
