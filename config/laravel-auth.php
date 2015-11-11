@@ -29,4 +29,6 @@ return [
         'enabled'   => true,
         'table'     => 'throttles',
     ],
+
+    'slug-separator' => '.',
 ];
