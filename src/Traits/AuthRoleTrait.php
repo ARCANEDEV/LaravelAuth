@@ -100,7 +100,7 @@ trait AuthRoleTrait
     }
 
     /**
-     * Check if user has a role by its slug.
+     * Check if has a role by its slug.
      *
      * @param  string  $slug
      *
@@ -109,21 +109,21 @@ trait AuthRoleTrait
     public function is($slug)
     {
         $roles = $this->roles->filter(function(Role $role) use ($slug) {
-            return $role->slug === str_slug($slug);
+            return $role->slug === str_slug($slug, config('laravel-auth.slug-separator', '.'));
         });
 
         return $roles->count() === 1;
     }
 
     /**
-     * Check if user has any of given roles.
+     * Check if has at least one role.
      *
      * @param  array  $roles
      * @param  array  &$failedRoles
      *
      * @return bool
      */
-    public function isAny(array $roles, array &$failedRoles = [])
+    public function isOne(array $roles, array &$failedRoles = [])
     {
         foreach ($roles as $role) {
             if ( ! $this->is($role)) {
@@ -135,7 +135,7 @@ trait AuthRoleTrait
     }
 
     /**
-     * Check if user match all the given roles.
+     * Check if has all roles.
      *
      * @param  array  $roles
      * @param  array  &$failedRoles
@@ -144,7 +144,7 @@ trait AuthRoleTrait
      */
     public function isAll(array $roles, array &$failedRoles = [])
     {
-        $this->isAny($roles, $failedRoles);
+        $this->isOne($roles, $failedRoles);
 
         return count($failedRoles) === 0;
     }
