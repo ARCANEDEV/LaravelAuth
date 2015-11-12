@@ -95,47 +95,9 @@ interface User
     public function detachAllRoles($reload = true);
 
     /* ------------------------------------------------------------------------------------------------
-     |  Check Functions
+     |  User Check Functions
      | ------------------------------------------------------------------------------------------------
      */
-    /**
-     * Check if user has the given role (Role Model or Id).
-     *
-     * @param  mixed  $id
-     *
-     * @return bool
-     */
-    public function hasRole($id);
-
-    /**
-     * Check if user has a role by its slug.
-     *
-     * @param  string  $slug
-     *
-     * @return bool
-     */
-    public function is($slug);
-
-    /**
-     * Check if user has any of given roles.
-     *
-     * @param  array  $roles
-     * @param  array  &$failedRoles
-     *
-     * @return bool
-     */
-    public function isAny(array $roles, array &$failedRoles = []);
-
-    /**
-     * Check if user match all the given roles.
-     *
-     * @param  array  $roles
-     * @param  array  &$failedRoles
-     *
-     * @return bool
-     */
-    public function isAll(array $roles, array &$failedRoles = []);
-
     /**
      * Check if user is an administrator.
      *
@@ -170,4 +132,79 @@ interface User
      * @return bool
      */
     public function deactivate();
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Role Check Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Check if user has the given role (Role Model or Id).
+     *
+     * @param  mixed  $id
+     *
+     * @return bool
+     */
+    public function hasRole($id);
+
+    /**
+     * Check if has a role by its slug.
+     *
+     * @param  string  $slug
+     *
+     * @return bool
+     */
+    public function is($slug);
+
+    /**
+     * Check if has at least one role.
+     *
+     * @param  array  $roles
+     * @param  array  &$failedRoles
+     *
+     * @return bool
+     */
+    public function isOne(array $roles, array &$failedRoles = []);
+
+    /**
+     * Check if has all roles.
+     *
+     * @param  array  $roles
+     * @param  array  &$failedRoles
+     *
+     * @return bool
+     */
+    public function isAll(array $roles, array &$failedRoles = []);
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Permission Check Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Check if has a permission.
+     *
+     * @param  string  $slug
+     *
+     * @return bool
+     */
+    public function may($slug);
+
+    /**
+     * Check if has at least one permission.
+     *
+     * @param  array  $permissions
+     * @param  array  $failedPermissions
+     *
+     * @return bool
+     */
+    public function mayOne(array $permissions, array &$failedPermissions = []);
+
+    /**
+     * Check if has all permissions.
+     *
+     * @param  array  $permissions
+     * @param  array  $failedPermissions
+     *
+     * @return bool
+     */
+    public function mayAll(array $permissions, array &$failedPermissions = []);
 }

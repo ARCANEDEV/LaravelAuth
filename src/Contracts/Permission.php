@@ -82,17 +82,17 @@ interface Permission
     public function is($slug);
 
     /**
-     * Check if user has any of given roles.
+     * Check if the permission has at least one role.
      *
      * @param  array  $roles
      * @param  array  &$failedRoles
      *
      * @return bool
      */
-    public function isAny(array $roles, array &$failedRoles = []);
+    public function isOne(array $roles, array &$failedRoles = []);
 
     /**
-     * Check if user match all the given roles.
+     * Check if the permission has all roles.
      *
      * @param  array  $roles
      * @param  array  &$failedRoles
