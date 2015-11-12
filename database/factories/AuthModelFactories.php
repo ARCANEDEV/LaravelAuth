@@ -22,7 +22,12 @@ $factory->define(User::class, function (Faker $faker) {
 });
 
 $factory->defineAs(User::class, 'admin', function (Faker $faker) use ($factory) {
+    unset($faker);
+
     $user = $factory->raw(User::class);
 
-    return array_merge($user, ['is_admin' => true]);
+    return array_merge($user, [
+        'is_active' => true,
+        'is_admin'  => true,
+    ]);
 });
