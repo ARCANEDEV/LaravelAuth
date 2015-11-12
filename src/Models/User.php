@@ -4,8 +4,7 @@ use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Contracts\User as UserContract;
 use Arcanedev\LaravelAuth\Exceptions\UserConfirmationException;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
-use Arcanedev\LaravelAuth\Traits\AuthRoleTrait;
-use Arcanedev\LaravelAuth\Traits\AuthUserRelationships;
+use Arcanedev\LaravelAuth\Traits\AuthUserTrait;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
@@ -37,6 +36,7 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
  * @property  \Carbon\Carbon                            updated_at
  * @property  \Carbon\Carbon                            deleted_at
  * @property  \Illuminate\Database\Eloquent\Collection  roles
+ * @property  \Illuminate\Database\Eloquent\Collection  permissions
  *
  * @method  static  bool                                   insert(array $values)
  * @method          \Illuminate\Database\Eloquent\Builder  unconfirmed(string $code)
@@ -51,8 +51,7 @@ class User
      */
     use Authenticatable,
         Authorizable,
-        AuthRoleTrait,
-        AuthUserRelationships,
+        AuthUserTrait,
         CanResetPassword,
         SoftDeletes;
 
