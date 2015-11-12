@@ -263,7 +263,7 @@ class PermissionTest extends ModelsTest
         ]);
 
         $failedRoles  = [];
-        $this->assertFalse($permission->isAny(['admin', 'member'], $failedRoles));
+        $this->assertFalse($permission->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(2, $failedRoles);
         $this->assertEquals(['admin', 'member'], $failedRoles);
 
@@ -276,7 +276,7 @@ class PermissionTest extends ModelsTest
         $permission->attachRole($adminRole);
 
         $failedRoles = [];
-        $this->assertTrue($permission->isAny(['admin', 'member'], $failedRoles));
+        $this->assertTrue($permission->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(1, $failedRoles);
         $this->assertEquals(['member'], $failedRoles);
     }

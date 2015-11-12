@@ -1,5 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Tests\Models;
 
+use Arcanedev\LaravelAuth\Models\Permission;
 use Arcanedev\LaravelAuth\Models\Role;
 use Arcanedev\LaravelAuth\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -356,7 +357,7 @@ class UserTest extends ModelsTest
         $user         = $this->createUser();
 
         $failedRoles  = [];
-        $this->assertFalse($user->isAny(['admin', 'member'], $failedRoles));
+        $this->assertFalse($user->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(2, $failedRoles);
         $this->assertEquals(['admin', 'member'], $failedRoles);
 
@@ -369,7 +370,7 @@ class UserTest extends ModelsTest
         $user->attachRole($adminRole);
 
         $failedRoles = [];
-        $this->assertTrue($user->isAny(['admin', 'member'], $failedRoles));
+        $this->assertTrue($user->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(1, $failedRoles);
         $this->assertEquals(['member'], $failedRoles);
     }
@@ -410,6 +411,78 @@ class UserTest extends ModelsTest
         $this->assertEmpty($failedRoles);
     }
 
+    /** @test */
+    public function it_can_check_if_has_permission()
+    {
+        $adminRole     = $this->createAdminRole();
+        $moderatorRole = $this->createModeratorRole();
+        $user          = $this->createUser();
+
+        $user->attachRole($adminRole);
+        $user->attachRole($moderatorRole);
+
+        $this->assertCount(4, $user->permissions);
+
+        $this->assertTrue($user->may('auth.users.create'));
+        $this->assertTrue($user->may('auth.users.update'));
+        $this->assertTrue($user->may('blog.posts.create'));
+        $this->assertTrue($user->may('blog.posts.update'));
+    }
+
+    /** @test */
+    public function it_can_check_if_has_one_of_permissions()
+    {
+        $adminRole     = $this->createAdminRole();
+        $moderatorRole = $this->createModeratorRole();
+        $user          = $this->createUser();
+
+        $user->attachRole($adminRole);
+        $user->attachRole($moderatorRole);
+
+        $this->assertCount(4, $user->permissions);
+
+        $failedPermissions = [];
+        $permissionToCheck = [
+            'auth.users.create', 'auth.users.update', 'blog.posts.create', 'blog.posts.update'
+        ];
+
+        $this->assertTrue($user->mayOne($permissionToCheck, $failedPermissions));
+        $this->assertEmpty($failedPermissions);
+
+        $permissionToCheck = array_merge($permissionToCheck, ['auth.users.delete', 'blog.posts.delete']);
+
+        $this->assertTrue($user->mayOne($permissionToCheck, $failedPermissions));
+        $this->assertCount(2, $failedPermissions);
+        $this->assertEquals($failedPermissions, ['auth.users.delete', 'blog.posts.delete']);
+    }
+
+    /** @test */
+    public function it_can_check_if_has_all_permissions()
+    {
+        $adminRole     = $this->createAdminRole();
+        $moderatorRole = $this->createModeratorRole();
+        $user          = $this->createUser();
+
+        $user->attachRole($adminRole);
+        $user->attachRole($moderatorRole);
+
+        $this->assertCount(4, $user->permissions);
+
+        $failedPermissions = [];
+        $permissionToCheck = [
+            'auth.users.create', 'auth.users.update', 'blog.posts.create', 'blog.posts.update'
+        ];
+
+        $this->assertTrue($user->mayAll($permissionToCheck, $failedPermissions));
+        $this->assertEmpty($failedPermissions);
+
+        $permissionToCheck = array_merge($permissionToCheck, ['auth.users.delete', 'blog.posts.delete']);
+
+        $this->assertFalse($user->mayAll($permissionToCheck, $failedPermissions));
+        $this->assertCount(2, $failedPermissions);
+        $this->assertEquals($failedPermissions, ['auth.users.delete', 'blog.posts.delete']);
+    }
+
     /* ------------------------------------------------------------------------------------------------
      |  Other Functions
      | ------------------------------------------------------------------------------------------------
@@ -447,5 +520,57 @@ class UserTest extends ModelsTest
             'email'      => 'j.doe@gmail.com',
             'password'   => 'PaSsWoRd',
         ];
+    }
+
+    /**
+     * Create an admin role.
+     *
+     * @return Role
+     */
+    private function createAdminRole()
+    {
+        $adminRole = Role::create([
+            'name'        => 'Admin',
+            'slug'        => 'admin',
+            'description' => 'Admin role descriptions.',
+        ]);
+
+        $adminRole->attachPermission(Permission::create([
+            'name'  => 'Create users permission',
+            'slug'  => 'auth.users.create',
+        ]));
+
+        $adminRole->attachPermission(Permission::create([
+            'name'  => 'Update users permission',
+            'slug'  => 'auth.users.update',
+        ]));
+
+        return $adminRole;
+    }
+
+    /**
+     * Create a moderator role.
+     *
+     * @return Role
+     */
+    private function createModeratorRole()
+    {
+        $moderatorRole = Role::create([
+            'name'        => 'Blog Moderator',
+            'slug'        => 'blog.moderator',
+            'description' => 'Blog Moderator role descriptions.',
+        ]);
+
+        $moderatorRole->attachPermission(Permission::create([
+            'name'  => 'Create posts permission',
+            'slug'  => 'blog.posts.create',
+        ]));
+
+        $moderatorRole->attachPermission(Permission::create([
+            'name'  => 'Update posts permission',
+            'slug'  => 'blog.posts.update',
+        ]));
+
+        return $moderatorRole;
     }
 }
