@@ -47,7 +47,7 @@ class RoleTest extends ModelsTest
     {
         $expectations = [
             \Illuminate\Database\Eloquent\Model::class,
-            \Arcanedev\LaravelAuth\Contracts\Role::class,
+            \Arcanesoft\Contracts\Auth\Models\Role::class,
             \Arcanedev\LaravelAuth\Models\Role::class,
         ];
 

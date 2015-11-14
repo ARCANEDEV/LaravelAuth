@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Services;
 
-use Arcanedev\LaravelAuth\Contracts\User;
+use Arcanesoft\Contracts\Auth\Models\User as UserContract;
 use Carbon\Carbon;
 
 /**
@@ -28,11 +28,11 @@ class UserConfirmator
     /**
      * Confirm user account.
      *
-     * @param  User  $user
+     * @param  \Arcanesoft\Contracts\Auth\Models\User  $user
      *
-     * @return User
+     * @return \Arcanesoft\Contracts\Auth\Models\User
      */
-    public function confirm(User $user)
+    public function confirm(UserContract $user)
     {
         event('auth.users.confirming', compact('user'));
 

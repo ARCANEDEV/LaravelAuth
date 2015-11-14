@@ -1,8 +1,8 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
 use Arcanedev\LaravelAuth\Bases\Model;
-use Arcanedev\LaravelAuth\Contracts\Role as RoleContract;
 use Arcanedev\LaravelAuth\Traits\AuthRoleRelationships;
+use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 
 /**
  * Class     Role
@@ -115,22 +115,6 @@ class Role extends Model implements RoleContract
     }
 
     /**
-     * Check if role has the given user (User Model or Id).
-     *
-     * @param  mixed  $id
-     *
-     * @return bool
-     */
-    public function hasUser($id)
-    {
-        if ($id instanceof User) {
-            $id = $id->getKey();
-        }
-
-        return $this->users->contains($id);
-    }
-
-    /**
      * Detach a user from a role.
      *
      * @param  \Arcanedev\LaravelAuth\Models\User|int  $user
@@ -169,6 +153,22 @@ class Role extends Model implements RoleContract
         }
 
         return $result;
+    }
+
+    /**
+     * Check if role has the given user (User Model or Id).
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\User|int  $id
+     *
+     * @return bool
+     */
+    public function hasUser($id)
+    {
+        if ($id instanceof User) {
+            $id = $id->getKey();
+        }
+
+        return $this->users->contains($id);
     }
 
     /**

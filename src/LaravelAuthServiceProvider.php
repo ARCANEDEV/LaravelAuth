@@ -72,6 +72,7 @@ class LaravelAuthServiceProvider extends ServiceProvider
         }
 
         $this->registerPublishes();
+        $this->registerBladeDirectives();
     }
 
     /**
@@ -106,6 +107,14 @@ class LaravelAuthServiceProvider extends ServiceProvider
         $this->publishes([
             $this->getBasePath() . DS . 'database/factories' => database_path('factories'),
         ], 'factories');
+    }
+
+    /**
+     * Register blade directives
+     */
+    private function registerBladeDirectives()
+    {
+        // Coming soon
     }
 
     /**

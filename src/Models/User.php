@@ -1,10 +1,10 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
 use Arcanedev\LaravelAuth\Bases\Model;
-use Arcanedev\LaravelAuth\Contracts\User as UserContract;
 use Arcanedev\LaravelAuth\Exceptions\UserConfirmationException;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Arcanedev\LaravelAuth\Traits\AuthUserTrait;
+use Arcanesoft\Contracts\Auth\Models\User as UserContract;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;

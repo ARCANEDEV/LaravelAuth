@@ -1,9 +1,9 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
 use Arcanedev\LaravelAuth\Bases\Model;
-use Arcanedev\LaravelAuth\Contracts\Permission as PermissionContract;
 use Arcanedev\LaravelAuth\Traits\AuthPermissionRelationships;
 use Arcanedev\LaravelAuth\Traits\AuthRoleTrait;
+use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 
 /**
  * Class     Permission

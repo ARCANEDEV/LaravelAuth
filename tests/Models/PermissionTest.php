@@ -48,7 +48,7 @@ class PermissionTest extends ModelsTest
     {
         $expectations = [
             \Illuminate\Database\Eloquent\Model::class,
-            \Arcanedev\LaravelAuth\Contracts\Permission::class,
+            \Arcanesoft\Contracts\Auth\Models\Permission::class,
             \Arcanedev\LaravelAuth\Models\Permission::class,
         ];
 

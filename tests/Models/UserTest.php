@@ -47,7 +47,7 @@ class UserTest extends ModelsTest
     {
         $expectations = [
             \Illuminate\Database\Eloquent\Model::class,
-            \Arcanedev\LaravelAuth\Contracts\User::class,
+            \Arcanesoft\Contracts\Auth\Models\User::class,
             \Arcanedev\LaravelAuth\Models\User::class,
         ];
 
