@@ -2,6 +2,7 @@
 
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Traits\AuthRoleRelationships;
+use Arcanedev\LaravelAuth\Traits\Slugable;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 
 /**
@@ -27,7 +28,7 @@ class Role extends Model implements RoleContract
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use AuthRoleRelationships;
+    use AuthRoleRelationships, Slugable;
 
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -88,7 +89,7 @@ class Role extends Model implements RoleContract
      */
     public function setSlugAttribute($slug)
     {
-        $this->attributes['slug'] = str_slug($slug, config('laravel-auth.slug-separator', '.'));
+        $this->attributes['slug'] = $this->slugify($slug);
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -261,7 +262,7 @@ class Role extends Model implements RoleContract
     public function can($slug)
     {
         $permissions = $this->permissions->filter(function(Permission $permission) use ($slug) {
-            return $permission->slug === str_slug($slug, config('laravel-auth.slug-separator', '.'));
+            return $permission->checkSlug($slug);
         });
 
         return $permissions->count() === 1;

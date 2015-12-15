@@ -3,6 +3,7 @@
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Traits\AuthPermissionRelationships;
 use Arcanedev\LaravelAuth\Traits\AuthRoleTrait;
+use Arcanedev\LaravelAuth\Traits\Slugable;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 
 /**
@@ -26,7 +27,7 @@ class Permission extends Model implements PermissionContract
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use AuthPermissionRelationships, AuthRoleTrait;
+    use AuthPermissionRelationships, AuthRoleTrait, Slugable;
 
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -66,6 +67,6 @@ class Permission extends Model implements PermissionContract
      */
     public function setSlugAttribute($slug)
     {
-        $this->attributes['slug'] = str_slug($slug, config('laravel-auth.slug-separator', '.'));
+        $this->attributes['slug'] = $this->slugify($slug);
     }
 }

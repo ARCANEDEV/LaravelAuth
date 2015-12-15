@@ -109,7 +109,7 @@ trait AuthRoleTrait
     public function is($slug)
     {
         $roles = $this->roles->filter(function(Role $role) use ($slug) {
-            return $role->slug === str_slug($slug, config('laravel-auth.slug-separator', '.'));
+            return $role->checkSlug($slug);
         });
 
         return $roles->count() === 1;
