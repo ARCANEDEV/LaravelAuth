@@ -22,9 +22,7 @@ class CreateAuthPermissionsTable extends Migration
     {
         parent::__construct();
 
-        $this->setTable(
-            config('laravel-auth.permissions.table')
-        );
+        $this->setTable(config('laravel-auth.permissions.table'));
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -41,7 +39,6 @@ class CreateAuthPermissionsTable extends Migration
             $table->string('name');
             $table->string('description')->nullable();
             $table->string('slug');
-            $table->string('model')->nullable();
             $table->timestamps();
 
             $table->unique('slug');

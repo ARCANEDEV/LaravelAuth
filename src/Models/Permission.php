@@ -16,7 +16,6 @@ use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
  * @property  string                                    name
  * @property  string                                    slug
  * @property  string                                    description
- * @property  string                                    model
  * @property  \Carbon\Carbon                            created_at
  * @property  \Carbon\Carbon                            updated_at
  * @property  \Illuminate\Database\Eloquent\Collection  roles
@@ -38,7 +37,7 @@ class Permission extends Model implements PermissionContract
      *
      * @var array
      */
-    protected $fillable = ['name', 'slug', 'description', 'model'];
+    protected $fillable = ['name', 'slug', 'description'];
 
     /* ------------------------------------------------------------------------------------------------
      |  Constructor
