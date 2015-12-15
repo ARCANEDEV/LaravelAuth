@@ -5,22 +5,22 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Class     CreateRoleUserTable
+ * Class     CreatePasswordResetsTable
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class CreateRoleUserPivotTable extends Migration
+class CreateAuthPasswordResetsTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
      |  Properties
      | ------------------------------------------------------------------------------------------------
      */
     /**
-     * The table name
+     * The table name.
      *
      * @var string
      */
-    protected $table = 'role_user';
+    protected $table = 'password_resets';
 
     /* ------------------------------------------------------------------------------------------------
      |  Main Functions
@@ -32,11 +32,9 @@ class CreateRoleUserPivotTable extends Migration
     public function up()
     {
         Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
-            $table->integer('role_id')->unsigned();
-            $table->integer('user_id')->unsigned();
-            $table->timestamps();
-
-            $table->primary(['user_id', 'role_id']);
+            $table->string('email')->index();
+            $table->string('token')->index();
+            $table->timestamp('created_at');
         });
     }
 }

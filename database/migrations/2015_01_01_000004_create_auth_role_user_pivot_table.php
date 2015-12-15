@@ -5,22 +5,22 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Class     CreatePermissionRoleTable
+ * Class     CreateRoleUserTable
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class CreatePermissionRolePivotTable extends Migration
+class CreateAuthRoleUserPivotTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
      |  Properties
      | ------------------------------------------------------------------------------------------------
      */
     /**
-     * Table name.
+     * The table name
      *
      * @var string
      */
-    protected $table = 'permission_role';
+    protected $table = 'role_user';
 
     /* ------------------------------------------------------------------------------------------------
      |  Main Functions
@@ -32,11 +32,11 @@ class CreatePermissionRolePivotTable extends Migration
     public function up()
     {
         Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
-            $table->integer('permission_id')->unsigned();
             $table->integer('role_id')->unsigned();
+            $table->integer('user_id')->unsigned();
             $table->timestamps();
 
-            $table->primary(['permission_id', 'role_id']);
+            $table->primary(['user_id', 'role_id']);
         });
     }
 }

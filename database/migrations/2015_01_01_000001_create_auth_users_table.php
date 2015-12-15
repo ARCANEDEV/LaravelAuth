@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class CreateUsersTable extends Migration
+class CreateAuthUsersTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
      |  Constructor

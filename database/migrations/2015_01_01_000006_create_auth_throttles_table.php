@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class CreateThrottlesTable extends Migration
+class CreateAuthThrottlesTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
      |  Constructor

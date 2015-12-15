@@ -5,27 +5,22 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Class     CreateRolesTable
+ * Class     CreatePermissionRoleTable
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class CreateRolesTable extends Migration
+class CreateAuthPermissionRolePivotTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
-     |  Constructor
+     |  Properties
      | ------------------------------------------------------------------------------------------------
      */
     /**
-     * Make a migration instance.
+     * Table name.
+     *
+     * @var string
      */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->setTable(
-            config('laravel-auth.roles.table', 'roles')
-        );
-    }
+    protected $table = 'permission_role';
 
     /* ------------------------------------------------------------------------------------------------
      |  Main Functions
@@ -37,15 +32,11 @@ class CreateRolesTable extends Migration
     public function up()
     {
         Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->string('slug');
-            $table->string('description')->nullable();
-            $table->boolean('is_active')->default(1);
-            $table->boolean('is_locked')->default(0);
+            $table->integer('permission_id')->unsigned();
+            $table->integer('role_id')->unsigned();
             $table->timestamps();
 
-            $table->unique('slug');
+            $table->primary(['permission_id', 'role_id']);
         });
     }
 }

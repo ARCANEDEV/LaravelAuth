@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class CreatePermissionsTable extends Migration
+class CreateAuthPermissionsTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
      |  Constructor
@@ -39,8 +39,8 @@ class CreatePermissionsTable extends Migration
         Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('slug');
             $table->string('description')->nullable();
+            $table->string('slug');
             $table->string('model')->nullable();
             $table->timestamps();
 
