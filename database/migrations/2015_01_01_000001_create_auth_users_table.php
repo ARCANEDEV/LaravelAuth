@@ -23,9 +23,7 @@ class CreateAuthUsersTable extends Migration
     {
         parent::__construct();
 
-        $this->setTable(
-            config('laravel-auth.users.table', 'users')
-        );
+        $this->setTable(config('laravel-auth.users.table', 'users'));
     }
 
     /* ------------------------------------------------------------------------------------------------

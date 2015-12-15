@@ -22,9 +22,7 @@ class CreateAuthRolesTable extends Migration
     {
         parent::__construct();
 
-        $this->setTable(
-            config('laravel-auth.roles.table', 'roles')
-        );
+        $this->setTable(config('laravel-auth.roles.table', 'roles'));
     }
 
     /* ------------------------------------------------------------------------------------------------

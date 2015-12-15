@@ -22,9 +22,7 @@ class CreateAuthThrottlesTable extends Migration
     {
         parent::__construct();
 
-        $this->setTable(
-            config('laravel-auth.throttles.table', 'throttles')
-        );
+        $this->setTable(config('laravel-auth.throttles.table', 'throttles'));
     }
 
     /* ------------------------------------------------------------------------------------------------
