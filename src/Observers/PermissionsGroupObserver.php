@@ -47,9 +47,7 @@ class PermissionsGroupObserver extends ModelObserver
 
     public function deleting(PermissionsGroup $group)
     {
-        $group->permissions()->update([
-            'group_id' => 0,
-        ]);
+        $group->detachAllPermissions(false);
 
         $this->event->fire('auth.permission-groups.deleting', compact('group'));
     }

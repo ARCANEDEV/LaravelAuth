@@ -196,6 +196,26 @@ class PermissionsGroup extends Model
         return $permission;
     }
 
+    /**
+     * Detach all permissions from the group.
+     *
+     * @param  bool  $reload
+     *
+     * @return int
+     */
+    public function detachAllPermissions($reload = true)
+    {
+        $detached = $this->permissions()->update([
+            'group_id' => 0
+        ]);
+
+        if ($reload) {
+            $this->load('permissions');
+        }
+
+        return $detached;
+    }
+
     /* ------------------------------------------------------------------------------------------------
      |  Check Functions
      | ------------------------------------------------------------------------------------------------
