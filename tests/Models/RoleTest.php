@@ -82,7 +82,7 @@ class RoleTest extends ModelsTest
         $attributes = [
             'name'        => 'Custom role',
             'slug'        => str_slug('Custom role', config('laravel-auth.slug-separator')),
-            'description' => 'Custom role descriptions.',
+            'description' => 'Custom role description.',
         ];
 
         $role = $this->createRole($attributes);
@@ -113,7 +113,7 @@ class RoleTest extends ModelsTest
 
         $updatedAttributes = [
             'name'        => 'Custom role',
-            'description' => 'Custom role descriptions.',
+            'description' => 'Custom role description.',
         ];
 
         $role->update($updatedAttributes);
