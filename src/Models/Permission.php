@@ -12,14 +12,15 @@ use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
  * @package  Arcanedev\LaravelAuth\Models
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  *
- * @property  int                                             id
- * @property  string                                          name
- * @property  string                                          slug
- * @property  string                                          description
- * @property  \Carbon\Carbon                                  created_at
- * @property  \Carbon\Carbon                                  updated_at
- * @property  \Illuminate\Database\Eloquent\Collection        roles
- * @property  \Arcanedev\LaravelAuth\Models\PermissionsGroup  group
+ * @property  int                                            id
+ * @property  int                                            group_id
+ * @property  string                                         name
+ * @property  string                                         slug
+ * @property  string                                         description
+ * @property  \Carbon\Carbon                                 created_at
+ * @property  \Carbon\Carbon                                 updated_at
+ * @property  \Illuminate\Database\Eloquent\Collection       roles
+ * @property  \Arcanedev\LaravelAuth\Models\PermissionsGroup group
  */
 class Permission extends Model implements PermissionContract
 {

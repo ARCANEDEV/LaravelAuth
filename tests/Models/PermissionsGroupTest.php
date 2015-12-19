@@ -146,11 +146,37 @@ class PermissionsGroupTest extends ModelsTest
 
         $this->assertTrue($group->hasPermission($permission));
         $this->assertCount(1, $group->permissions);
+        $this->assertEquals($group->id, $permission->group_id);
 
+        // Make sure that attach only once :
         $group->attachPermission($permission);
 
         $this->assertTrue($group->hasPermission($permission));
         $this->assertCount(1, $group->permissions);
+        $this->assertEquals($group->id, $permission->group_id);
+    }
+
+    /** @test */
+    public function it_can_attach_permission_by_id()
+    {
+        $permission = Permission::create([
+            'name'        => 'Create users',
+            'slug'        => 'auth.users.create',
+            'description' => 'Allow to create users',
+        ]);
+
+        $group      = $this->createGroup(
+            $this->getAuthGroupAttributes()
+        );
+
+        $this->assertFalse($group->hasPermission($permission));
+        $this->assertCount(0, $group->permissions);
+
+        $permission = $group->attachPermissionById($permission->id);
+
+        $this->assertTrue($group->hasPermission($permission));
+        $this->assertCount(1, $group->permissions);
+        $this->assertEquals($group->id, $permission->group_id);
     }
 
     /** @test */
@@ -173,17 +199,66 @@ class PermissionsGroupTest extends ModelsTest
 
         $this->assertTrue($group->hasPermission($permission));
         $this->assertCount(1, $group->permissions);
+        $this->assertEquals($group->id, $permission->group_id);
 
         $group->detachPermission($permission);
 
         $this->assertFalse($group->hasPermission($permission));
         $this->assertCount(0, $group->permissions);
+        $this->assertEquals(0, $permission->group_id);
 
         // Make sure it can not detach this
         $group->detachPermission($permission);
 
         $this->assertFalse($group->hasPermission($permission));
         $this->assertCount(0, $group->permissions);
+        $this->assertEquals(0, $permission->group_id);
+    }
+
+    /** @test */
+    public function it_can_attach_and_detach_permission_from_group_to_group()
+    {
+        $permission = Permission::create([
+            'name'        => 'Random permission',
+            'slug'        => 'random.permission',
+            'description' => 'Random permission description',
+        ]);
+
+        $authGroup  = $this->createGroup(
+            $this->getAuthGroupAttributes()
+        );
+        $blogGroup  = $this->createGroup(
+            $this->getBlogGroupAttributes()
+        );
+
+        $this->assertFalse($authGroup->hasPermission($permission));
+        $this->assertCount(0, $authGroup->permissions);
+        $this->assertFalse($blogGroup->hasPermission($permission));
+        $this->assertCount(0, $blogGroup->permissions);
+
+        $authGroup->attachPermission($permission);
+
+        $this->assertTrue($authGroup->hasPermission($permission));
+        $this->assertCount(1, $authGroup->permissions);
+        $this->assertFalse($blogGroup->hasPermission($permission));
+        $this->assertCount(0, $blogGroup->permissions);
+        $this->assertEquals($authGroup->id, $permission->group_id);
+
+        $blogGroup->attachPermission($permission);
+
+        $this->assertFalse($authGroup->hasPermission($permission));
+        $this->assertCount(0, $authGroup->permissions);
+        $this->assertTrue($blogGroup->hasPermission($permission));
+        $this->assertCount(1, $blogGroup->permissions);
+        $this->assertEquals($blogGroup->id, $permission->group_id);
+
+        $blogGroup->detachPermission($permission);
+
+        $this->assertFalse($authGroup->hasPermission($permission));
+        $this->assertCount(0, $authGroup->permissions);
+        $this->assertFalse($blogGroup->hasPermission($permission));
+        $this->assertCount(0, $blogGroup->permissions);
+        $this->assertEquals(0, $permission->group_id);
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -201,6 +276,20 @@ class PermissionsGroupTest extends ModelsTest
             'name'        => 'Auth Group',
             'slug'        => str_slug('Auth Group', config('laravel-auth.slug-separator')),
             'description' => 'Auth Permissions Group description.',
+        ];
+    }
+
+    /**
+     * Get auth group attributes.
+     *
+     * @return array
+     */
+    private function getBlogGroupAttributes()
+    {
+        return [
+            'name'        => 'Blog Group',
+            'slug'        => str_slug('Blog Group', config('laravel-auth.slug-separator')),
+            'description' => 'Blog Permissions Group description.',
         ];
     }
 

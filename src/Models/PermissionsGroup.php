@@ -52,7 +52,7 @@ class PermissionsGroup extends Model
     /**
      * Permissions Groups has many permissions.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function permissions()
     {
@@ -81,16 +81,16 @@ class PermissionsGroup extends Model
     /**
      * Attach the permission to a group.
      *
-     * @param  \Arcanedev\LaravelAuth\Models\Permission|int  $permission
-     * @param  bool                                          $reload
+     * @param  \Arcanedev\LaravelAuth\Models\Permission  $permission
+     * @param  bool                                      $reload
      */
-    public function attachPermission($permission, $reload = true)
+    public function attachPermission(&$permission, $reload = true)
     {
         if ($this->hasPermission($permission)) {
             return;
         }
 
-        $this->permissions()->save($permission);
+        $permission = $this->permissions()->save($permission);
 
         if ($reload) {
             $this->load('permissions');
@@ -98,18 +98,39 @@ class PermissionsGroup extends Model
     }
 
     /**
+     * Attach the permission by id to a group.
+     *
+     * @param  int   $id
+     * @param  bool  $reload
+     *
+     * @return \Arcanedev\LaravelAuth\Models\Permission
+     */
+    public function attachPermissionById($id, $reload = true)
+    {
+        $permission = $this->permissions()->getRelated()
+            ->where('id', $id)
+            ->first();
+
+        $this->attachPermission($permission, $reload);
+
+        return $permission;
+    }
+
+    /**
      * Attach the permission from a group.
      *
-     * @param  \Arcanedev\LaravelAuth\Models\Permission|int  $permission
-     * @param  bool                                          $reload
+     * @param  \Arcanedev\LaravelAuth\Models\Permission  $permission
+     * @param  bool                                      $reload
      */
-    public function detachPermission($permission, $reload = true)
+    public function detachPermission(&$permission, $reload = true)
     {
         if ( ! $this->hasPermission($permission)) {
             return;
         }
 
-        $this->getPermission($permission)->update([
+        $permission = $this->getPermission($permission);
+
+        $permission->update([
             'group_id' => 0,
         ]);
 
@@ -150,6 +171,8 @@ class PermissionsGroup extends Model
         if ($id instanceof Permission) {
             $id = $id->getKey();
         }
+
+        $this->load('permissions');
 
         return $this->permissions->filter(function (Permission $permission) use ($id) {
             return $permission->id == $id;
