@@ -12,13 +12,14 @@ use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
  * @package  Arcanedev\LaravelAuth\Models
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  *
- * @property  int                                       id
- * @property  string                                    name
- * @property  string                                    slug
- * @property  string                                    description
- * @property  \Carbon\Carbon                            created_at
- * @property  \Carbon\Carbon                            updated_at
- * @property  \Illuminate\Database\Eloquent\Collection  roles
+ * @property  int                                             id
+ * @property  string                                          name
+ * @property  string                                          slug
+ * @property  string                                          description
+ * @property  \Carbon\Carbon                                  created_at
+ * @property  \Carbon\Carbon                                  updated_at
+ * @property  \Illuminate\Database\Eloquent\Collection        roles
+ * @property  \Arcanedev\LaravelAuth\Models\PermissionsGroup  group
  */
 class Permission extends Model implements PermissionContract
 {
@@ -37,7 +38,7 @@ class Permission extends Model implements PermissionContract
      *
      * @var array
      */
-    protected $fillable = ['name', 'slug', 'description'];
+    protected $fillable = ['group_id', 'name', 'slug', 'description'];
 
     /* ------------------------------------------------------------------------------------------------
      |  Constructor
@@ -53,6 +54,20 @@ class Permission extends Model implements PermissionContract
         $this->setTable(config('laravel-auth.permissions.table', 'permissions'));
 
         parent::__construct($attributes);
+    }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Relationships
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Permission belongs to one group.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function group()
+    {
+        return $this->belongsTo(PermissionsGroup::class, 'group_id');
     }
 
     /* ------------------------------------------------------------------------------------------------
