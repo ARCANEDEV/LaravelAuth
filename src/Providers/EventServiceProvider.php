@@ -1,8 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Providers;
 
-use Arcanedev\LaravelAuth\Models\Permission;
-use Arcanedev\LaravelAuth\Models\Role;
-use Arcanedev\LaravelAuth\Models\User;
+use Arcanedev\LaravelAuth\Models;
+use Arcanedev\LaravelAuth\Observers;
 use Arcanedev\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Contracts\Events\Dispatcher;
 
@@ -14,6 +13,10 @@ use Illuminate\Contracts\Events\Dispatcher;
  */
 class EventServiceProvider extends ServiceProvider
 {
+    /* ------------------------------------------------------------------------------------------------
+     |  Main Functions
+     | ------------------------------------------------------------------------------------------------
+     */
     /**
      * Register the application's event listeners.
      *
@@ -23,20 +26,9 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot($events);
 
-        $this->observeModels();
-    }
-
-    /* ------------------------------------------------------------------------------------------------
-     |  Other Functions
-     | ------------------------------------------------------------------------------------------------
-     */
-    /**
-     * Observe the models.
-     */
-    private function observeModels()
-    {
-        User::observe(\Arcanedev\LaravelAuth\Observers\UserObserver::class);
-        Role::observe(\Arcanedev\LaravelAuth\Observers\RoleObserver::class);
-        Permission::observe(\Arcanedev\LaravelAuth\Observers\PermissionObserver::class);
+        Models\User::observe(Observers\UserObserver::class);
+        Models\Role::observe(Observers\RoleObserver::class);
+        Models\PermissionsGroup::observe(Observers\PermissionsGroupObserver::class);
+        Models\Permission::observe(Observers\PermissionObserver::class);
     }
 }
