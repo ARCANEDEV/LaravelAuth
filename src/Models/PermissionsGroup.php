@@ -97,6 +97,27 @@ class PermissionsGroup extends Model
         }
     }
 
+    /**
+     * Attach the permission from a group.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Permission|int  $permission
+     * @param  bool                                          $reload
+     */
+    public function detachPermission($permission, $reload = true)
+    {
+        if ( ! $this->hasPermission($permission)) {
+            return;
+        }
+
+        $this->getPermission($permission)->update([
+            'group_id' => 0,
+        ]);
+
+        if ($reload) {
+            $this->load('permissions');
+        }
+    }
+
     /* ------------------------------------------------------------------------------------------------
      |  Check Functions
      | ------------------------------------------------------------------------------------------------
@@ -104,7 +125,7 @@ class PermissionsGroup extends Model
     /**
      * Check if role has the given permission (Permission Model or Id).
      *
-     * @param  mixed  $id
+     * @param  \Arcanedev\LaravelAuth\Models\Permission|int  $id
      *
      * @return bool
      */
@@ -114,6 +135,24 @@ class PermissionsGroup extends Model
             $id = $id->getKey();
         }
 
-        return $this->permissions->contains($id);
+        return ! is_null($this->getPermission($id));
+    }
+
+    /**
+     * Get a permission from the group.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Permission|int  $id
+     *
+     * @return \Arcanedev\LaravelAuth\Models\Permission|null
+     */
+    private function getPermission($id)
+    {
+        if ($id instanceof Permission) {
+            $id = $id->getKey();
+        }
+
+        return $this->permissions->filter(function (Permission $permission) use ($id) {
+            return $permission->id == $id;
+        })->first();
     }
 }
