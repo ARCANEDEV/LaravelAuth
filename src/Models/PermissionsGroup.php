@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
 use Arcanedev\LaravelAuth\Bases\Model;
+use Arcanedev\LaravelAuth\Traits\Slugable;
 
 /**
  * Class     PermissionsGroup
@@ -18,6 +19,12 @@ use Arcanedev\LaravelAuth\Bases\Model;
  */
 class PermissionsGroup extends Model
 {
+    /* ------------------------------------------------------------------------------------------------
+     |  Traits
+     | ------------------------------------------------------------------------------------------------
+     */
+    use Slugable;
+
     /* ------------------------------------------------------------------------------------------------
      |  Properties
      | ------------------------------------------------------------------------------------------------
@@ -57,6 +64,22 @@ class PermissionsGroup extends Model
     public function permissions()
     {
         return $this->hasMany(Permission::class, 'group_id');
+    }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Getters & Setters
+     | ------------------------------------------------------------------------------------------------
+     */
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = $value;
+        $this->setSlugAttribute($value);
+
+    }
+
+    public function setSlugAttribute($value)
+    {
+        $this->attributes['slug'] = $this->slugify($value);
     }
 
     /* ------------------------------------------------------------------------------------------------

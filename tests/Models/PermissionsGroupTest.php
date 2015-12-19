@@ -81,6 +81,29 @@ class PermissionsGroupTest extends ModelsTest
     }
 
     /** @test */
+    public function it_can_update()
+    {
+        $attributes = [
+            'name'        => 'Custom group',
+            'description' => 'Custom group description',
+        ];
+
+        $group = $this->createGroup($attributes);
+
+        $this->seeInDatabase('permissions_group', $attributes);
+
+        $attributes = [
+            'name'        => 'Super Custom Group',
+            'slug'        => 'super.custom.group',
+            'description' => 'Super Custom Group description',
+        ];
+
+        $group->update($attributes);
+
+        $this->seeInDatabase('permissions_group', $attributes);
+    }
+
+    /** @test */
     public function it_can_create_permission()
     {
         $group      = $this->createGroup(
@@ -324,6 +347,33 @@ class PermissionsGroupTest extends ModelsTest
         $this->assertCount(0, $authGroup->permissions);
         $this->assertFalse($blogGroup->hasPermission($permission));
         $this->assertCount(0, $blogGroup->permissions);
+        $this->assertEquals(0, $permission->group_id);
+    }
+
+    /** @test */
+    public function it_can_delete_a_group()
+    {
+        $permission = Permission::create([
+            'name'        => 'Create users',
+            'slug'        => 'auth.users.create',
+            'description' => 'Allow to create users',
+        ]);
+
+        $group      = $this->createGroup(
+            $this->getAuthGroupAttributes()
+        );
+
+        $group->attachPermission($permission);
+
+        $this->assertTrue($group->hasPermission($permission));
+        $this->assertCount(1, $group->permissions);
+        $this->assertEquals($group->id, $permission->group_id);
+
+        $group->delete();
+
+        /** @var  Permission  $permission */
+        $permission = Permission::where('id', $permission->id)->first();
+
         $this->assertEquals(0, $permission->group_id);
     }
 
