@@ -216,6 +216,42 @@ class PermissionsGroupTest extends ModelsTest
     }
 
     /** @test */
+    public function it_can_detach_permission_by_id()
+    {
+        $permission = Permission::create([
+            'name'        => 'Create users',
+            'slug'        => 'auth.users.create',
+            'description' => 'Allow to create users',
+        ]);
+
+        $group      = $this->createGroup(
+            $this->getAuthGroupAttributes()
+        );
+
+        $this->assertFalse($group->hasPermission($permission));
+        $this->assertCount(0, $group->permissions);
+
+        $group->attachPermission($permission);
+
+        $this->assertTrue($group->hasPermission($permission));
+        $this->assertCount(1, $group->permissions);
+        $this->assertEquals($group->id, $permission->group_id);
+
+        $permission = $group->detachPermissionById($permission->id);
+
+        $this->assertFalse($group->hasPermission($permission));
+        $this->assertCount(0, $group->permissions);
+        $this->assertEquals(0, $permission->group_id);
+
+        // Make sure it can not detach this
+        $permission = $group->detachPermissionById($permission->id);
+
+        $this->assertFalse($group->hasPermission($permission));
+        $this->assertCount(0, $group->permissions);
+        $this->assertEquals(0, $permission->group_id);
+    }
+
+    /** @test */
     public function it_can_attach_and_detach_permission_from_group_to_group()
     {
         $permission = Permission::create([

@@ -107,9 +107,7 @@ class PermissionsGroup extends Model
      */
     public function attachPermissionById($id, $reload = true)
     {
-        $permission = $this->permissions()->getRelated()
-            ->where('id', $id)
-            ->first();
+        $permission = $this->getPermissionById($id);
 
         $this->attachPermission($permission, $reload);
 
@@ -128,7 +126,7 @@ class PermissionsGroup extends Model
             return;
         }
 
-        $permission = $this->getPermission($permission);
+        $permission = $this->getPermissionFromGroup($permission);
 
         $permission->update([
             'group_id' => 0,
@@ -137,6 +135,23 @@ class PermissionsGroup extends Model
         if ($reload) {
             $this->load('permissions');
         }
+    }
+
+    /**
+     * Attach the permission by id to a group.
+     *
+     * @param  int   $id
+     * @param  bool  $reload
+     *
+     * @return \Arcanedev\LaravelAuth\Models\Permission
+     */
+    public function detachPermissionById($id, $reload = true)
+    {
+        $permission = $this->getPermissionById($id);
+
+        $this->detachPermission($permission, $reload);
+
+        return $permission;
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -156,7 +171,7 @@ class PermissionsGroup extends Model
             $id = $id->getKey();
         }
 
-        return ! is_null($this->getPermission($id));
+        return ! is_null($this->getPermissionFromGroup($id));
     }
 
     /**
@@ -166,7 +181,7 @@ class PermissionsGroup extends Model
      *
      * @return \Arcanedev\LaravelAuth\Models\Permission|null
      */
-    private function getPermission($id)
+    private function getPermissionFromGroup($id)
     {
         if ($id instanceof Permission) {
             $id = $id->getKey();
@@ -177,5 +192,20 @@ class PermissionsGroup extends Model
         return $this->permissions->filter(function (Permission $permission) use ($id) {
             return $permission->id == $id;
         })->first();
+    }
+
+    /**
+     * Get a permission by id.
+     *
+     * @param  int  $id
+     *
+     * @return \Arcanedev\LaravelAuth\Models\Permission|null
+     */
+    private function getPermissionById($id)
+    {
+        return $this->permissions()
+            ->getRelated()
+            ->where('id', $id)
+            ->first();
     }
 }
