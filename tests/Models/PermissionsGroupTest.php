@@ -180,6 +180,36 @@ class PermissionsGroupTest extends ModelsTest
     }
 
     /** @test */
+    public function it_can_attach_many_permissions()
+    {
+        $group      = $this->createGroup(
+            $this->getAuthGroupAttributes()
+        );
+
+        $permissions = [
+            Permission::create([
+                'name'        => 'Create users',
+                'slug'        => 'auth.users.create',
+                'description' => 'Allow to create users',
+            ]),
+            Permission::create([
+                'name'        => 'Update users',
+                'slug'        => 'auth.users.update',
+                'description' => 'Allow to update users',
+            ])
+        ];
+
+        $this->assertCount(0, $group->permissions);
+
+        $group->attachPermissions($permissions);
+
+        $this->assertCount(2, $group->permissions);
+        foreach ($permissions as $permission) {
+            $this->assertTrue($group->hasPermission($permission));
+        }
+    }
+
+    /** @test */
     public function it_can_detach_permission()
     {
         $permission = Permission::create([

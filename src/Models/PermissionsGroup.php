@@ -98,6 +98,25 @@ class PermissionsGroup extends Model
     }
 
     /**
+     * Attach a collection of permissions to the group.
+     *
+     * @param  \Illuminate\Database\Eloquent\Collection|array  $permissions
+     * @param  bool                                            $reload
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|array
+     */
+    public function attachPermissions($permissions, $reload = true)
+    {
+        $permissions = $this->permissions()->saveMany($permissions);
+
+        if ($reload) {
+            $this->load('permissions');
+        }
+
+        return $permissions;
+    }
+
+    /**
      * Attach the permission by id to a group.
      *
      * @param  int   $id
