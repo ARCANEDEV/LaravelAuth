@@ -15,6 +15,11 @@ return [
         'model'     => Arcanedev\LaravelAuth\Models\Role::class,
     ],
 
+    'permissions-group' => [
+        'table'     => 'permissions_group',
+        'model'     => Arcanedev\LaravelAuth\Models\PermissionsGroup::class,
+    ],
+
     'permissions' => [
         'table'     => 'permissions',
         'model'     => Arcanedev\LaravelAuth\Models\Permission::class,

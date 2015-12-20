@@ -2,6 +2,7 @@
 
 use Arcanedev\LaravelAuth\Models\Permission;
 use Arcanedev\LaravelAuth\Models\Role;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
@@ -60,14 +61,20 @@ class PermissionTest extends ModelsTest
     /** @test */
     public function it_has_relationships()
     {
+        $groupRelationship = $this->permissionModel->group();
         $rolesRelationship = $this->permissionModel->roles();
 
+        $this->assertInstanceOf(BelongsTo::class,     $groupRelationship);
         $this->assertInstanceOf(BelongsToMany::class, $rolesRelationship);
 
-        /** @var  \Arcanedev\LaravelAuth\Models\Role  $role */
-        $role = $rolesRelationship->getRelated();
-
-        $this->assertInstanceOf(\Arcanedev\LaravelAuth\Models\Role::class, $role);
+        $this->assertInstanceOf(
+            \Arcanedev\LaravelAuth\Models\PermissionsGroup::class,
+            $groupRelationship->getRelated()
+        );
+        $this->assertInstanceOf(
+            \Arcanedev\LaravelAuth\Models\Role::class,
+            $rolesRelationship->getRelated()
+        );
     }
 
     /** @test */

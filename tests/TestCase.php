@@ -77,6 +77,7 @@ abstract class TestCase extends BaseTestCase
         return [
             'users',
             'roles',
+            'permissions_group',
             'permissions',
             'role_user',
             'permission_role',
