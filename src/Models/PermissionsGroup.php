@@ -70,16 +70,25 @@ class PermissionsGroup extends Model
      |  Getters & Setters
      | ------------------------------------------------------------------------------------------------
      */
-    public function setNameAttribute($value)
+    /**
+     * Set the name attribute.
+     *
+     * @param  string  $name
+     */
+    public function setNameAttribute($name)
     {
-        $this->attributes['name'] = $value;
-        $this->setSlugAttribute($value);
-
+        $this->attributes['name'] = $name;
+        $this->setSlugAttribute($name);
     }
 
-    public function setSlugAttribute($value)
+    /**
+     * Set the slug attribute.
+     *
+     * @param  string  $slug
+     */
+    public function setSlugAttribute($slug)
     {
-        $this->attributes['slug'] = $this->slugify($value);
+        $this->attributes['slug'] = $this->slugify($slug);
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -121,6 +130,25 @@ class PermissionsGroup extends Model
     }
 
     /**
+     * Attach the permission by id to a group.
+     *
+     * @param  int   $id
+     * @param  bool  $reload
+     *
+     * @return \Arcanedev\LaravelAuth\Models\Permission
+     */
+    public function attachPermissionById($id, $reload = true)
+    {
+        $permission = $this->getPermissionById($id);
+
+        if ( ! is_null($permission)) {
+            $this->attachPermission($permission, $reload);
+        }
+
+        return $permission;
+    }
+
+    /**
      * Attach a collection of permissions to the group.
      *
      * @param  \Illuminate\Database\Eloquent\Collection|array  $permissions
@@ -137,23 +165,6 @@ class PermissionsGroup extends Model
         }
 
         return $permissions;
-    }
-
-    /**
-     * Attach the permission by id to a group.
-     *
-     * @param  int   $id
-     * @param  bool  $reload
-     *
-     * @return \Arcanedev\LaravelAuth\Models\Permission
-     */
-    public function attachPermissionById($id, $reload = true)
-    {
-        $permission = $this->getPermissionById($id);
-
-        $this->attachPermission($permission, $reload);
-
-        return $permission;
     }
 
     /**
@@ -191,7 +202,9 @@ class PermissionsGroup extends Model
     {
         $permission = $this->getPermissionById($id);
 
-        $this->detachPermission($permission, $reload);
+        if ( ! is_null($permission)) {
+            $this->detachPermission($permission, $reload);
+        }
 
         return $permission;
     }
