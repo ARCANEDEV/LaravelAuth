@@ -63,7 +63,7 @@ class PermissionsGroup extends Model
      */
     public function permissions()
     {
-        return $this->hasMany(Permission::class, 'group_id');
+        return $this->hasMany(config('laravel-auth.permissions.model', Permission::class), 'group_id');
     }
 
     /* ------------------------------------------------------------------------------------------------
