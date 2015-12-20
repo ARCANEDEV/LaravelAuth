@@ -197,6 +197,27 @@ class PermissionsGroup extends Model
     }
 
     /**
+     * Detach multiple permissions by ids.
+     *
+     * @param  array  $ids
+     * @param  bool   $reload
+     *
+     * @return int
+     */
+    public function detachPermissions(array $ids, $reload = true)
+    {
+        $detached = $this->permissions()->whereIn('id', $ids)->update([
+            'group_id' => 0
+        ]);
+
+        if ($reload) {
+            $this->load('permissions');
+        }
+
+        return $detached;
+    }
+
+    /**
      * Detach all permissions from the group.
      *
      * @param  bool  $reload

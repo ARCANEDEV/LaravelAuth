@@ -305,6 +305,39 @@ class PermissionsGroupTest extends ModelsTest
     }
 
     /** @test */
+    public function it_can_detach_permissions_by_ids()
+    {
+        $group      = $this->createGroup(
+            $this->getAuthGroupAttributes()
+        );
+
+        $create = Permission::create([
+            'name'        => 'Create users',
+            'slug'        => 'auth.users.create',
+            'description' => 'Allow to create users',
+        ]);
+        $update = Permission::create([
+            'name'        => 'Update users',
+            'slug'        => 'auth.users.update',
+            'description' => 'Allow to update users',
+        ]);
+        $delete = Permission::create([
+            'name'        => 'Delete users',
+            'slug'        => 'auth.users.delete',
+            'description' => 'Allow to delete users',
+        ]);
+
+        $group->attachPermissions(compact('create', 'update', 'delete'));
+
+        $this->assertCount(3, $group->permissions);
+
+        $group->detachPermissions([$create->id, $delete->id]);
+
+        $this->assertCount(1, $group->permissions);
+        $this->assertEquals($group->permissions->first()->toArray(), $update->toArray());
+    }
+
+    /** @test */
     public function it_can_detach_all_permissions()
     {
         $group      = $this->createGroup(
