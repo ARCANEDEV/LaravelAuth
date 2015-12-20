@@ -334,7 +334,9 @@ class PermissionsGroupTest extends ModelsTest
         $group->detachPermissions([$create->id, $delete->id]);
 
         $this->assertCount(1, $group->permissions);
-        $this->assertEquals($group->permissions->first()->toArray(), $update->toArray());
+
+        $expected = $group->permissions->first();
+        $this->assertEquals($expected->slug, $update->slug);
     }
 
     /** @test */
