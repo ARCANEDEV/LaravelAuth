@@ -68,7 +68,7 @@ class Permission extends Model implements PermissionContract
      */
     public function group()
     {
-        return $this->belongsTo(PermissionsGroup::class, 'group_id');
+        return $this->belongsTo(config('laravel-auth.permissions-group.model', PermissionsGroup::class), 'group_id');
     }
 
     /* ------------------------------------------------------------------------------------------------
