@@ -48,7 +48,7 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
      */
     public function __construct(array $attributes = [])
     {
-        $this->setTable(config('laravel-auth.permissions-group.table', 'permissions_group'));
+        $this->setTable(config('laravel-auth.permissions-groups.table', 'permissions_groups'));
 
         parent::__construct($attributes);
     }
