@@ -52,14 +52,18 @@ abstract class TestCase extends BaseTestCase
         /** @var \Illuminate\Config\Repository $config */
         $config = $app['config'];
 
+        // Laravel App Configs
         $config->set('database.default', 'testing');
         $config->set('database.connections.testing', [
             'driver'   => 'sqlite',
             'database' => ':memory:',
             'prefix'   => '',
         ]);
-
         $config->set('auth.model', \Arcanedev\LaravelAuth\Models\User::class);
+
+        // Laravel Auth Configs
+        $config->set('laravel-auth.database.connection', 'testing');
+        $config->set('laravel-auth.users.model', \Arcanedev\LaravelAuth\Models\User::class);
         $config->set('laravel-auth.user-confirmation.enabled', true);
     }
 
