@@ -3,6 +3,7 @@
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Traits\Slugable;
 use Arcanesoft\Contracts\Auth\Models\PermissionsGroup as PermissionsGroupContract;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class     PermissionsGroup
@@ -114,8 +115,8 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
     /**
      * Attach the permission to a group.
      *
-     * @param  \Arcanedev\LaravelAuth\Models\Permission  $permission
-     * @param  bool                                      $reload
+     * @param  \Arcanesoft\Contracts\Auth\Models\Permission  $permission
+     * @param  bool                                          $reload
      */
     public function attachPermission(&$permission, $reload = true)
     {
@@ -136,7 +137,7 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
      * @param  int   $id
      * @param  bool  $reload
      *
-     * @return \Arcanedev\LaravelAuth\Models\Permission
+     * @return \Arcanesoft\Contracts\Auth\Models\Permission
      */
     public function attachPermissionById($id, $reload = true)
     {
@@ -171,8 +172,8 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
     /**
      * Attach the permission from a group.
      *
-     * @param  \Arcanedev\LaravelAuth\Models\Permission  $permission
-     * @param  bool                                      $reload
+     * @param  \Arcanesoft\Contracts\Auth\Models\Permission  $permission
+     * @param  bool                                          $reload
      */
     public function detachPermission(&$permission, $reload = true)
     {
@@ -197,7 +198,7 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
      * @param  int   $id
      * @param  bool  $reload
      *
-     * @return \Arcanedev\LaravelAuth\Models\Permission
+     * @return \Arcanesoft\Contracts\Auth\Models\Permission
      */
     public function detachPermissionById($id, $reload = true)
     {
@@ -258,13 +259,13 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
     /**
      * Check if role has the given permission (Permission Model or Id).
      *
-     * @param  \Arcanedev\LaravelAuth\Models\Permission|int  $id
+     * @param  \Arcanesoft\Contracts\Auth\Models\Permission|int  $id
      *
      * @return bool
      */
     public function hasPermission($id)
     {
-        if ($id instanceof Permission) {
+        if ($id instanceof Eloquent) {
             $id = $id->getKey();
         }
 
@@ -274,19 +275,19 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
     /**
      * Get a permission from the group.
      *
-     * @param  \Arcanedev\LaravelAuth\Models\Permission|int  $id
+     * @param  \Arcanesoft\Contracts\Auth\Models\Permission|int  $id
      *
-     * @return \Arcanedev\LaravelAuth\Models\Permission|null
+     * @return \Arcanesoft\Contracts\Auth\Models\Permission|null
      */
     private function getPermissionFromGroup($id)
     {
-        if ($id instanceof Permission) {
+        if ($id instanceof Eloquent) {
             $id = $id->getKey();
         }
 
         $this->load('permissions');
 
-        return $this->permissions->filter(function (Permission $permission) use ($id) {
+        return $this->permissions->filter(function ($permission) use ($id) {
             return $permission->id == $id;
         })->first();
     }
@@ -296,7 +297,7 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
      *
      * @param  int  $id
      *
-     * @return \Arcanedev\LaravelAuth\Models\Permission|null
+     * @return \Arcanesoft\Contracts\Auth\Models\Permission|null
      */
     private function getPermissionById($id)
     {

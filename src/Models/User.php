@@ -199,7 +199,7 @@ class User
      *
      * @param  string  $code
      *
-     * @return \Arcanedev\LaravelAuth\Models\User
+     * @return \Arcanesoft\Contracts\Auth\Models\User
      *
      * @throws \Arcanedev\LaravelAuth\Exceptions\UserConfirmationException
      */
@@ -217,9 +217,9 @@ class User
     /**
      * Confirm the new user account.
      *
-     * @param  \Arcanedev\LaravelAuth\Models\User|string  $code
+     * @param  \Arcanesoft\Contracts\Auth\Models\User|string  $code
      *
-     * @return \Arcanedev\LaravelAuth\Models\User
+     * @return \Arcanesoft\Contracts\Auth\Models\User
      */
     public function confirm($code)
     {

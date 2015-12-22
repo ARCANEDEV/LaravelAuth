@@ -4,6 +4,7 @@ use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Traits\AuthRoleRelationships;
 use Arcanedev\LaravelAuth\Traits\Slugable;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class     Role
@@ -99,8 +100,8 @@ class Role extends Model implements RoleContract
     /**
      * Attach a permission to a role.
      *
-     * @param  \Arcanedev\LaravelAuth\Models\User|int  $user
-     * @param  bool                                    $reload
+     * @param  \Arcanesoft\Contracts\Auth\Models\User|int  $user
+     * @param  bool                                        $reload
      */
     public function attachUser($user, $reload = true)
     {
@@ -118,14 +119,14 @@ class Role extends Model implements RoleContract
     /**
      * Detach a user from a role.
      *
-     * @param  \Arcanedev\LaravelAuth\Models\User|int  $user
+     * @param  \Arcanesoft\Contracts\Auth\Models\User|int  $user
      * @param  bool                                    $reload
      *
      * @return int
      */
     public function detachUser($user, $reload = true)
     {
-        if ($user instanceof User) {
+        if ($user instanceof Eloquent) {
             $user = (array) $user->getKey();
         }
 
@@ -159,13 +160,13 @@ class Role extends Model implements RoleContract
     /**
      * Check if role has the given user (User Model or Id).
      *
-     * @param  \Arcanedev\LaravelAuth\Models\User|int  $id
+     * @param  \Arcanesoft\Contracts\Auth\Models\User|int  $id
      *
      * @return bool
      */
     public function hasUser($id)
     {
-        if ($id instanceof User) {
+        if ($id instanceof Eloquent) {
             $id = $id->getKey();
         }
 
@@ -175,8 +176,8 @@ class Role extends Model implements RoleContract
     /**
      * Attach a permission to a role.
      *
-     * @param  \Arcanedev\LaravelAuth\Models\Permission|int  $permission
-     * @param  bool                                          $reload
+     * @param  \Arcanesoft\Contracts\Auth\Models\Permission|int  $permission
+     * @param  bool                                              $reload
      */
     public function attachPermission($permission, $reload = true)
     {
@@ -194,14 +195,14 @@ class Role extends Model implements RoleContract
     /**
      * Detach a permission from a role.
      *
-     * @param  \Arcanedev\LaravelAuth\Models\Permission|int  $permission
-     * @param  bool                                          $reload
+     * @param  \Arcanesoft\Contracts\Auth\Models\Permission|int  $permission
+     * @param  bool                                              $reload
      *
      * @return int
      */
     public function detachPermission($permission, $reload = true)
     {
-        if ($permission instanceof Permission) {
+        if ($permission instanceof Eloquent) {
             $permission = (array) $permission->getKey();
         }
 
@@ -241,7 +242,7 @@ class Role extends Model implements RoleContract
      */
     public function hasPermission($id)
     {
-        if ($id instanceof Permission) {
+        if ($id instanceof Eloquent) {
             $id = $id->getKey();
         }
 
@@ -261,7 +262,7 @@ class Role extends Model implements RoleContract
      */
     public function can($slug)
     {
-        $permissions = $this->permissions->filter(function(Permission $permission) use ($slug) {
+        $permissions = $this->permissions->filter(function($permission) use ($slug) {
             return $permission->checkSlug($slug);
         });
 
