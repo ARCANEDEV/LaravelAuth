@@ -2,6 +2,7 @@
 
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Traits\Slugable;
+use Arcanesoft\Contracts\Auth\Models\PermissionsGroup as PermissionsGroupContract;
 
 /**
  * Class     PermissionsGroup
@@ -17,7 +18,7 @@ use Arcanedev\LaravelAuth\Traits\Slugable;
  * @property  \Carbon\Carbon                            updated_at
  * @property  \Illuminate\Database\Eloquent\Collection  permissions
  */
-class PermissionsGroup extends Model
+class PermissionsGroup extends Model implements PermissionsGroupContract
 {
     /* ------------------------------------------------------------------------------------------------
      |  Traits
