@@ -54,7 +54,10 @@ class LaravelAuthServiceProvider extends ServiceProvider
         $this->registerConfig();
 
         $this->bindModels();
-        $this->app->register(Providers\EventServiceProvider::class);
+
+        if ($this->app['config']->get('laravel-auth.user-observers', false)) {
+            $this->app->register(Providers\EventServiceProvider::class);
+        }
     }
 
     /**

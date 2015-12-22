@@ -6,24 +6,30 @@ return [
     ],
 
     'users' => [
-        'table'     => config('auth.table', 'users'),
-        'model'     => config('auth.model', Arcanedev\LaravelAuth\Models\User::class),
+        'table'    => 'users',
+        'model'    => Arcanedev\LaravelAuth\Models\User::class,
+        'observer' => Arcanedev\LaravelAuth\Observers\UserObserver::class,
     ],
 
     'roles' => [
-        'table'     => 'roles',
-        'model'     => Arcanedev\LaravelAuth\Models\Role::class,
+        'table'    => 'roles',
+        'model'    => Arcanedev\LaravelAuth\Models\Role::class,
+        'observer' => Arcanedev\LaravelAuth\Observers\RoleObserver::class,
     ],
 
     'permissions-groups' => [
-        'table'     => 'permissions_groups',
-        'model'     => Arcanedev\LaravelAuth\Models\PermissionsGroup::class,
+        'table'    => 'permissions_groups',
+        'model'    => Arcanedev\LaravelAuth\Models\PermissionsGroup::class,
+        'observer' => Arcanedev\LaravelAuth\Observers\PermissionsGroupObserver::class,
     ],
 
     'permissions' => [
-        'table'     => 'permissions',
-        'model'     => Arcanedev\LaravelAuth\Models\Permission::class,
+        'table'    => 'permissions',
+        'model'    => Arcanedev\LaravelAuth\Models\Permission::class,
+        'observer' => Arcanedev\LaravelAuth\Observers\PermissionObserver::class,
     ],
+
+    'user-observers'    => true,
 
     'user-confirmation' => [
         'enabled'   => false,
