@@ -76,7 +76,7 @@ class PermissionsGroupTest extends ModelsTest
         $attributes = $this->getAuthGroupAttributes();
         $group      = $this->createGroup($attributes);
 
-        $this->seeInDatabase('permissions_group', $attributes);
+        $this->seeInDatabase('permissions_groups', $attributes);
         $this->assertCount(0, $group->permissions);
     }
 
@@ -90,7 +90,7 @@ class PermissionsGroupTest extends ModelsTest
 
         $group = $this->createGroup($attributes);
 
-        $this->seeInDatabase('permissions_group', $attributes);
+        $this->seeInDatabase('permissions_groups', $attributes);
 
         $attributes = [
             'name'        => 'Super Custom Group',
@@ -100,7 +100,7 @@ class PermissionsGroupTest extends ModelsTest
 
         $group->update($attributes);
 
-        $this->seeInDatabase('permissions_group', $attributes);
+        $this->seeInDatabase('permissions_groups', $attributes);
     }
 
     /** @test */
