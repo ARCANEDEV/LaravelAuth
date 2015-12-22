@@ -51,11 +51,7 @@ class LaravelAuthServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // @codeCoverageIgnoreStart
-        if ( ! $this->isTesting()) {
-            $this->registerConfig();
-        }
-        // @codeCoverageIgnoreEnd
+        $this->registerConfig();
 
         $this->app->register(Providers\EventServiceProvider::class);
     }
@@ -66,10 +62,6 @@ class LaravelAuthServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
-
-        if ($this->isTesting()) {
-            $this->registerConfig();
-        }
 
         $this->registerPublishes();
         $this->registerBladeDirectives();
