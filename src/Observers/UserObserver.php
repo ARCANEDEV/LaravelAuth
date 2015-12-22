@@ -1,8 +1,8 @@
 <?php namespace Arcanedev\LaravelAuth\Observers;
 
 use Arcanedev\LaravelAuth\Bases\ModelObserver;
-use Arcanedev\LaravelAuth\Models\User;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
+use Arcanesoft\Contracts\Auth\Models\User;
 
 /**
  * Class     UserObserver

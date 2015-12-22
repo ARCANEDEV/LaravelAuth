@@ -53,7 +53,11 @@ class LaravelAuthServiceProvider extends ServiceProvider
     {
         $this->registerConfig();
 
-        $this->app->register(Providers\EventServiceProvider::class);
+        $this->bindModels();
+
+        if ($this->app['config']->get('laravel-auth.user-observers', false)) {
+            $this->app->register(Providers\EventServiceProvider::class);
+        }
     }
 
     /**
@@ -109,13 +113,29 @@ class LaravelAuthServiceProvider extends ServiceProvider
         // Coming soon
     }
 
-    /**
-     * Check if the environment is testing.
-     *
-     * @return bool
-     */
-    private function isTesting()
+    private function bindModels()
     {
-        return $this->app->environment() == 'testing';
+        /** @var \Illuminate\Contracts\Config\Repository $config */
+        $config = $this->app['config'];
+
+        $this->bind(
+            \Arcanesoft\Contracts\Auth\Models\User::class,
+            $config->get('laravel-auth.users.model')
+        );
+
+        $this->bind(
+            \Arcanesoft\Contracts\Auth\Models\Role::class,
+            $config->get('laravel-auth.roles.model')
+        );
+
+        $this->bind(
+            \Arcanesoft\Contracts\Auth\Models\Permission::class,
+            $config->get('laravel-auth.permissions.model')
+        );
+
+        $this->bind(
+            \Arcanesoft\Contracts\Auth\Models\PermissionsGroup::class,
+            $config->get('laravel-auth.permissions-groups.model')
+        );
     }
 }

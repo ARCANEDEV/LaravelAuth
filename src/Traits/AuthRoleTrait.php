@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Traits;
 
-use Arcanedev\LaravelAuth\Models\Role;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Trait     AuthRoleTrait
@@ -22,7 +22,7 @@ trait AuthRoleTrait
     /**
      * Attach a role to a user.
      *
-     * @param  \Arcanedev\LaravelAuth\Models\Role|int  $role
+     * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
      * @param  bool                                    $reload
      */
     public function attachRole($role, $reload = true)
@@ -41,14 +41,14 @@ trait AuthRoleTrait
     /**
      * Detach a role from a user.
      *
-     * @param  \Arcanedev\LaravelAuth\Models\Role|int  $role
-     * @param  bool                                    $reload
+     * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
+     * @param  bool                                        $reload
      *
      * @return int
      */
     public function detachRole($role, $reload = true)
     {
-        if ($role instanceof Role) {
+        if ($role instanceof Eloquent) {
             $role = (array) $role->getKey();
         }
 
@@ -92,7 +92,7 @@ trait AuthRoleTrait
      */
     public function hasRole($id)
     {
-        if ($id instanceof Role) {
+        if ($id instanceof Eloquent) {
             $id = $id->getKey();
         }
 
@@ -108,7 +108,7 @@ trait AuthRoleTrait
      */
     public function is($slug)
     {
-        $roles = $this->roles->filter(function(Role $role) use ($slug) {
+        $roles = $this->roles->filter(function($role) use ($slug) {
             return $role->checkSlug($slug);
         });
 
