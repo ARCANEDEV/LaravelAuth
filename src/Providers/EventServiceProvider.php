@@ -1,6 +1,5 @@
 <?php namespace Arcanedev\LaravelAuth\Providers;
 
-use Arcanedev\LaravelAuth\Observers;
 use Arcanedev\Support\Providers\EventServiceProvider as ServiceProvider;
 use Arcanesoft\Contracts\Auth\Models;
 use Illuminate\Contracts\Events\Dispatcher;
