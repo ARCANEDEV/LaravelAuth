@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class CreateAuthPermissionsGroupTable extends Migration
+class CreateAuthPermissionsGroupsTable extends Migration
 {
     /* ------------------------------------------------------------------------------------------------
      |  Constructor
@@ -22,7 +22,7 @@ class CreateAuthPermissionsGroupTable extends Migration
     {
         parent::__construct();
 
-        $this->setTable(config('laravel-auth.permissions-group.table'));
+        $this->setTable(config('laravel-auth.permissions-groups.table'));
     }
 
     /* ------------------------------------------------------------------------------------------------
