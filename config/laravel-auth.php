@@ -1,17 +1,25 @@
 <?php
 
 return [
-    'database' => [
+    /* ------------------------------------------------------------------------------------------------
+     |  Database
+     | ------------------------------------------------------------------------------------------------
+     */
+    'database'           => [
         'connection' => config('database.default'),
     ],
 
-    'users' => [
+    /* ------------------------------------------------------------------------------------------------
+     |  Models
+     | ------------------------------------------------------------------------------------------------
+     */
+    'users'              => [
         'table'    => 'users',
         'model'    => Arcanedev\LaravelAuth\Models\User::class,
         'observer' => Arcanedev\LaravelAuth\Observers\UserObserver::class,
     ],
 
-    'roles' => [
+    'roles'              => [
         'table'    => 'roles',
         'model'    => Arcanedev\LaravelAuth\Models\Role::class,
         'observer' => Arcanedev\LaravelAuth\Observers\RoleObserver::class,
@@ -23,33 +31,49 @@ return [
         'observer' => Arcanedev\LaravelAuth\Observers\PermissionsGroupObserver::class,
     ],
 
-    'permissions' => [
+    'permissions'        => [
         'table'    => 'permissions',
         'model'    => Arcanedev\LaravelAuth\Models\Permission::class,
         'observer' => Arcanedev\LaravelAuth\Observers\PermissionObserver::class,
     ],
 
-    'user-observers'    => true,
-
-    'user-confirmation' => [
+    /* ------------------------------------------------------------------------------------------------
+     |  User Confirmation
+     | ------------------------------------------------------------------------------------------------
+     */
+    'user-confirmation'  => [
         'enabled'   => false,
         'length'    => 30,
     ],
 
-    'throttles' => [
+    /* ------------------------------------------------------------------------------------------------
+     |  Throttles
+     | ------------------------------------------------------------------------------------------------
+     */
+    'throttles'          => [
         'enabled'   => true,
         'table'     => 'throttles',
     ],
 
-    'slug-separator' => '.',
-
-    'seeds' => [
-        'users' => [
-            [
-                'username'   => 'admin',
-                'email'      => env('ADMIN_USER_EMAIL', 'admin@email.com'),
-                'password'   => env('ADMIN_USER_PASSWORD', 'password'),
-            ],
+    /* ------------------------------------------------------------------------------------------------
+     |  Seeds
+     | ------------------------------------------------------------------------------------------------
+     */
+    'seeds'              => [
+    'users' => [
+        [
+            'username'   => 'admin',
+            'email'      => env('ADMIN_USER_EMAIL', 'admin@email.com'),
+            'password'   => env('ADMIN_USER_PASSWORD', 'password'),
         ],
     ],
+],
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Other Stuff
+     | ------------------------------------------------------------------------------------------------
+     */
+    'use-observers'      => true,
+
+    'slug-separator'     => '.',
 ];

@@ -55,7 +55,7 @@ class LaravelAuthServiceProvider extends ServiceProvider
 
         $this->bindModels();
 
-        if ($this->app['config']->get('laravel-auth.user-observers', false)) {
+        if ($this->app['config']->get('laravel-auth.use-observers', false)) {
             $this->app->register(Providers\EventServiceProvider::class);
         }
     }
@@ -88,31 +88,8 @@ class LaravelAuthServiceProvider extends ServiceProvider
      | ------------------------------------------------------------------------------------------------
      */
     /**
-     * Register all publishable stuff.
+     * Binding the models with the contracts.
      */
-    private function registerPublishes()
-    {
-        $this->publishes([
-            $this->getConfigFile() => config_path("{$this->package}.php"),
-        ], 'config');
-
-        $this->publishes([
-            $this->getBasePath() . DS . 'database/migrations' => database_path('migrations'),
-        ], 'migrations');
-
-        $this->publishes([
-            $this->getBasePath() . DS . 'database/factories' => database_path('factories'),
-        ], 'factories');
-    }
-
-    /**
-     * Register blade directives
-     */
-    private function registerBladeDirectives()
-    {
-        // Coming soon
-    }
-
     private function bindModels()
     {
         /** @var \Illuminate\Contracts\Config\Repository $config */
@@ -137,5 +114,31 @@ class LaravelAuthServiceProvider extends ServiceProvider
             \Arcanesoft\Contracts\Auth\Models\PermissionsGroup::class,
             $config->get('laravel-auth.permissions-groups.model')
         );
+    }
+
+    /**
+     * Register all publishable stuff.
+     */
+    private function registerPublishes()
+    {
+        $this->publishes([
+            $this->getConfigFile() => config_path("{$this->package}.php"),
+        ], 'config');
+
+        $this->publishes([
+            $this->getBasePath() . DS . 'database/migrations' => database_path('migrations'),
+        ], 'migrations');
+
+        $this->publishes([
+            $this->getBasePath() . DS . 'database/factories' => database_path('factories'),
+        ], 'factories');
+    }
+
+    /**
+     * Register blade directives
+     */
+    private function registerBladeDirectives()
+    {
+        // Coming soon
     }
 }
