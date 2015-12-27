@@ -12,7 +12,7 @@
 [![Packagist Downloads][badge_downloads]](https://packagist.org/packages/arcanedev/laravel-auth)
 
 [badge_license]:   https://img.shields.io/packagist/l/arcanedev/laravel-auth.svg?style=flat-square
-[badge_laravel]:   https://img.shields.io/badge/For%20Laravel-5.1-orange.svg?style=flat-square
+[badge_laravel]:   https://img.shields.io/badge/For-Laravel%205.1|5.2-orange.svg?style=flat-square
 
 [badge_build]:     https://img.shields.io/travis/ARCANEDEV/LaravelAuth.svg?style=flat-square
 [badge_hhvm]:      https://img.shields.io/hhvm/arcanedev/laravel-auth.svg?style=flat-square
@@ -27,7 +27,7 @@
 
 *By [ARCANEDEV&copy;](http://www.arcanedev.net/)*
 
-Laravel Authorization package for Laravel v5.1.
+Laravel Authorization package for Laravel (5.1 & 5.2).
 
 Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/releases), [license](LICENSE.md), and [contribution guidelines](CONTRIBUTING.md).
 
@@ -53,11 +53,11 @@ Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/r
 
   - [ ] Complete the model factories.
   - [ ] Complete the documentation.
-  - [ ] Laravel 5.2 support.
 
 ## DONE
 
   - [x] User confirmation system.
+  - [x] Laravel 5.2 supported.
   - [x] Laravel 5.1 supported.
 
 ## Security
