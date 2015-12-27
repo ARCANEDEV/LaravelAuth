@@ -21,7 +21,6 @@
         "arcanesoft/contracts": "~1.0"
     },
     "require-dev": {
-        "orchestra/testbench":  "~3.1",
         "phpunit/phpcov":       "~2.0",
         "phpunit/phpunit":      "~4.0|~5.0"
     },
@@ -34,6 +33,9 @@
         "psr-4": {
             "Arcanedev\\LaravelAuth\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "testbench": "composer require --dev \"orchestra/testbench=~3.0\""
     },
     "extra": {
         "branch-alias": {
