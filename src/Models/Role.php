@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
 use Arcanedev\LaravelAuth\Bases\Model;
+use Arcanedev\LaravelAuth\Traits\Activatable;
 use Arcanedev\LaravelAuth\Traits\AuthRoleRelationships;
 use Arcanedev\LaravelAuth\Traits\Slugable;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
@@ -29,7 +30,7 @@ class Role extends Model implements RoleContract
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use AuthRoleRelationships, Slugable;
+    use Activatable, AuthRoleRelationships, Slugable;
 
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -301,16 +302,6 @@ class Role extends Model implements RoleContract
         $this->canAny($permissions, $failedPermissions);
 
         return count($failedPermissions) === 0;
-    }
-
-    /**
-     * Check if the role is active.
-     *
-     * @return bool
-     */
-    public function isActive()
-    {
-        return $this->is_active;
     }
 
     /**

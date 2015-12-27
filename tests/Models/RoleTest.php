@@ -101,7 +101,7 @@ class RoleTest extends ModelsTest
     {
         $attributes = $this->getAdminRoleAttributes();
 
-        $role = $this->createRole();
+        $role = $this->createRole($attributes);
 
         $this->seeInDatabase('roles', $attributes);
         $this->seeInDatabase('roles', $role->toArray());
@@ -126,6 +126,36 @@ class RoleTest extends ModelsTest
         $this->assertTrue($role->isActive());
         $this->assertFalse($role->is_locked);
         $this->assertFalse($role->isLocked());
+    }
+
+    /** @test */
+    public function it_activate_and_disable()
+    {
+        $attributes = $this->getAdminRoleAttributes();
+
+        $role = $this->createRole($attributes);
+
+        $this->assertTrue($role->isActive());
+
+        $saved = $role->deactivate();
+
+        $this->assertTrue($saved);
+        $this->assertFalse($role->isActive());
+
+        $saved = $role->activate();
+
+        $this->assertTrue($saved);
+        $this->assertTrue($role->isActive());
+
+        $saved = $role->deactivate(false);
+
+        $this->assertFalse($saved);
+        $this->assertFalse($role->isActive());
+
+        $saved = $role->activate(false);
+
+        $this->assertFalse($saved);
+        $this->assertTrue($role->isActive());
     }
 
     /** @test */

@@ -3,6 +3,7 @@
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Exceptions\UserConfirmationException;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
+use Arcanedev\LaravelAuth\Traits\Activatable;
 use Arcanedev\LaravelAuth\Traits\AuthUserTrait;
 use Arcanesoft\Contracts\Auth\Models\User as UserContract;
 use Illuminate\Auth\Authenticatable;
@@ -49,11 +50,7 @@ class User
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use Authenticatable,
-        Authorizable,
-        AuthUserTrait,
-        CanResetPassword,
-        SoftDeletes;
+    use Activatable, Authenticatable, Authorizable, AuthUserTrait, CanResetPassword, SoftDeletes;
 
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -161,40 +158,6 @@ class User
      | ------------------------------------------------------------------------------------------------
      */
     /**
-     * Activate the user.
-     *
-     * @return bool
-     */
-    public function activate()
-    {
-        return $this->switchActive(true);
-    }
-
-    /**
-     * Deactivate the user.
-     *
-     * @return bool
-     */
-    public function deactivate()
-    {
-        return $this->switchActive(false);
-    }
-
-    /**
-     * Activate/deactivate the user.
-     *
-     * @param  bool  $active
-     *
-     * @return bool
-     */
-    protected function switchActive($active)
-    {
-        $this->is_active = boolval($active);
-
-        return $this->save();
-    }
-
-    /**
      * Confirm the unconfirmed user account by confirmation code.
      *
      * @param  string  $code
@@ -244,16 +207,6 @@ class User
     public function isAdmin()
     {
         return $this->is_admin;
-    }
-
-    /**
-     * Check if user has an activated account.
-     *
-     * @return bool
-     */
-    public function isActive()
-    {
-        return $this->is_active;
     }
 
     /**
