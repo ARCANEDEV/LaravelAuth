@@ -1,6 +1,5 @@
 <?php
 
-use Arcanedev\LaravelAuth\Models\User;
 use Faker\Generator as Faker;
 use Illuminate\Database\Eloquent\Factory;
 
@@ -8,8 +7,10 @@ use Illuminate\Database\Eloquent\Factory;
  |  Users Factory
  | ------------------------------------------------------------------------------------------------
  */
+$userModel = config('laravel-auth.users.model');
+
 /** @var Factory $factory */
-$factory->define(User::class, function (Faker $faker) {
+$factory->define($userModel, function (Faker $faker) {
     return [
         'username'       => $faker->userName,
         'first_name'     => $faker->firstName,
@@ -21,10 +22,8 @@ $factory->define(User::class, function (Faker $faker) {
     ];
 });
 
-$factory->defineAs(User::class, 'admin', function (Faker $faker) use ($factory) {
-    unset($faker);
-
-    $user = $factory->raw(User::class);
+$factory->defineAs($userModel, 'admin', function () use ($factory, $userModel) {
+    $user = $factory->raw($userModel);
 
     return array_merge($user, [
         'is_active' => true,
