@@ -51,6 +51,7 @@ Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/r
 
 ## TODO
 
+  - [ ] Adding Blade Authorization directives.
   - [ ] Complete the model factories.
   - [ ] Complete the documentation.
 
