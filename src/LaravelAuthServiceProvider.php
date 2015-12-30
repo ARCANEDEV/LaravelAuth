@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth;
 
 use Arcanedev\Support\PackageServiceProvider as ServiceProvider;
+use Arcanesoft\Contracts\Auth\Models as AuthContracts;
 
 /**
  * Class     LaravelAuthServiceProvider
@@ -68,7 +69,6 @@ class LaravelAuthServiceProvider extends ServiceProvider
         parent::boot();
 
         $this->registerPublishes();
-        $this->registerBladeDirectives();
     }
 
     /**
@@ -95,25 +95,16 @@ class LaravelAuthServiceProvider extends ServiceProvider
         /** @var \Illuminate\Contracts\Config\Repository $config */
         $config = $this->app['config'];
 
-        $this->bind(
-            \Arcanesoft\Contracts\Auth\Models\User::class,
-            $config->get('laravel-auth.users.model')
-        );
+        $bindings = [
+            'users'              => AuthContracts\User::class,
+            'roles'              => AuthContracts\Role::class,
+            'permissions'        => AuthContracts\Permission::class,
+            'permissions-groups' => AuthContracts\PermissionsGroup::class,
+        ];
 
-        $this->bind(
-            \Arcanesoft\Contracts\Auth\Models\Role::class,
-            $config->get('laravel-auth.roles.model')
-        );
-
-        $this->bind(
-            \Arcanesoft\Contracts\Auth\Models\Permission::class,
-            $config->get('laravel-auth.permissions.model')
-        );
-
-        $this->bind(
-            \Arcanesoft\Contracts\Auth\Models\PermissionsGroup::class,
-            $config->get('laravel-auth.permissions-groups.model')
-        );
+        foreach ($bindings as $key => $contract) {
+            $this->bind($contract, $config->get("laravel-auth.$key.model"));
+        }
     }
 
     /**
@@ -132,13 +123,5 @@ class LaravelAuthServiceProvider extends ServiceProvider
         $this->publishes([
             $this->getBasePath() . DS . 'database/factories' => database_path('factories'),
         ], 'factories');
-    }
-
-    /**
-     * Register blade directives
-     */
-    private function registerBladeDirectives()
-    {
-        // Coming soon
     }
 }
