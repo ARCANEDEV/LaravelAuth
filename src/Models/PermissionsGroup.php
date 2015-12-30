@@ -2,6 +2,7 @@
 
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Traits\Slugable;
+use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\PermissionsGroup as PermissionsGroupContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
@@ -287,7 +288,7 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
 
         $this->load('permissions');
 
-        return $this->permissions->filter(function ($permission) use ($id) {
+        return $this->permissions->filter(function (PermissionContract $permission) use ($id) {
             return $permission->id == $id;
         })->first();
     }

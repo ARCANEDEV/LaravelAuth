@@ -5,6 +5,7 @@ use Arcanedev\LaravelAuth\Traits\Activatable;
 use Arcanedev\LaravelAuth\Traits\AuthRoleRelationships;
 use Arcanedev\LaravelAuth\Traits\Slugable;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
+use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
@@ -263,7 +264,7 @@ class Role extends Model implements RoleContract
      */
     public function can($slug)
     {
-        $permissions = $this->permissions->filter(function($permission) use ($slug) {
+        $permissions = $this->permissions->filter(function(PermissionContract $permission) use ($slug) {
             return $permission->checkSlug($slug);
         });
 

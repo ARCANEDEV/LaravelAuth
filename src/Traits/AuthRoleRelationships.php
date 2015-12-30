@@ -2,7 +2,6 @@
 
 use Arcanedev\LaravelAuth\Models\Permission;
 use Arcanedev\LaravelAuth\Models\User;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Trait     AuthRoleRelationships
@@ -10,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @package  Arcanedev\LaravelAuth\Traits
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  *
- * @method   BelongsToMany  belongsToMany(string $related, string $table = null, string $foreignKey = null, string $otherKey = null, string $relation = null)
+ * @method  \Illuminate\Database\Eloquent\Relations\BelongsToMany  belongsToMany(string $related, string $table = null, string $foreignKey = null, string $otherKey = null, string $relation = null)
  */
 trait AuthRoleRelationships
 {

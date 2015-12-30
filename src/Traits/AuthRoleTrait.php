@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Traits;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 
 /**
  * Trait     AuthRoleTrait
@@ -100,19 +101,18 @@ trait AuthRoleTrait
     }
 
     /**
-     * Check if has a role by its slug.
+     * Check if has all roles.
      *
-     * @param  string  $slug
+     * @param  array  $roles
+     * @param  array  &$failedRoles
      *
      * @return bool
      */
-    public function is($slug)
+    public function isAll(array $roles, array &$failedRoles = [])
     {
-        $roles = $this->roles->filter(function($role) use ($slug) {
-            return $role->checkSlug($slug);
-        });
+        $this->isOne($roles, $failedRoles);
 
-        return $roles->count() === 1;
+        return count($failedRoles) === 0;
     }
 
     /**
@@ -135,17 +135,18 @@ trait AuthRoleTrait
     }
 
     /**
-     * Check if has all roles.
+     * Check if has a role by its slug.
      *
-     * @param  array  $roles
-     * @param  array  &$failedRoles
+     * @param  string  $slug
      *
      * @return bool
      */
-    public function isAll(array $roles, array &$failedRoles = [])
+    public function is($slug)
     {
-        $this->isOne($roles, $failedRoles);
+        $roles = $this->roles->filter(function(RoleContract $role) use ($slug) {
+            return $role->checkSlug($slug);
+        });
 
-        return count($failedRoles) === 0;
+        return $roles->count() === 1;
     }
 }
