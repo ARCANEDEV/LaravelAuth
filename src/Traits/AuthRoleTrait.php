@@ -28,14 +28,9 @@ trait AuthRoleTrait
      */
     public function attachRole($role, $reload = true)
     {
-        if ($this->hasRole($role)) {
-            return;
-        }
-
-        $this->roles()->attach($role);
-
-        if ($reload) {
-            $this->load('roles');
+        if ( ! $this->hasRole($role)) {
+            $this->roles()->attach($role);
+            $this->loadRoles($reload);
         }
     }
 
@@ -54,10 +49,7 @@ trait AuthRoleTrait
         }
 
         $results = $this->roles()->detach($role);
-
-        if ($reload) {
-            $this->load('roles');
-        }
+        $this->loadRoles($reload);
 
         return $results;
     }
@@ -72,10 +64,7 @@ trait AuthRoleTrait
     public function detachAllRoles($reload = true)
     {
         $results = $this->roles()->detach();
-
-        if ($reload) {
-            $this->load('roles');
-        }
+        $this->loadRoles($reload);
 
         return $results;
     }
@@ -148,5 +137,21 @@ trait AuthRoleTrait
         });
 
         return $roles->count() === 1;
+    }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Other Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Load all roles.
+     *
+     * @param  bool  $load
+     *
+     * @return self
+     */
+    protected function loadRoles($load = true)
+    {
+        return $load ? $this->load('roles') : $this;
     }
 }

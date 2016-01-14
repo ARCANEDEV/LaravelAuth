@@ -107,14 +107,9 @@ class Role extends Model implements RoleContract
      */
     public function attachUser($user, $reload = true)
     {
-        if ($this->hasUser($user)) {
-            return;
-        }
-
-        $this->users()->attach($user);
-
-        if ($reload) {
-            $this->load('users');
+        if ( ! $this->hasUser($user)) {
+            $this->users()->attach($user);
+            $this->loadUsers($reload);
         }
     }
 
@@ -122,7 +117,7 @@ class Role extends Model implements RoleContract
      * Detach a user from a role.
      *
      * @param  \Arcanesoft\Contracts\Auth\Models\User|int  $user
-     * @param  bool                                    $reload
+     * @param  bool                                        $reload
      *
      * @return int
      */
@@ -133,10 +128,7 @@ class Role extends Model implements RoleContract
         }
 
         $result = $this->users()->detach($user);
-
-        if ($reload) {
-            $this->load('users');
-        }
+        $this->loadUsers($reload);
 
         return $result;
     }
@@ -151,10 +143,7 @@ class Role extends Model implements RoleContract
     public function detachAllUsers($reload = true)
     {
         $result = $this->users()->detach();
-
-        if ($reload) {
-            $this->load('users');
-        }
+        $this->loadUsers($reload);
 
         return $result;
     }
@@ -183,14 +172,9 @@ class Role extends Model implements RoleContract
      */
     public function attachPermission($permission, $reload = true)
     {
-        if ($this->hasPermission($permission)) {
-            return;
-        }
-
-        $this->permissions()->attach($permission);
-
-        if ($reload) {
-            $this->load('permissions');
+        if ( ! $this->hasPermission($permission)) {
+            $this->permissions()->attach($permission);
+            $this->loadPermissions($reload);
         }
     }
 
@@ -209,10 +193,7 @@ class Role extends Model implements RoleContract
         }
 
         $result = $this->permissions()->detach($permission);
-
-        if ($reload) {
-            $this->load('permissions');
-        }
+        $this->loadPermissions($reload);
 
         return $result;
     }
@@ -227,10 +208,7 @@ class Role extends Model implements RoleContract
     public function detachAllPermissions($reload = true)
     {
         $result = $this->permissions()->detach();
-
-        if ($reload) {
-            $this->load('permissions');
-        }
+        $this->loadPermissions($reload);
 
         return $result;
     }
@@ -313,5 +291,33 @@ class Role extends Model implements RoleContract
     public function isLocked()
     {
         return $this->is_locked;
+    }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Other Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Load the users.
+     *
+     * @param  bool  $load
+     *
+     * @return self
+     */
+    protected function loadUsers($load = true)
+    {
+        return $load ? $this->load('users') : $this;
+    }
+
+    /**
+     * Load the permissions.
+     *
+     * @param  bool  $load
+     *
+     * @return self
+     */
+    protected function loadPermissions($load = true)
+    {
+        return $load ? $this->load('permissions') : $this;
     }
 }

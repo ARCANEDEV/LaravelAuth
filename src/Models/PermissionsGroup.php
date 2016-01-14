@@ -108,9 +108,7 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
     {
         $this->permissions()->create($attributes);
 
-        if ($reload) {
-            $this->load('permissions');
-        }
+        $this->loadPermissions($reload);
     }
 
     /**
@@ -127,9 +125,7 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
 
         $permission = $this->permissions()->save($permission);
 
-        if ($reload) {
-            $this->load('permissions');
-        }
+        $this->loadPermissions($reload);
     }
 
     /**
@@ -163,9 +159,7 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
     {
         $permissions = $this->permissions()->saveMany($permissions);
 
-        if ($reload) {
-            $this->load('permissions');
-        }
+        $this->loadPermissions($reload);
 
         return $permissions;
     }
@@ -183,14 +177,11 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
         }
 
         $permission = $this->getPermissionFromGroup($permission);
-
         $permission->update([
             'group_id' => 0,
         ]);
 
-        if ($reload) {
-            $this->load('permissions');
-        }
+        $this->loadPermissions($reload);
     }
 
     /**
@@ -226,9 +217,7 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
             'group_id' => 0
         ]);
 
-        if ($reload) {
-            $this->load('permissions');
-        }
+        $this->loadPermissions($reload);
 
         return $detached;
     }
@@ -246,9 +235,7 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
             'group_id' => 0
         ]);
 
-        if ($reload) {
-            $this->load('permissions');
-        }
+        $this->loadPermissions($reload);
 
         return $detached;
     }
@@ -273,6 +260,10 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
         return ! is_null($this->getPermissionFromGroup($id));
     }
 
+    /* ------------------------------------------------------------------------------------------------
+     |  Other Functions
+     | ------------------------------------------------------------------------------------------------
+     */
     /**
      * Get a permission from the group.
      *
@@ -286,7 +277,7 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
             $id = $id->getKey();
         }
 
-        $this->load('permissions');
+        $this->loadPermissions();
 
         return $this->permissions->filter(function (PermissionContract $permission) use ($id) {
             return $permission->id == $id;
@@ -306,5 +297,17 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
             ->getRelated()
             ->where('id', $id)
             ->first();
+    }
+
+    /**
+     * Load the permissions.
+     *
+     * @param  bool  $load
+     *
+     * @return self
+     */
+    protected function loadPermissions($load = true)
+    {
+        return $load ? $this->load('permissions') : $this;
     }
 }
