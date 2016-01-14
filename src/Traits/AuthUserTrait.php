@@ -32,7 +32,6 @@ trait AuthUserTrait
     public function getPermissionsAttribute()
     {
         $permissions = new Collection;
-        $this->load(['roles', 'roles.permissions']);
 
         foreach ($this->roles as $role) {
             /** @var Role $role */
