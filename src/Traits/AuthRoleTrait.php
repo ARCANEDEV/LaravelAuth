@@ -1,7 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Traits;
 
-use Illuminate\Database\Eloquent\Model as Eloquent;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Trait     AuthRoleTrait

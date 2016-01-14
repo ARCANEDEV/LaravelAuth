@@ -4,8 +4,8 @@ use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Traits\Activatable;
 use Arcanedev\LaravelAuth\Traits\AuthRoleRelationships;
 use Arcanedev\LaravelAuth\Traits\Slugable;
-use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
+use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
