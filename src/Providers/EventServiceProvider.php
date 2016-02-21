@@ -1,7 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Providers;
 
 use Arcanedev\Support\Providers\EventServiceProvider as ServiceProvider;
-use Arcanesoft\Contracts\Auth\Models;
 use Illuminate\Contracts\Events\Dispatcher;
 
 /**
@@ -25,44 +24,35 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot($events);
 
-        $this->observeUserModel();
-        $this->observeRoleModel();
-        $this->observePermissionsGroupModel();
-        $this->observePermissionModel();
-    }
+        $observers = [
+            'users'              => \Arcanesoft\Contracts\Auth\Models\User::class,
+            'roles'              => \Arcanesoft\Contracts\Auth\Models\Role::class,
+            'permissions-groups' => \Arcanesoft\Contracts\Auth\Models\PermissionsGroup::class,
+            'permissions'        => \Arcanesoft\Contracts\Auth\Models\Permission::class,
+        ];
 
-    private function observeUserModel()
-    {
-        $observer = $this->getObserver('users');
-
-        $this->getModel(Models\User::class)->observe($observer);
-    }
-
-    private function observeRoleModel()
-    {
-        $observer = $this->getObserver('roles');
-
-        $this->getModel(Models\Role::class)->observe($observer);
-    }
-
-    private function observePermissionsGroupModel()
-    {
-        $observer = $this->getObserver('permissions-groups');
-
-        $this->getModel(Models\PermissionsGroup::class)->observe($observer);
-    }
-
-    private function observePermissionModel()
-    {
-        $observer = $this->getObserver('permissions');
-
-        $this->getModel(Models\Permission::class)->observe($observer);
+        foreach ($observers as $name => $abstract) {
+            $this->observe($name, $abstract);
+        }
     }
 
     /* ------------------------------------------------------------------------------------------------
      |  Other Functions
      | ------------------------------------------------------------------------------------------------
      */
+    /**
+     * Observe the model.
+     *
+     * @param  string  $name
+     * @param  string  $abstract
+     */
+    private function observe($name, $abstract)
+    {
+        $this->getModel($abstract)->observe(
+            $this->getObserver($name)
+        );
+    }
+
     /**
      * Get the concrete model.
      *
