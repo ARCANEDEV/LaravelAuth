@@ -9,7 +9,7 @@ Or by adding the package to your `composer.json`.
 ```json
 {
     "require": {
-        "arcanedev/laravel-auth": "~0.5"
+        "arcanedev/laravel-auth": "~0.9"
     }
 }
 ```
@@ -37,7 +37,7 @@ Publish the package config file, migrations and model factories to your applicat
 $ php artisan vendor:publish --provider="Arcanedev\LaravelAuth\LaravelAuthServiceProvider"
 ```
 
-You can also separate the publish command into two commands by adding the `--tag` flag :
+You can also separate the publish command into three commands by adding the `--tag` flag :
 
 ```bash
 $ php artisan vendor:publish --provider="Arcanedev\LaravelAuth\LaravelAuthServiceProvider" --tag=config
