@@ -1,29 +1,15 @@
-# LaravelAuth [![Packagist License][badge_license]](LICENSE.md) [![For Laravel 5][badge_laravel]](https://github.com/ARCANEDEV/LaravelAuth#laravel-auth)
+# LaravelAuth [![Packagist License][badge_license]](LICENSE.md) [![For Laravel 5][badge_laravel]]link-github-repo
 
-[![Travis Status][badge_build]](https://travis-ci.org/ARCANEDEV/LaravelAuth)
-[![HHVM Status][badge_hhvm]](http://hhvm.h4cc.de/package/arcanedev/laravel-auth)
-[![Coverage Status][badge_coverage]](https://scrutinizer-ci.com/g/ARCANEDEV/LaravelAuth/?branch=master)
-[![Scrutinizer Code Quality][badge_quality]](https://scrutinizer-ci.com/g/ARCANEDEV/LaravelAuth/?branch=master)
-[![SensioLabs Insight][badge_insight]](https://insight.sensiolabs.com/projects/7b4ce5ae-af3c-4e97-8f03-b992609f4d19)
-[![Github Issues][badge_issues]](https://github.com/ARCANEDEV/LaravelAuth/issues)
+[![Travis Status][badge_build]][link-travis]
+[![HHVM Status][badge_hhvm]][link-hhvm]
+[![Coverage Status][badge_coverage]][link-scrutinizer]
+[![Scrutinizer Code Quality][badge_quality]][link-scrutinizer]
+[![SensioLabs Insight][badge_insight]][link-insight]
+[![Github Issues][badge_issues]][link-github-issues]
 
-[![Packagist][badge_package]](https://packagist.org/packages/arcanedev/laravel-auth)
-[![Packagist Release][badge_release]](https://packagist.org/packages/arcanedev/laravel-auth)
-[![Packagist Downloads][badge_downloads]](https://packagist.org/packages/arcanedev/laravel-auth)
-
-[badge_license]:   https://img.shields.io/packagist/l/arcanedev/laravel-auth.svg?style=flat-square
-[badge_laravel]:   https://img.shields.io/badge/For-Laravel%205.1|5.2-orange.svg?style=flat-square
-
-[badge_build]:     https://img.shields.io/travis/ARCANEDEV/LaravelAuth.svg?style=flat-square
-[badge_hhvm]:      https://img.shields.io/hhvm/arcanedev/laravel-auth.svg?style=flat-square
-[badge_coverage]:  https://img.shields.io/scrutinizer/coverage/g/ARCANEDEV/LaravelAuth.svg?style=flat-square
-[badge_quality]:   https://img.shields.io/scrutinizer/g/ARCANEDEV/LaravelAuth.svg?style=flat-square
-[badge_insight]:   https://img.shields.io/sensiolabs/i/7b4ce5ae-af3c-4e97-8f03-b992609f4d19.svg?style=flat-square
-[badge_issues]:    https://img.shields.io/github/issues/ARCANEDEV/LaravelAuth.svg?style=flat-square
-
-[badge_package]:   https://img.shields.io/badge/package-arcanedev/laravel--auth-blue.svg?style=flat-square
-[badge_release]:   https://img.shields.io/packagist/v/arcanedev/laravel-auth.svg?style=flat-square
-[badge_downloads]: https://img.shields.io/packagist/dt/arcanedev/laravel-auth.svg?style=flat-square
+[![Packagist][badge_package]][link-packagist]
+[![Packagist Release][badge_release]][link-packagist]
+[![Packagist Downloads][badge_downloads]][link-packagist]
 
 *By [ARCANEDEV&copy;](http://www.arcanedev.net/)*
 
@@ -49,17 +35,17 @@ Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/r
   3. [Configuration](_docs/3-Configuration.md)
   4. [Usage](_docs/4-Usage.md)
 
-## TODO
-
-  - [ ] Adding Blade Authorization directives.
-  - [ ] Complete the model factories.
-  - [ ] Complete the documentation.
-
 ## DONE
 
   - [x] User confirmation system.
   - [x] Laravel 5.2 supported.
   - [x] Laravel 5.1 supported.
+
+## TODO
+
+  - [ ] Adding Blade Authorization directives.
+  - [ ] Complete the model factories.
+  - [ ] Complete the documentation.
 
 ## Security
 
@@ -68,3 +54,30 @@ If you discover any security related issues, please email arcanedev-maroc@gmail.
 ## Contribution
 
 Any ideas are welcome. Feel free to submit any issues or pull requests, please check the [contribution guidelines](CONTRIBUTING.md).
+
+## Credits
+
+- [ARCANEDEV][link-author]
+- [All Contributors][link-contributors]
+
+[badge_license]:   https://img.shields.io/packagist/l/arcanedev/laravel-auth.svg?style=flat-square
+[badge_laravel]:   https://img.shields.io/badge/For-Laravel%205.1|5.2-orange.svg?style=flat-square
+[badge_build]:     https://img.shields.io/travis/ARCANEDEV/LaravelAuth.svg?style=flat-square
+[badge_hhvm]:      https://img.shields.io/hhvm/arcanedev/laravel-auth.svg?style=flat-square
+[badge_coverage]:  https://img.shields.io/scrutinizer/coverage/g/ARCANEDEV/LaravelAuth.svg?style=flat-square
+[badge_quality]:   https://img.shields.io/scrutinizer/g/ARCANEDEV/LaravelAuth.svg?style=flat-square
+[badge_insight]:   https://img.shields.io/sensiolabs/i/7b4ce5ae-af3c-4e97-8f03-b992609f4d19.svg?style=flat-square
+[badge_issues]:    https://img.shields.io/github/issues/ARCANEDEV/LaravelAuth.svg?style=flat-square
+[badge_package]:   https://img.shields.io/badge/package-arcanedev/laravel--auth-blue.svg?style=flat-square
+[badge_release]:   https://img.shields.io/packagist/v/arcanedev/laravel-auth.svg?style=flat-square
+[badge_downloads]: https://img.shields.io/packagist/dt/arcanedev/laravel-auth.svg?style=flat-square
+
+[link-author]:        https://github.com/arcanedev-maroc
+[link-github-repo]:   https://github.com/ARCANEDEV/LaravelAuth
+[link-github-issues]: https://github.com/ARCANEDEV/LaravelAuth/issues
+[link-contributors]:  https://github.com/ARCANEDEV/LaravelAuth/graphs/contributors
+[link-packagist]:     https://packagist.org/packages/arcanedev/laravel-auth
+[link-travis]:        https://travis-ci.org/ARCANEDEV/LaravelAuth
+[link-hhvm]:          http://hhvm.h4cc.de/package/arcanedev/laravel-auth
+[link-scrutinizer]:   https://scrutinizer-ci.com/g/ARCANEDEV/LaravelAuth/?branch=master
+[link-insight]:       https://insight.sensiolabs.com/projects/7b4ce5ae-af3c-4e97-8f03-b992609f4d19
