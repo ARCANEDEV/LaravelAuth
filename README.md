@@ -1,4 +1,4 @@
-# LaravelAuth [![Packagist License][badge_license]](LICENSE.md) [![For Laravel 5][badge_laravel]]link-github-repo
+# LaravelAuth [![Packagist License][badge_license]](LICENSE.md) [![For Laravel 5][badge_laravel]][link-github-repo]
 
 [![Travis Status][badge_build]][link-travis]
 [![HHVM Status][badge_hhvm]][link-hhvm]
