@@ -53,7 +53,6 @@ class LaravelAuthServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerConfig();
-
         $this->bindModels();
 
         if ($this->app['config']->get('laravel-auth.use-observers', false)) {
@@ -68,7 +67,12 @@ class LaravelAuthServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        $this->registerPublishes();
+        $this->publishConfig();
+        $this->publishMigrations();
+
+        $this->publishes([
+            $this->getBasePath() . DS . 'database/factories' => database_path('factories'),
+        ], 'factories');
     }
 
     /**
@@ -93,8 +97,7 @@ class LaravelAuthServiceProvider extends ServiceProvider
     private function bindModels()
     {
         /** @var \Illuminate\Contracts\Config\Repository $config */
-        $config = $this->app['config'];
-
+        $config   = $this->app['config'];
         $bindings = [
             'users'              => AuthContracts\User::class,
             'roles'              => AuthContracts\Role::class,
@@ -105,23 +108,5 @@ class LaravelAuthServiceProvider extends ServiceProvider
         foreach ($bindings as $key => $contract) {
             $this->bind($contract, $config->get("laravel-auth.$key.model"));
         }
-    }
-
-    /**
-     * Register all publishable stuff.
-     */
-    private function registerPublishes()
-    {
-        $this->publishes([
-            $this->getConfigFile() => config_path("{$this->package}.php"),
-        ], 'config');
-
-        $this->publishes([
-            $this->getBasePath() . DS . 'database/migrations' => database_path('migrations'),
-        ], 'migrations');
-
-        $this->publishes([
-            $this->getBasePath() . DS . 'database/factories' => database_path('factories'),
-        ], 'factories');
     }
 }
