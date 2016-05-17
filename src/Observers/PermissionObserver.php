@@ -15,36 +15,85 @@ class PermissionObserver extends ModelObserver
      |  Model Events
      | ------------------------------------------------------------------------------------------------
      */
+    /**
+     * Eloquent 'creating' event method.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
+     *
+     * @return mixed
+     */
     public function creating(Permission $permission)
     {
         $this->event->fire('auth.permissions.creating', compact('permission'));
     }
 
+    /**
+     * Eloquent 'created' event method.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
+     *
+     * @return mixed
+     */
     public function created(Permission $permission)
     {
         $this->event->fire('auth.permissions.created', compact('permission'));
     }
 
+    /**
+     * Eloquent 'updating' event method.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
+     *
+     * @return mixed
+     */
     public function updating(Permission $permission)
     {
         $this->event->fire('auth.permissions.updating', compact('permission'));
     }
 
+    /**
+     * Eloquent 'updated' event method.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
+     *
+     * @return mixed
+     */
     public function updated(Permission $permission)
     {
         $this->event->fire('auth.permissions.updated', compact('permission'));
     }
 
+    /**
+     * Eloquent 'saving' event method.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
+     *
+     * @return mixed
+     */
     public function saving(Permission $permission)
     {
         $this->event->fire('auth.permissions.saving', compact('permission'));
     }
 
+    /**
+     * Eloquent 'saved' event method.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
+     *
+     * @return mixed
+     */
     public function saved(Permission $permission)
     {
         $this->event->fire('auth.permissions.saved', compact('permission'));
     }
 
+    /**
+     * Eloquent 'deleting' event method.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
+     *
+     * @return mixed
+     */
     public function deleting(Permission $permission)
     {
         $permission->roles()->detach();
@@ -52,6 +101,13 @@ class PermissionObserver extends ModelObserver
         $this->event->fire('auth.permissions.deleting', compact('permission'));
     }
 
+    /**
+     * Eloquent 'deleted' event method.
+     *
+     * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
+     *
+     * @return mixed
+     */
     public function deleted(Permission $permission)
     {
         $this->event->fire('auth.permissions.deleted', compact('permission'));
