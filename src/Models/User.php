@@ -218,4 +218,14 @@ class User
     {
         return $this->is_confirmed;
     }
+
+    /**
+     * Check if user is on force deleting.
+     *
+     * @return bool
+     */
+    public function isForceDeleting()
+    {
+        return $this->forceDeleting;
+    }
 }
