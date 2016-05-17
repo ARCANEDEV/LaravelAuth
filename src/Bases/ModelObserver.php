@@ -15,7 +15,9 @@ abstract class ModelObserver
      | ------------------------------------------------------------------------------------------------
      */
     /**
-     * @var Dispatcher
+     * The event dispatcher instance.
+     *
+     * @var \Illuminate\Contracts\Events\Dispatcher
      */
     protected $event;
 
@@ -26,7 +28,7 @@ abstract class ModelObserver
     /**
      * UserObserver constructor.
      *
-     * @param  Dispatcher  $event
+     * @param  \Illuminate\Contracts\Events\Dispatcher  $event
      */
     public function __construct(Dispatcher $event)
     {
