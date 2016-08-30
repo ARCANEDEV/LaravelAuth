@@ -246,7 +246,7 @@ class PermissionTest extends ModelsTest
             'description' => 'Custom permission description.',
         ]);
 
-        $this->assertFalse($permission->is('admin'));
+        $this->assertFalse($permission->hasRoleSlug('admin'));
 
         $adminRole = Role::create([
             'name'        => 'Admin',
@@ -256,8 +256,8 @@ class PermissionTest extends ModelsTest
 
         $permission->attachRole($adminRole);
 
-        $this->assertTrue($permission->is('Admin'));
-        $this->assertTrue($permission->is('admin'));
+        $this->assertTrue($permission->hasRoleSlug('Admin'));
+        $this->assertTrue($permission->hasRoleSlug('admin'));
     }
 
     /** @test */

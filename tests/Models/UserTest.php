@@ -337,7 +337,7 @@ class UserTest extends ModelsTest
     {
         $user      = $this->createUser();
 
-        $this->assertFalse($user->is('admin'));
+        $this->assertFalse($user->hasRoleSlug('admin'));
 
         $adminRole = Role::create([
             'name'        => 'Admin',
@@ -347,8 +347,8 @@ class UserTest extends ModelsTest
 
         $user->attachRole($adminRole);
 
-        $this->assertTrue($user->is('Admin'));
-        $this->assertTrue($user->is('admin'));
+        $this->assertTrue($user->hasRoleSlug('Admin'));
+        $this->assertTrue($user->hasRoleSlug('admin'));
     }
 
     /** @test */
