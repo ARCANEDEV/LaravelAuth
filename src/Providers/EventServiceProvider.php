@@ -1,7 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Providers;
 
 use Arcanedev\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Contracts\Events\Dispatcher;
 
 /**
  * Class     EventServiceProvider
@@ -16,14 +15,22 @@ class EventServiceProvider extends ServiceProvider
      | ------------------------------------------------------------------------------------------------
      */
     /**
-     * Register the application's event listeners.
-     *
-     * @param  \Illuminate\Contracts\Events\Dispatcher  $events
+     * {@inheritdoc}
      */
-    public function boot(Dispatcher $events)
+    public function register()
     {
-        parent::boot($events);
+        parent::register();
 
+        $this->app->booted(function () {
+            $this->registerObservers();
+        });
+    }
+
+    /**
+     * Register the application's event listeners.
+     */
+    protected function registerObservers()
+    {
         $observers = [
             'users'              => \Arcanesoft\Contracts\Auth\Models\User::class,
             'roles'              => \Arcanesoft\Contracts\Auth\Models\Role::class,
