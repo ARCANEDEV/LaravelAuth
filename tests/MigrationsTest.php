@@ -42,7 +42,5 @@ class MigrationsTest extends TestCase
         foreach ($this->getTablesNames() as $table) {
             $this->assertTrue(Schema::hasTable($table), "The table [$table] not found in the database.");
         }
-
-        $this->resetMigration();
     }
 }
