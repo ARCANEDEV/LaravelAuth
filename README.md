@@ -13,16 +13,16 @@
 
 *By [ARCANEDEV&copy;](http://www.arcanedev.net/)*
 
-Laravel Authorization package for Laravel (5.1 & 5.2).
+Laravel Authorization package for Laravel.
 
 Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/releases), [license](LICENSE.md), and [contribution guidelines](CONTRIBUTING.md).
 
 ### Features
 
-  * Users management.
-  * Roles management.
-  * Permissions management (with permission's groups).
-  * User confirmation system (email verification).
+  * Laravel `5.1 | 5.2 | 5.3` are supported.
+  * CRUD for Roles.
+  * CRUD fot Permissions.
+  * User confirmation system.
   * Easy setup &amp; configuration.
   * Well documented &amp; IDE Friendly.
   * Well tested with maximum code quality.
@@ -34,12 +34,6 @@ Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/r
   2. [Installation and Setup](_docs/2-Installation-and-Setup.md)
   3. [Configuration](_docs/3-Configuration.md)
   4. [Usage](_docs/4-Usage.md)
-
-## DONE
-
-  - [x] User confirmation system.
-  - [x] Laravel 5.2 supported.
-  - [x] Laravel 5.1 supported.
 
 ## TODO
 
@@ -61,7 +55,7 @@ Any ideas are welcome. Feel free to submit any issues or pull requests, please c
 - [All Contributors][link-contributors]
 
 [badge_license]:   https://img.shields.io/packagist/l/arcanedev/laravel-auth.svg?style=flat-square
-[badge_laravel]:   https://img.shields.io/badge/For-Laravel%205.1|5.2-orange.svg?style=flat-square
+[badge_laravel]:   https://img.shields.io/badge/For-Laravel%205.1|5.2|5.3-orange.svg?style=flat-square
 [badge_build]:     https://img.shields.io/travis/ARCANEDEV/LaravelAuth.svg?style=flat-square
 [badge_hhvm]:      https://img.shields.io/hhvm/arcanedev/laravel-auth.svg?style=flat-square
 [badge_coverage]:  https://img.shields.io/scrutinizer/coverage/g/ARCANEDEV/LaravelAuth.svg?style=flat-square
