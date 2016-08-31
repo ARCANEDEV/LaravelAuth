@@ -115,7 +115,7 @@ trait AuthRoleTrait
     public function isOne(array $roles, array &$failedRoles = [])
     {
         foreach ($roles as $role) {
-            if ( ! $this->is($role)) {
+            if ( ! $this->hasRoleSlug($role)) {
                 $failedRoles[] = $role;
             }
         }
@@ -130,7 +130,7 @@ trait AuthRoleTrait
      *
      * @return bool
      */
-    public function is($slug)
+    public function hasRoleSlug($slug)
     {
         $roles = $this->roles->filter(function(RoleContract $role) use ($slug) {
             return $role->checkSlug($slug);

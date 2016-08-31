@@ -1,9 +1,10 @@
 # LaravelAuth
 
-Laravel Authorization package for Laravel v5.1.
+Laravel Authorization package for Laravel.
 
 ### Features
 
+  * Laravel `5.1 | 5.2 | 5.3` are supported.
   * CRUD for Roles.
   * CRUD fot Permissions.
   * User confirmation system.

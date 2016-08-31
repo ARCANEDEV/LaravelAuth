@@ -122,14 +122,6 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Reset all migrations.
-     */
-    protected function resetMigration()
-    {
-        $this->artisan('migrate:reset');
-    }
-
-    /**
      * Publish the migrations.
      */
     protected function publishMigrations()
