@@ -1,7 +1,6 @@
 # LaravelAuth [![Packagist License][badge_license]](LICENSE.md) [![For Laravel 5][badge_laravel]][link-github-repo]
 
 [![Travis Status][badge_build]][link-travis]
-[![HHVM Status][badge_hhvm]][link-hhvm]
 [![Coverage Status][badge_coverage]][link-scrutinizer]
 [![Scrutinizer Code Quality][badge_quality]][link-scrutinizer]
 [![SensioLabs Insight][badge_insight]][link-insight]
@@ -57,7 +56,6 @@ Any ideas are welcome. Feel free to submit any issues or pull requests, please c
 [badge_license]:   https://img.shields.io/packagist/l/arcanedev/laravel-auth.svg?style=flat-square
 [badge_laravel]:   https://img.shields.io/badge/For-Laravel%205.1|5.2|5.3-orange.svg?style=flat-square
 [badge_build]:     https://img.shields.io/travis/ARCANEDEV/LaravelAuth.svg?style=flat-square
-[badge_hhvm]:      https://img.shields.io/hhvm/arcanedev/laravel-auth.svg?style=flat-square
 [badge_coverage]:  https://img.shields.io/scrutinizer/coverage/g/ARCANEDEV/LaravelAuth.svg?style=flat-square
 [badge_quality]:   https://img.shields.io/scrutinizer/g/ARCANEDEV/LaravelAuth.svg?style=flat-square
 [badge_insight]:   https://img.shields.io/sensiolabs/i/7b4ce5ae-af3c-4e97-8f03-b992609f4d19.svg?style=flat-square
@@ -72,6 +70,5 @@ Any ideas are welcome. Feel free to submit any issues or pull requests, please c
 [link-contributors]:  https://github.com/ARCANEDEV/LaravelAuth/graphs/contributors
 [link-packagist]:     https://packagist.org/packages/arcanedev/laravel-auth
 [link-travis]:        https://travis-ci.org/ARCANEDEV/LaravelAuth
-[link-hhvm]:          http://hhvm.h4cc.de/package/arcanedev/laravel-auth
 [link-scrutinizer]:   https://scrutinizer-ci.com/g/ARCANEDEV/LaravelAuth/?branch=master
 [link-insight]:       https://insight.sensiolabs.com/projects/7b4ce5ae-af3c-4e97-8f03-b992609f4d19
