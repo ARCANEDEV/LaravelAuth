@@ -1,5 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Traits;
 
+use Illuminate\Support\Str;
+
 /**
  * Trait     Slugable
  *
@@ -23,7 +25,7 @@ trait Slugable
      */
     protected function slugify($value)
     {
-        return str_slug($value, config('laravel-auth.slug-separator', '.'));
+        return Str::slug($value, config('laravel-auth.slug-separator', '.'));
     }
 
     /* ------------------------------------------------------------------------------------------------
