@@ -17,7 +17,7 @@
     "license": "MIT",
     "require": {
         "php":                  ">=5.6",
-        "arcanedev/support":    "~3.0",
+        "arcanedev/support":    "~3.15",
         "arcanesoft/contracts": "~1.2"
     },
     "require-dev": {
