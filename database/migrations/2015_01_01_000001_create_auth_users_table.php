@@ -40,8 +40,8 @@ class CreateAuthUsersTable extends Migration
             $table->string('username');
             $table->string('first_name', 30)->nullable();
             $table->string('last_name', 30)->nullable();
-            $table->string('email');
-            $table->string('password', 60);
+            $table->string('email')->unique();
+            $table->string('password');
             $table->rememberToken();
             $table->boolean('is_admin')->default(0);
             $table->boolean('is_active')->default(0);
@@ -50,8 +50,6 @@ class CreateAuthUsersTable extends Migration
             }
             $table->timestamps();
             $table->softDeletes();
-
-            $table->unique('email');
         });
     }
 

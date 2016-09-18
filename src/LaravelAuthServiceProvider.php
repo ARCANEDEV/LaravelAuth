@@ -16,13 +16,6 @@ class LaravelAuthServiceProvider extends ServiceProvider
      | ------------------------------------------------------------------------------------------------
      */
     /**
-     * Vendor name.
-     *
-     * @var string
-     */
-    protected $vendor  = 'arcanedev';
-
-    /**
      * Package name.
      *
      * @var string
@@ -55,7 +48,7 @@ class LaravelAuthServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->bindModels();
 
-        if ($this->app['config']->get('laravel-auth.use-observers', false)) {
+        if ($this->config()->get('laravel-auth.use-observers', false)) {
             $this->app->register(Providers\EventServiceProvider::class);
         }
     }
@@ -69,10 +62,7 @@ class LaravelAuthServiceProvider extends ServiceProvider
 
         $this->publishConfig();
         $this->publishMigrations();
-
-        $this->publishes([
-            $this->getBasePath() . DS . 'database/factories' => database_path('factories'),
-        ], 'factories');
+        $this->publishFactories();
     }
 
     /**
@@ -96,8 +86,6 @@ class LaravelAuthServiceProvider extends ServiceProvider
      */
     private function bindModels()
     {
-        /** @var \Illuminate\Contracts\Config\Repository $config */
-        $config   = $this->app['config'];
         $bindings = [
             'users'              => AuthContracts\User::class,
             'roles'              => AuthContracts\Role::class,
@@ -106,7 +94,7 @@ class LaravelAuthServiceProvider extends ServiceProvider
         ];
 
         foreach ($bindings as $key => $contract) {
-            $this->bind($contract, $config->get("laravel-auth.$key.model"));
+            $this->bind($contract, $this->config()->get("laravel-auth.$key.model"));
         }
     }
 }
