@@ -13,6 +13,7 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\Access\Authorizable;
+use Illuminate\Support\Str;
 
 /**
  * Class     User
@@ -134,7 +135,22 @@ class User
      | ------------------------------------------------------------------------------------------------
      */
     /**
-     * Get the full name attribute.
+     * Set the `username` attribute.
+     *
+     * @param  string  $username
+     */
+    public function setUsernameAttribute($username)
+    {
+        $username = Str::slug(
+            trim($username),
+            config('laravel-auth.slug-separator', '.')
+        );
+
+        $this->attributes['username'] = $username;
+    }
+
+    /**
+     * Get the `full_name` attribute.
      *
      * @return string
      */
@@ -144,7 +160,7 @@ class User
     }
 
     /**
-     * Set the password attribute.
+     * Set the `password` attribute.
      *
      * @param  string  $password
      */

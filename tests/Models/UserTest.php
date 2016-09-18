@@ -98,7 +98,7 @@ class UserTest extends ModelsTest
     public function it_can_activate_and_deactivate()
     {
         $attributes = [
-            'username'   => 'john-doe',
+            'username'   => 'john.doe',
             'first_name' => 'John',
             'last_name'  => 'DOE',
             'email'      => 'j.doe@gmail.com',
@@ -514,7 +514,7 @@ class UserTest extends ModelsTest
     private function getUserAttributes()
     {
         return [
-            'username'   => 'john-doe',
+            'username'   => 'john.doe',
             'first_name' => 'John',
             'last_name'  => 'DOE',
             'email'      => 'j.doe@gmail.com',
