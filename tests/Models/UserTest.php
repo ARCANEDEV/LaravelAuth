@@ -86,6 +86,8 @@ class UserTest extends ModelsTest
 
         $this->assertFalse($user->is_admin);
         $this->assertFalse($user->isAdmin());
+        $this->assertFalse($user->isModerator());
+        $this->assertTrue($user->isMember());
         $this->assertFalse($user->is_active);
         $this->assertFalse($user->isActive());
         $this->assertFalse($user->is_confirmed);
@@ -298,6 +300,8 @@ class UserTest extends ModelsTest
         $user->save();
 
         $this->assertTrue($user->isAdmin());
+        $this->assertFalse($user->isModerator());
+        $this->assertFalse($user->isMember());
         $this->assertFalse($user->trashed());
         $this->assertFalse($user->delete());
 

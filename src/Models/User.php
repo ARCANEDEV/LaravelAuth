@@ -226,6 +226,27 @@ class User
     }
 
     /**
+     * Check if user is a moderator.
+     *
+     * @return bool
+     */
+    public function isModerator()
+    {
+        // Override this method to give more privileges than members.
+        return false;
+    }
+
+    /**
+     * Check if user is a member.
+     *
+     * @return bool
+     */
+    public function isMember()
+    {
+        return ! $this->isAdmin();
+    }
+
+    /**
      * Check if user has a confirmed account.
      *
      * @return bool
