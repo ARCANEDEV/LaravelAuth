@@ -1,12 +1,12 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
 use Arcanedev\LaravelAuth\Bases\Model;
+use Arcanedev\LaravelAuth\Models\Relationships\RoleRelationships;
 use Arcanedev\LaravelAuth\Traits\Activatable;
-use Arcanedev\LaravelAuth\Traits\AuthRoleRelationships;
-use Arcanedev\LaravelAuth\Traits\Slugable;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Support\Str;
 
 /**
  * Class     Role
@@ -31,7 +31,7 @@ class Role extends Model implements RoleContract
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use Activatable, AuthRoleRelationships, Slugable;
+    use RoleRelationships, Activatable;
 
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -123,9 +123,8 @@ class Role extends Model implements RoleContract
      */
     public function detachUser($user, $reload = true)
     {
-        if ($user instanceof Eloquent) {
+        if ($user instanceof Eloquent)
             $user = (array) $user->getKey();
-        }
 
         $result = $this->users()->detach($user);
         $this->loadUsers($reload);
@@ -157,9 +156,8 @@ class Role extends Model implements RoleContract
      */
     public function hasUser($id)
     {
-        if ($id instanceof Eloquent) {
+        if ($id instanceof Eloquent)
             $id = $id->getKey();
-        }
 
         return $this->users->contains($id);
     }
@@ -188,9 +186,8 @@ class Role extends Model implements RoleContract
      */
     public function detachPermission($permission, $reload = true)
     {
-        if ($permission instanceof Eloquent) {
+        if ($permission instanceof Eloquent)
             $permission = (array) $permission->getKey();
-        }
 
         $result = $this->permissions()->detach($permission);
         $this->loadPermissions($reload);
@@ -222,9 +219,8 @@ class Role extends Model implements RoleContract
      */
     public function hasPermission($id)
     {
-        if ($id instanceof Eloquent) {
+        if ($id instanceof Eloquent)
             $id = $id->getKey();
-        }
 
         return $this->permissions->contains($id);
     }
@@ -260,9 +256,8 @@ class Role extends Model implements RoleContract
     public function canAny(array $permissions, array &$failedPermissions = [])
     {
         foreach ($permissions as $permission) {
-            if ( ! $this->can($permission)) {
+            if ( ! $this->can($permission))
                 $failedPermissions[] = $permission;
-            }
         }
 
         return count($permissions) !== count($failedPermissions);
@@ -293,6 +288,18 @@ class Role extends Model implements RoleContract
         return $this->is_locked;
     }
 
+    /**
+     * Check if slug is the same as the given value.
+     *
+     * @param  string  $value
+     *
+     * @return bool
+     */
+    public function checkSlug($value)
+    {
+        return $this->slug === $this->slugify($value);
+    }
+
     /* ------------------------------------------------------------------------------------------------
      |  Other Functions
      | ------------------------------------------------------------------------------------------------
@@ -319,5 +326,17 @@ class Role extends Model implements RoleContract
     protected function loadPermissions($load = true)
     {
         return $load ? $this->load('permissions') : $this;
+    }
+
+    /**
+     * Slugify the value.
+     *
+     * @param  string  $value
+     *
+     * @return string
+     */
+    protected function slugify($value)
+    {
+        return Str::slug($value, config('laravel-auth.roles.slug-separator', '-'));
     }
 }
