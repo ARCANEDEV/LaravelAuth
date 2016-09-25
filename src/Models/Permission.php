@@ -1,10 +1,10 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
 use Arcanedev\LaravelAuth\Bases\Model;
-use Arcanedev\LaravelAuth\Traits\AuthPermissionRelationships;
+use Arcanedev\LaravelAuth\Models\Relationships\PermissionRelationships;
 use Arcanedev\LaravelAuth\Traits\AuthRoleTrait;
-use Arcanedev\LaravelAuth\Traits\Slugable;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
+use Illuminate\Support\Str;
 
 /**
  * Class     Permission
@@ -28,7 +28,7 @@ class Permission extends Model implements PermissionContract
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use AuthPermissionRelationships, AuthRoleTrait, Slugable;
+    use PermissionRelationships, AuthRoleTrait;
 
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -68,7 +68,10 @@ class Permission extends Model implements PermissionContract
      */
     public function group()
     {
-        return $this->belongsTo(config('laravel-auth.permissions-groups.model', PermissionsGroup::class), 'group_id');
+        return $this->belongsTo(
+            config('laravel-auth.permissions-groups.model', PermissionsGroup::class),
+            'group_id'
+        );
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -83,5 +86,37 @@ class Permission extends Model implements PermissionContract
     public function setSlugAttribute($slug)
     {
         $this->attributes['slug'] = $this->slugify($slug);
+    }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Check Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Check if slug is the same as the given value.
+     *
+     * @param  string  $value
+     *
+     * @return bool
+     */
+    public function checkSlug($value)
+    {
+        return $this->slug === $this->slugify($value);
+    }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Other Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Slugify the value.
+     *
+     * @param  string  $value
+     *
+     * @return string
+     */
+    protected function slugify($value)
+    {
+        return Str::slug($value, config('laravel-auth.permissions.slug-separator', '.'));
     }
 }
