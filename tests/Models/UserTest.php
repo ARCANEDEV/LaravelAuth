@@ -46,8 +46,15 @@ class UserTest extends ModelsTest
     public function it_can_be_instantiated()
     {
         $expectations = [
+            // Laravel
             \Illuminate\Database\Eloquent\Model::class,
+            \Illuminate\Contracts\Auth\Authenticatable::class,
+            \Illuminate\Contracts\Auth\Access\Authorizable::class,
+            \Illuminate\Contracts\Auth\CanResetPassword::class,
+
+            // Arcanedev
             \Arcanesoft\Contracts\Auth\Models\User::class,
+            \Arcanedev\LaravelAuth\Bases\User::class,
             \Arcanedev\LaravelAuth\Models\User::class,
         ];
 

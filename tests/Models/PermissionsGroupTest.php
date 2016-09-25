@@ -3,6 +3,7 @@
 use Arcanedev\LaravelAuth\Models\Permission;
 use Arcanedev\LaravelAuth\Models\PermissionsGroup;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 /**
  * Class     PermissionsGroupTest
@@ -94,7 +95,7 @@ class PermissionsGroupTest extends ModelsTest
 
         $attributes = [
             'name'        => 'Super Custom Group',
-            'slug'        => 'super.custom.group',
+            'slug'        => 'super-custom-group',
             'description' => 'Super Custom Group description',
         ];
 
@@ -459,7 +460,7 @@ class PermissionsGroupTest extends ModelsTest
     {
         return [
             'name'        => 'Auth Group',
-            'slug'        => str_slug('Auth Group', config('laravel-auth.slug-separator')),
+            'slug'        => Str::slug('Auth Group', '-'),
             'description' => 'Auth Permissions Group description.',
         ];
     }
@@ -473,7 +474,7 @@ class PermissionsGroupTest extends ModelsTest
     {
         return [
             'name'        => 'Blog Group',
-            'slug'        => str_slug('Blog Group', config('laravel-auth.slug-separator')),
+            'slug'        => Str::slug('Blog Group', '-'),
             'description' => 'Blog Permissions Group description.',
         ];
     }

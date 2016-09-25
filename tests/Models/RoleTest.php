@@ -4,6 +4,7 @@ use Arcanedev\LaravelAuth\Models\Permission;
 use Arcanedev\LaravelAuth\Models\Role;
 use Arcanedev\LaravelAuth\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
 
 /**
  * Class     RoleTest
@@ -81,15 +82,15 @@ class RoleTest extends ModelsTest
     {
         $attributes = [
             'name'        => 'Custom role',
-            'slug'        => str_slug('Custom role', config('laravel-auth.slug-separator')),
+            'slug'        => 'Custom role',
             'description' => 'Custom role description.',
         ];
 
         $role = $this->createRole($attributes);
 
-        $this->assertEquals($attributes['name'],        $role->name);
-        $this->assertEquals($attributes['slug'],        $role->slug);
-        $this->assertEquals($attributes['description'], $role->description);
+        $this->assertEquals($attributes['name'],                 $role->name);
+        $this->assertEquals(Str::slug($attributes['slug'], '-'), $role->slug);
+        $this->assertEquals($attributes['description'],          $role->description);
         $this->assertTrue($role->is_active);
         $this->assertTrue($role->isActive());
         $this->assertFalse($role->is_locked);

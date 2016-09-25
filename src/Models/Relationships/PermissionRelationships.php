@@ -1,16 +1,16 @@
-<?php namespace Arcanedev\LaravelAuth\Traits;
+<?php namespace Arcanedev\LaravelAuth\Models\Relationships;
 
 use Arcanedev\LaravelAuth\Models\Role;
 
 /**
- * Class     AuthPermissionRelationships
+ * Class     PermissionRelationships
  *
  * @package  Arcanedev\LaravelAuth\Traits
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  *
  * @method  \Illuminate\Database\Eloquent\Relations\BelongsToMany  belongsToMany(string $related, string $table = null, string $foreignKey = null, string $otherKey = null, string $relation = null)
  */
-trait AuthPermissionRelationships
+trait PermissionRelationships
 {
     /* ------------------------------------------------------------------------------------------------
      |  Relationships

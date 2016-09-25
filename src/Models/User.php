@@ -1,18 +1,12 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Bases\Model;
+use Arcanedev\LaravelAuth\Bases\User as Authenticatable;
 use Arcanedev\LaravelAuth\Exceptions\UserConfirmationException;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Arcanedev\LaravelAuth\Traits\Activatable;
 use Arcanedev\LaravelAuth\Traits\AuthUserTrait;
 use Arcanesoft\Contracts\Auth\Models\User as UserContract;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Support\Str;
 
 /**
@@ -43,15 +37,13 @@ use Illuminate\Support\Str;
  * @method  static  bool                                   insert(array $values)
  * @method          \Illuminate\Database\Eloquent\Builder  unconfirmed(string $code)
  */
-class User
-    extends Model
-    implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, UserContract
+class User extends Authenticatable implements UserContract
 {
     /* ------------------------------------------------------------------------------------------------
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use Activatable, Authenticatable, Authorizable, AuthUserTrait, CanResetPassword, SoftDeletes;
+    use AuthUserTrait, Activatable, SoftDeletes;
 
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -141,12 +133,7 @@ class User
      */
     public function setUsernameAttribute($username)
     {
-        $username = Str::slug(
-            trim($username),
-            config('laravel-auth.slug-separator', '.')
-        );
-
-        $this->attributes['username'] = $username;
+        $this->attributes['username'] = $this->slugify($username);
     }
 
     /**
@@ -186,9 +173,8 @@ class User
     {
         $unconfirmedUser = self::unconfirmed($code)->first();
 
-        if ( ! $unconfirmedUser instanceof self) {
+        if ( ! $unconfirmedUser instanceof self)
             throw (new UserConfirmationException)->setModel(self::class);
-        }
 
         return $unconfirmedUser;
     }
@@ -202,9 +188,8 @@ class User
      */
     public function confirm($code)
     {
-        if ($code instanceof self) {
+        if ($code instanceof self)
             $code = $code->confirmation_code;
-        }
 
         $user = $this->findUnconfirmed($code);
 
@@ -264,5 +249,21 @@ class User
     public function isForceDeleting()
     {
         return $this->forceDeleting;
+    }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Other Functions
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Slugify the value.
+     *
+     * @param  string  $value
+     *
+     * @return string
+     */
+    protected function slugify($value)
+    {
+        return Str::slug($value, config('laravel-auth.users.slug-separator', '.'));
     }
 }

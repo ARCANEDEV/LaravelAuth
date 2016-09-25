@@ -1,10 +1,10 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
 use Arcanedev\LaravelAuth\Bases\Model;
-use Arcanedev\LaravelAuth\Traits\Slugable;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\PermissionsGroup as PermissionsGroupContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Support\Str;
 
 /**
  * Class     PermissionsGroup
@@ -22,12 +22,6 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  */
 class PermissionsGroup extends Model implements PermissionsGroupContract
 {
-    /* ------------------------------------------------------------------------------------------------
-     |  Traits
-     | ------------------------------------------------------------------------------------------------
-     */
-    use Slugable;
-
     /* ------------------------------------------------------------------------------------------------
      |  Properties
      | ------------------------------------------------------------------------------------------------
@@ -50,7 +44,9 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
      */
     public function __construct(array $attributes = [])
     {
-        $this->setTable(config('laravel-auth.permissions-groups.table', 'permissions_groups'));
+        $this->setTable(
+            config('laravel-auth.permissions-groups.table', 'permissions_groups')
+        );
 
         parent::__construct($attributes);
     }
@@ -66,7 +62,10 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
      */
     public function permissions()
     {
-        return $this->hasMany(config('laravel-auth.permissions.model', Permission::class), 'group_id');
+        return $this->hasMany(
+            config('laravel-auth.permissions.model', Permission::class),
+            'group_id'
+        );
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -119,9 +118,8 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
      */
     public function attachPermission(&$permission, $reload = true)
     {
-        if ($this->hasPermission($permission)) {
+        if ($this->hasPermission($permission))
             return;
-        }
 
         $permission = $this->permissions()->save($permission);
 
@@ -140,9 +138,8 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
     {
         $permission = $this->getPermissionById($id);
 
-        if ( ! is_null($permission)) {
+        if ( ! is_null($permission))
             $this->attachPermission($permission, $reload);
-        }
 
         return $permission;
     }
@@ -172,14 +169,11 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
      */
     public function detachPermission(&$permission, $reload = true)
     {
-        if ( ! $this->hasPermission($permission)) {
+        if ( ! $this->hasPermission($permission))
             return;
-        }
 
         $permission = $this->getPermissionFromGroup($permission);
-        $permission->update([
-            'group_id' => 0,
-        ]);
+        $permission->update(['group_id' => 0]);
 
         $this->loadPermissions($reload);
     }
@@ -196,9 +190,8 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
     {
         $permission = $this->getPermissionById($id);
 
-        if ( ! is_null($permission)) {
+        if ( ! is_null($permission))
             $this->detachPermission($permission, $reload);
-        }
 
         return $permission;
     }
@@ -213,9 +206,7 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
      */
     public function detachPermissions(array $ids, $reload = true)
     {
-        $detached = $this->permissions()->whereIn('id', $ids)->update([
-            'group_id' => 0
-        ]);
+        $detached = $this->permissions()->whereIn('id', $ids)->update(['group_id' => 0]);
 
         $this->loadPermissions($reload);
 
@@ -231,9 +222,7 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
      */
     public function detachAllPermissions($reload = true)
     {
-        $detached = $this->permissions()->update([
-            'group_id' => 0
-        ]);
+        $detached = $this->permissions()->update(['group_id' => 0]);
 
         $this->loadPermissions($reload);
 
@@ -253,9 +242,8 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
      */
     public function hasPermission($id)
     {
-        if ($id instanceof Eloquent) {
+        if ($id instanceof Eloquent)
             $id = $id->getKey();
-        }
 
         return ! is_null($this->getPermissionFromGroup($id));
     }
@@ -273,9 +261,8 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
      */
     private function getPermissionFromGroup($id)
     {
-        if ($id instanceof Eloquent) {
+        if ($id instanceof Eloquent)
             $id = $id->getKey();
-        }
 
         $this->loadPermissions();
 
@@ -309,5 +296,17 @@ class PermissionsGroup extends Model implements PermissionsGroupContract
     protected function loadPermissions($load = true)
     {
         return $load ? $this->load('permissions') : $this;
+    }
+
+    /**
+     * Slugify the value.
+     *
+     * @param  string  $value
+     *
+     * @return string
+     */
+    protected function slugify($value)
+    {
+        return Str::slug($value, config('laravel-auth.permissions-groups.slug-separator', '-'));
     }
 }
