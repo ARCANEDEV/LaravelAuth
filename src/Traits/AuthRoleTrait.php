@@ -82,9 +82,8 @@ trait AuthRoleTrait
      */
     public function hasRole($id)
     {
-        if ($id instanceof Eloquent) {
+        if ($id instanceof Eloquent)
             $id = $id->getKey();
-        }
 
         return $this->roles->contains($id);
     }
@@ -115,9 +114,8 @@ trait AuthRoleTrait
     public function isOne(array $roles, array &$failedRoles = [])
     {
         foreach ($roles as $role) {
-            if ( ! $this->hasRoleSlug($role)) {
+            if ( ! $this->hasRoleSlug($role))
                 $failedRoles[] = $role;
-            }
         }
 
         return count($roles) !== count($failedRoles);
@@ -136,7 +134,7 @@ trait AuthRoleTrait
             return $role->checkSlug($slug);
         });
 
-        return $roles->count() === 1;
+        return ! $roles->isEmpty();
     }
 
     /* ------------------------------------------------------------------------------------------------

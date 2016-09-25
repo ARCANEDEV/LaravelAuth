@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Traits;
 
 use Arcanedev\LaravelAuth\Models\Permission;
+use Arcanedev\LaravelAuth\Models\Relationships\UserRelationships;
 use Arcanedev\LaravelAuth\Models\Role;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -18,7 +19,7 @@ trait AuthUserTrait
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use AuthRoleTrait, AuthUserRelationships;
+    use AuthRoleTrait, UserRelationships;
 
     /* ------------------------------------------------------------------------------------------------
      |  Getters & Setters
@@ -58,7 +59,7 @@ trait AuthUserTrait
             return $permission->slug === str_slug($slug, config('laravel-auth.slug-separator', '.'));
         });
 
-        return $permissions->count() === 1;
+        return ! $permissions->isEmpty();
     }
 
     /**
@@ -72,9 +73,8 @@ trait AuthUserTrait
     public function mayOne(array $permissions, array &$failedPermissions = [])
     {
         foreach ($permissions as $permission) {
-            if ( ! $this->may($permission)) {
+            if ( ! $this->may($permission))
                 $failedPermissions[] = $permission;
-            }
         }
 
         return count($permissions) !== count($failedPermissions);
