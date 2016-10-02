@@ -244,6 +244,9 @@ class User extends Authenticatable implements UserContract
     /**
      * Check if user is on force deleting.
      *
+     * @deprecated since Laravel v5.3.11
+     * @see https://github.com/laravel/framework/pull/15580
+     *
      * @return bool
      */
     public function isForceDeleting()

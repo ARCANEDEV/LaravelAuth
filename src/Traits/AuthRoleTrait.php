@@ -35,6 +35,27 @@ trait AuthRoleTrait
     }
 
     /**
+     * Sync the roles by its slugs.
+     *
+     * @param  array  $slugs
+     * @param  bool   $reload
+     *
+     * @return array
+     */
+    public function syncRoles(array $slugs, $reload = true)
+    {
+        /** @var \Illuminate\Database\Eloquent\Collection $roles */
+        $roles  = app(RoleContract::class)->whereIn('slug', $slugs)->get();
+        $synced = $this->roles()->sync(
+            $roles->pluck('id')->toArray()
+        );
+
+        $this->loadRoles($reload);
+
+        return $synced;
+    }
+
+    /**
      * Detach a role from a user.
      *
      * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
