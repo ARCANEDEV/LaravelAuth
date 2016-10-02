@@ -200,6 +200,37 @@ class PermissionTest extends ModelsTest
     }
 
     /** @test */
+    public function it_can_sync_roles_by_its_slugs()
+    {
+        $permission = Permission::create([
+            'name'        => 'Custom permission',
+            'slug'        => 'permissions.custom',
+            'description' => 'Custom permission description.',
+        ]);
+        $roles = collect([
+            Role::create([
+                'name'        => 'Admin',
+                'description' => 'Admin role descriptions.',
+            ]),
+            Role::create([
+                'name'        => 'Moderator',
+                'description' => 'Moderator role descriptions.',
+            ])
+        ]);
+
+        $this->assertCount(0, $permission->roles);
+
+        $synced = $permission->syncRoles(
+            $roles->pluck('slug')->toArray()
+        );
+
+        $this->assertCount($roles->count(),               $synced['attached']);
+        $this->assertSame($roles->pluck('id')->toArray(), $synced['attached']);
+        $this->assertEmpty($synced['detached']);
+        $this->assertEmpty($synced['updated']);
+    }
+
+    /** @test */
     public function it_can_detach_all_roles()
     {
         $permission    = Permission::create([
