@@ -1,5 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Tests;
 
+use Illuminate\Routing\Router;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 /**
@@ -49,22 +50,72 @@ abstract class TestCase extends BaseTestCase
      */
     protected function getEnvironmentSetUp($app)
     {
-        /** @var \Illuminate\Config\Repository $config */
-        $config = $app['config'];
-
         // Laravel App Configs
+        $this->setAuthConfigs($app['config']);
+
+        // Laravel Auth Routes
+        $this->setAuthRoutes($app['router']);
+    }
+
+    /**
+     * Set the Auth configs.
+     *
+     * @param  \Illuminate\Config\Repository  $config
+     */
+    private function setAuthConfigs($config)
+    {
         $config->set('database.default', 'testing');
         $config->set('database.connections.testing', [
             'driver'   => 'sqlite',
             'database' => ':memory:',
             'prefix'   => '',
         ]);
-        $config->set('auth.model', \Arcanedev\LaravelAuth\Models\User::class);
+
+        $config->set(
+            version_compare('5.2.0', app()->version(), '<=') ? 'auth.providers.users.model' : 'auth.model',
+            \Arcanedev\LaravelAuth\Models\User::class
+        );
 
         // Laravel Auth Configs
         $config->set('laravel-auth.database.connection', 'testing');
-        $config->set('laravel-auth.users.model', \Arcanedev\LaravelAuth\Models\User::class);
         $config->set('laravel-auth.user-confirmation.enabled', true);
+        $config->set('laravel-auth.impersonation.enabled', true);
+    }
+
+    /**
+     * Set the Auth routes.
+     *
+     * @param  \Illuminate\Routing\Router  $router
+     */
+    private function setAuthRoutes($router)
+    {
+        $router->middleware('impersonate', \Arcanedev\LaravelAuth\Http\Middleware\Impersonate::class);
+
+        $attributes = version_compare('5.2.0', app()->version(), '<=')
+            ? ['middleware' => ['web', 'impersonate']]
+            : ['middleware' => 'impersonate'];
+
+        $router->group($attributes, function (Router $router) {
+            $router->get('/', function () {
+                return \Auth::user()->toJson();
+            });
+
+            $router->get('impersonate/start/{id}', function ($id) {
+                $status = \Arcanedev\LaravelAuth\Services\UserImpersonator::start(
+                    \Arcanedev\LaravelAuth\Models\User::find($id)
+                );
+
+                return response()->json([
+                    'status' => $status ? 'success' : 'error'
+                ]);
+            });
+
+            $router->get('impersonate/stop', function () {
+                \Arcanedev\LaravelAuth\Services\UserImpersonator::stop();
+
+                return redirect()->to('/');
+            });
+        });
     }
 
     /* ------------------------------------------------------------------------------------------------

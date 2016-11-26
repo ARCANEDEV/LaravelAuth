@@ -22,6 +22,7 @@ Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/r
   * CRUD for Roles.
   * CRUD fot Permissions.
   * User confirmation system.
+  * User impersonation.
   * Easy setup &amp; configuration.
   * Well documented &amp; IDE Friendly.
   * Well tested with maximum code quality.
