@@ -13,11 +13,12 @@ class UserConfirmationException extends ModelNotFoundException
     /**
      * Set the affected Eloquent model.
      *
-     * @param  string   $model
+     * @param  string  $model
+     * @param  array   $ids
      *
      * @return self
      */
-    public function setModel($model)
+    public function setModel($model, $ids = [])
     {
         parent::setModel($model);
 
