@@ -1,4 +1,4 @@
-<?php namespace Arcanedev\LaravelAuth\Observers;
+<?php namespace Arcanedev\LaravelAuth\Models\Observers;
 
 use Arcanedev\LaravelAuth\Bases\ModelObserver;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
@@ -20,8 +20,6 @@ class UserObserver extends ModelObserver
      * Eloquent 'creating' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\User|User  $user
-     *
-     * @return mixed
      */
     public function creating(User $user)
     {
@@ -36,8 +34,6 @@ class UserObserver extends ModelObserver
      * Eloquent 'created' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\User|User  $user
-     *
-     * @return mixed
      */
     public function created(User $user)
     {
@@ -48,8 +44,6 @@ class UserObserver extends ModelObserver
      * Eloquent 'updating' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\User|User  $user
-     *
-     * @return mixed
      */
     public function updating(User $user)
     {
@@ -60,8 +54,6 @@ class UserObserver extends ModelObserver
      * Eloquent 'updated' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\User|User  $user
-     *
-     * @return mixed
      */
     public function updated(User $user)
     {
@@ -72,8 +64,6 @@ class UserObserver extends ModelObserver
      * Eloquent 'saving' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\User|User  $user
-     *
-     * @return mixed
      */
     public function saving(User $user)
     {
@@ -84,8 +74,6 @@ class UserObserver extends ModelObserver
      * Eloquent 'saved' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\User|User  $user
-     *
-     * @return mixed
      */
     public function saved(User $user)
     {
@@ -97,7 +85,7 @@ class UserObserver extends ModelObserver
      *
      * @param  \Arcanedev\LaravelAuth\Models\User|User  $user
      *
-     * @return mixed
+     * @return bool
      */
     public function deleting(User $user)
     {
@@ -116,8 +104,6 @@ class UserObserver extends ModelObserver
      * Eloquent 'deleted' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\User|User  $user
-     *
-     * @return mixed
      */
     public function deleted(User $user)
     {
@@ -128,8 +114,6 @@ class UserObserver extends ModelObserver
      * Eloquent 'restoring' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\User|User  $user
-     *
-     * @return mixed
      */
     public function restoring(User $user)
     {
@@ -140,8 +124,6 @@ class UserObserver extends ModelObserver
      * Eloquent 'restored' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\User|User  $user
-     *
-     * @return mixed
      */
     public function restored(User $user)
     {

@@ -16,28 +16,28 @@ return [
     'users'              => [
         'table'          => 'users',
         'model'          => Arcanedev\LaravelAuth\Models\User::class,
-        'observer'       => Arcanedev\LaravelAuth\Observers\UserObserver::class,
+        'observer'       => \Arcanedev\LaravelAuth\Models\Observers\UserObserver::class,
         'slug-separator' => '.',
     ],
 
     'roles'              => [
         'table'          => 'roles',
         'model'          => Arcanedev\LaravelAuth\Models\Role::class,
-        'observer'       => Arcanedev\LaravelAuth\Observers\RoleObserver::class,
+        'observer'       => \Arcanedev\LaravelAuth\Models\Observers\RoleObserver::class,
         'slug-separator' => '-',
     ],
 
     'permissions-groups' => [
         'table'          => 'permissions_groups',
         'model'          => Arcanedev\LaravelAuth\Models\PermissionsGroup::class,
-        'observer'       => Arcanedev\LaravelAuth\Observers\PermissionsGroupObserver::class,
+        'observer'       => \Arcanedev\LaravelAuth\Models\Observers\PermissionsGroupObserver::class,
         'slug-separator' => '-',
     ],
 
     'permissions'        => [
         'table'          => 'permissions',
         'model'          => Arcanedev\LaravelAuth\Models\Permission::class,
-        'observer'       => Arcanedev\LaravelAuth\Observers\PermissionObserver::class,
+        'observer'       => \Arcanedev\LaravelAuth\Models\Observers\PermissionObserver::class,
         'slug-separator' => '.',
     ],
 

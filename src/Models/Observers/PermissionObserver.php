@@ -1,4 +1,4 @@
-<?php namespace Arcanedev\LaravelAuth\Observers;
+<?php namespace Arcanedev\LaravelAuth\Models\Observers;
 
 use Arcanedev\LaravelAuth\Bases\ModelObserver;
 use Arcanesoft\Contracts\Auth\Models\Permission;
@@ -19,8 +19,6 @@ class PermissionObserver extends ModelObserver
      * Eloquent 'creating' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
-     *
-     * @return mixed
      */
     public function creating(Permission $permission)
     {
@@ -31,8 +29,6 @@ class PermissionObserver extends ModelObserver
      * Eloquent 'created' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
-     *
-     * @return mixed
      */
     public function created(Permission $permission)
     {
@@ -43,8 +39,6 @@ class PermissionObserver extends ModelObserver
      * Eloquent 'updating' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
-     *
-     * @return mixed
      */
     public function updating(Permission $permission)
     {
@@ -55,8 +49,6 @@ class PermissionObserver extends ModelObserver
      * Eloquent 'updated' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
-     *
-     * @return mixed
      */
     public function updated(Permission $permission)
     {
@@ -67,8 +59,6 @@ class PermissionObserver extends ModelObserver
      * Eloquent 'saving' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
-     *
-     * @return mixed
      */
     public function saving(Permission $permission)
     {
@@ -79,8 +69,6 @@ class PermissionObserver extends ModelObserver
      * Eloquent 'saved' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
-     *
-     * @return mixed
      */
     public function saved(Permission $permission)
     {
@@ -91,8 +79,6 @@ class PermissionObserver extends ModelObserver
      * Eloquent 'deleting' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
-     *
-     * @return mixed
      */
     public function deleting(Permission $permission)
     {
@@ -105,8 +91,6 @@ class PermissionObserver extends ModelObserver
      * Eloquent 'deleted' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Permission|Permission  $permission
-     *
-     * @return mixed
      */
     public function deleted(Permission $permission)
     {

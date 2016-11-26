@@ -1,4 +1,4 @@
-<?php namespace Arcanedev\LaravelAuth\Observers;
+<?php namespace Arcanedev\LaravelAuth\Models\Observers;
 
 use Arcanedev\LaravelAuth\Bases\ModelObserver;
 use Arcanesoft\Contracts\Auth\Models\Role;
@@ -19,8 +19,6 @@ class RoleObserver extends ModelObserver
      * Eloquent 'creating' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Role|Role  $role
-     *
-     * @return mixed
      */
     public function creating(Role $role)
     {
@@ -31,8 +29,6 @@ class RoleObserver extends ModelObserver
      * Eloquent 'created' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Role|Role  $role
-     *
-     * @return mixed
      */
     public function created(Role $role)
     {
@@ -43,8 +39,6 @@ class RoleObserver extends ModelObserver
      * Eloquent 'updating' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Role|Role  $role
-     *
-     * @return mixed
      */
     public function updating(Role $role)
     {
@@ -55,8 +49,6 @@ class RoleObserver extends ModelObserver
      * Eloquent 'updated' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Role|Role  $role
-     *
-     * @return mixed
      */
     public function updated(Role $role)
     {
@@ -67,8 +59,6 @@ class RoleObserver extends ModelObserver
      * Eloquent 'saving' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Role|Role  $role
-     *
-     * @return mixed
      */
     public function saving(Role $role)
     {
@@ -79,8 +69,6 @@ class RoleObserver extends ModelObserver
      * Eloquent 'saved' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Role|Role  $role
-     *
-     * @return mixed
      */
     public function saved(Role $role)
     {
@@ -91,8 +79,6 @@ class RoleObserver extends ModelObserver
      * Eloquent 'deleting' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Role|Role  $role
-     *
-     * @return mixed
      */
     public function deleting(Role $role)
     {
@@ -106,8 +92,6 @@ class RoleObserver extends ModelObserver
      * Eloquent 'deleted' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\Role|Role  $role
-     *
-     * @return mixed
      */
     public function deleted(Role $role)
     {

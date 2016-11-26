@@ -1,4 +1,4 @@
-<?php namespace Arcanedev\LaravelAuth\Traits;
+<?php namespace Arcanedev\LaravelAuth\Models\Traits;
 
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  * @property  \Illuminate\Database\Eloquent\Collection  roles
  *
  * @method    \Illuminate\Database\Eloquent\Relations\BelongsToMany  roles()
- * @method    \Arcanedev\LaravelAuth\Traits\AuthRoleTrait            load(mixed $relations)
+ * @method    \Arcanedev\LaravelAuth\Models\Traits\AuthRoleTrait     load(mixed $relations)
  */
 trait AuthRoleTrait
 {

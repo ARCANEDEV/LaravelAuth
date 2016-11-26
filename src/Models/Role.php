@@ -2,7 +2,7 @@
 
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Models\Relationships\RoleRelationships;
-use Arcanedev\LaravelAuth\Traits\Activatable;
+use Arcanedev\LaravelAuth\Models\Traits\Activatable;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;

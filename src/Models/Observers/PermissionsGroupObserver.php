@@ -1,4 +1,4 @@
-<?php namespace Arcanedev\LaravelAuth\Observers;
+<?php namespace Arcanedev\LaravelAuth\Models\Observers;
 
 use Arcanedev\LaravelAuth\Bases\ModelObserver;
 use Arcanesoft\Contracts\Auth\Models\PermissionsGroup;
@@ -19,8 +19,6 @@ class PermissionsGroupObserver extends ModelObserver
      * Eloquent 'creating' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\PermissionsGroup|PermissionsGroup  $group
-     *
-     * @return mixed
      */
     public function creating(PermissionsGroup $group)
     {
@@ -31,8 +29,6 @@ class PermissionsGroupObserver extends ModelObserver
      * Eloquent 'created' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\PermissionsGroup|PermissionsGroup  $group
-     *
-     * @return mixed
      */
     public function created(PermissionsGroup $group)
     {
@@ -43,8 +39,6 @@ class PermissionsGroupObserver extends ModelObserver
      * Eloquent 'updating' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\PermissionsGroup|PermissionsGroup  $group
-     *
-     * @return mixed
      */
     public function updating(PermissionsGroup $group)
     {
@@ -55,8 +49,6 @@ class PermissionsGroupObserver extends ModelObserver
      * Eloquent 'updated' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\PermissionsGroup|PermissionsGroup  $group
-     *
-     * @return mixed
      */
     public function updated(PermissionsGroup $group)
     {
@@ -67,8 +59,6 @@ class PermissionsGroupObserver extends ModelObserver
      * Eloquent 'saving' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\PermissionsGroup|PermissionsGroup  $group
-     *
-     * @return mixed
      */
     public function saving(PermissionsGroup $group)
     {
@@ -79,8 +69,6 @@ class PermissionsGroupObserver extends ModelObserver
      * Eloquent 'saved' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\PermissionsGroup|PermissionsGroup  $group
-     *
-     * @return mixed
      */
     public function saved(PermissionsGroup $group)
     {
@@ -91,8 +79,6 @@ class PermissionsGroupObserver extends ModelObserver
      * Eloquent 'deleting' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\PermissionsGroup|PermissionsGroup  $group
-     *
-     * @return mixed
      */
     public function deleting(PermissionsGroup $group)
     {
@@ -105,8 +91,6 @@ class PermissionsGroupObserver extends ModelObserver
      * Eloquent 'deleted' event method.
      *
      * @param  \Arcanedev\LaravelAuth\Models\PermissionsGroup|PermissionsGroup  $group
-     *
-     * @return mixed
      */
     public function deleted(PermissionsGroup $group)
     {

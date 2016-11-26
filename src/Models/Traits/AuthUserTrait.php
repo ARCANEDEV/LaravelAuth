@@ -1,8 +1,9 @@
-<?php namespace Arcanedev\LaravelAuth\Traits;
+<?php namespace Arcanedev\LaravelAuth\Models\Traits;
 
 use Arcanedev\LaravelAuth\Models\Permission;
 use Arcanedev\LaravelAuth\Models\Relationships\UserRelationships;
 use Arcanedev\LaravelAuth\Models\Role;
+use Arcanedev\LaravelAuth\Models\Traits\AuthRoleTrait;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
