@@ -2,7 +2,7 @@
 
 use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Models\Relationships\PermissionRelationships;
-use Arcanedev\LaravelAuth\Traits\AuthRoleTrait;
+use Arcanedev\LaravelAuth\Models\Traits\AuthRoleTrait;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Illuminate\Support\Str;
 

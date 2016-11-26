@@ -3,8 +3,8 @@
 use Arcanedev\LaravelAuth\Bases\User as Authenticatable;
 use Arcanedev\LaravelAuth\Exceptions\UserConfirmationException;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
-use Arcanedev\LaravelAuth\Traits\Activatable;
-use Arcanedev\LaravelAuth\Traits\AuthUserTrait;
+use Arcanedev\LaravelAuth\Models\Traits\Activatable;
+use Arcanedev\LaravelAuth\Models\Traits\AuthUserTrait;
 use Arcanesoft\Contracts\Auth\Models\User as UserContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;

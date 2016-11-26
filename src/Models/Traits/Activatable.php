@@ -1,4 +1,4 @@
-<?php namespace Arcanedev\LaravelAuth\Traits;
+<?php namespace Arcanedev\LaravelAuth\Models\Traits;
 
 /**
  * Class     Activatable
