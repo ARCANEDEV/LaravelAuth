@@ -254,6 +254,16 @@ class User extends Authenticatable implements UserContract
         return $this->forceDeleting;
     }
 
+    /**
+     * Check if user can be impersonated.
+     *
+     * @return bool
+     */
+    public function canBeImpersonated()
+    {
+        return $this->isMember();
+    }
+
     /* ------------------------------------------------------------------------------------------------
      |  Other Functions
      | ------------------------------------------------------------------------------------------------
