@@ -80,6 +80,7 @@ abstract class TestCase extends BaseTestCase
         $config->set('laravel-auth.database.connection', 'testing');
         $config->set('laravel-auth.user-confirmation.enabled', true);
         $config->set('laravel-auth.impersonation.enabled', true);
+        $config->set('laravel-auth.socialite.enabled', true);
     }
 
     /**

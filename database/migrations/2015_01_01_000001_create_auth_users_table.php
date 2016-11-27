@@ -1,6 +1,7 @@
 <?php
 
 use Arcanedev\LaravelAuth\Bases\Migration;
+use Arcanedev\LaravelAuth\Services\SocialAuthenticator;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -40,14 +41,11 @@ class CreateAuthUsersTable extends Migration
             $table->string('username');
             $table->string('first_name', 30)->nullable();
             $table->string('last_name', 30)->nullable();
-            $table->string('email')->unique();
-            $table->string('password');
+            $this->addCredentialsColumns($table);
             $table->rememberToken();
             $table->boolean('is_admin')->default(0);
             $table->boolean('is_active')->default(0);
-            if (UserConfirmator::isEnabled()) {
-                $this->addConfirmationColumns($table);
-            }
+            $this->addConfirmationColumns($table);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -58,14 +56,37 @@ class CreateAuthUsersTable extends Migration
      | ------------------------------------------------------------------------------------------------
      */
     /**
+     * Add credentials columns.
+     *
+     * @param  \Illuminate\Database\Schema\Blueprint  $table
+     */
+    private function addCredentialsColumns(Blueprint $table)
+    {
+        // Basic columns
+        $table->string('email')->unique();
+
+        if (SocialAuthenticator::isEnabled()) {
+            $table->string('password')->nullable();
+            // Social network columns
+            $table->string('social_provider')->nullable();
+            $table->string('social_provider_id')->unique()->nullable();
+        }
+        else {
+            $table->string('password');
+        }
+    }
+
+    /**
      * Add confirmation columns.
      *
-     * @param  Blueprint  $table
+     * @param  \Illuminate\Database\Schema\Blueprint  $table
      */
     private function addConfirmationColumns(Blueprint $table)
     {
-        $table->boolean('is_confirmed')->default(0);
-        $table->string('confirmation_code', UserConfirmator::getLength())->nullable();
-        $table->timestamp('confirmed_at')->nullable();
+        if (UserConfirmator::isEnabled()) {
+            $table->boolean('is_confirmed')->default(0);
+            $table->string('confirmation_code', UserConfirmator::getLength())->nullable();
+            $table->timestamp('confirmed_at')->nullable();
+        }
     }
 }

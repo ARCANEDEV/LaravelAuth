@@ -2,6 +2,7 @@
 
 use Arcanedev\LaravelAuth\Bases\User as Authenticatable;
 use Arcanedev\LaravelAuth\Exceptions\UserConfirmationException;
+use Arcanedev\LaravelAuth\Services\SocialAuthenticator;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Arcanedev\LaravelAuth\Models\Traits\Activatable;
 use Arcanedev\LaravelAuth\Models\Traits\AuthUserTrait;
@@ -99,6 +100,11 @@ class User extends Authenticatable implements UserContract
     public function __construct(array $attributes = [])
     {
         $this->setTable(config('laravel-auth.users.table', 'users'));
+
+        if (SocialAuthenticator::isEnabled()) {
+            $this->hidden   = array_merge($this->hidden, ['social_provider_id']);
+            $this->fillable = array_merge($this->fillable, ['social_provider', 'social_provider_id']);
+        }
 
         parent::__construct($attributes);
     }
