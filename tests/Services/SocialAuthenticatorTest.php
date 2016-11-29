@@ -24,9 +24,19 @@ class SocialAuthenticatorTest extends TestCase
     /** @test */
     public function it_can_get_supported_drivers()
     {
-        $expected = ['facebook', 'google', 'twitter'];
+        $expected = ['bitbucket', 'facebook', 'github', 'google', 'linkedin', 'twitter'];
+        $drivers  = SocialAuthenticator::drivers();
 
-        $this->assertSame($expected, SocialAuthenticator::drivers());
+        $this->assertSame($expected, $drivers->keys()->toArray());
+    }
+
+    /** @test */
+    public function it_can_get_enabled_drivers()
+    {
+        $expected = ['facebook', 'google', 'twitter'];
+        $drivers  = SocialAuthenticator::enabledDrivers();
+
+        $this->assertSame($expected, $drivers->keys()->toArray());
     }
 
     /** @test */
