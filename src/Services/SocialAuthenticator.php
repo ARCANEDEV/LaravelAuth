@@ -1,4 +1,5 @@
 <?php namespace Arcanedev\LaravelAuth\Services;
+use Illuminate\Support\Collection;
 
 /**
  * Class     SocialAuthenticator
@@ -21,13 +22,23 @@ class SocialAuthenticator
     /**
      * Get the supported drivers.
      *
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     public static function drivers()
     {
-        $drivers = array_filter(config('laravel-auth.socialite.drivers', []));
+        return Collection::make(config('laravel-auth.socialite.drivers', []));
+    }
 
-        return array_keys($drivers);
+    /**
+     * Get the enabled drivers.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static function enabledDrivers()
+    {
+        return static::drivers()->filter(function ($driver) {
+            return $driver['enabled'];
+        });
     }
 
     /**
@@ -39,6 +50,6 @@ class SocialAuthenticator
      */
     public static function isSupported($driver)
     {
-        return in_array($driver, static::drivers());
+        return static::enabledDrivers()->has($driver);
     }
 }

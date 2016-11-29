@@ -65,13 +65,31 @@ return [
      */
     'socialite'          => [
         'enabled' => false,
+
         'drivers' => [
-            'bitbucket' => false,
-            'facebook'  => true,
-            'github'    => false,
-            'google'    => true,
-            'linkedin'  => false,
-            'twitter'   => true,
+            'bitbucket' => [
+                'enabled' => false,
+            ],
+
+            'facebook'  => [
+                'enabled' => true,
+            ],
+
+            'github'    => [
+                'enabled' => false,
+            ],
+
+            'google'    => [
+                'enabled' => true,
+            ],
+
+            'linkedin'  => [
+                'enabled' => false,
+            ],
+
+            'twitter'   => [
+                'enabled' => true,
+            ],
         ],
     ],
 
