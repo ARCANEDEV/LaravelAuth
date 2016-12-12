@@ -521,6 +521,27 @@ class UserTest extends ModelsTest
         $this->assertEquals($failedPermissions, ['auth.users.delete', 'blog.posts.delete']);
     }
 
+    /** @test */
+    public function it_can_track_last_active_users()
+    {
+        $user = $this->createUser();
+
+        $this->actingAs($user);
+
+        $this->assertNull(auth()->user()->last_activity);
+
+        $this->call('GET', '/');
+
+        $authUser = auth()->user();
+        $this->assertNotNull($authUser->last_activity);
+        $this->assertInstanceOf(\Carbon\Carbon::class, $authUser->last_activity);
+
+        $users = User::lastActive()->get();
+
+        $this->assertCount(1, $users);
+        $this->assertSame($authUser->id, $users->first()->id);
+    }
+
     /* ------------------------------------------------------------------------------------------------
      |  Other Functions
      | ------------------------------------------------------------------------------------------------

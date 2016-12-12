@@ -91,10 +91,11 @@ abstract class TestCase extends BaseTestCase
     private function setAuthRoutes($router)
     {
         $router->middleware('impersonate', \Arcanedev\LaravelAuth\Http\Middleware\Impersonate::class);
+        $router->middleware('track-activity', \Arcanedev\LaravelAuth\Http\Middleware\TrackLastActivity::class);
 
         $attributes = version_compare('5.2.0', app()->version(), '<=')
-            ? ['middleware' => ['web', 'impersonate']]
-            : ['middleware' => 'impersonate'];
+            ? ['middleware' => ['web', 'impersonate', 'track-activity']]
+            : ['middleware' => ['impersonate', 'track-activity']];
 
         $router->group($attributes, function (Router $router) {
             $router->get('/', function () {

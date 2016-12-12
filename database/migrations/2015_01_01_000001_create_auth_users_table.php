@@ -46,6 +46,7 @@ class CreateAuthUsersTable extends Migration
             $table->boolean('is_admin')->default(0);
             $table->boolean('is_active')->default(0);
             $this->addConfirmationColumns($table);
+            $table->timestamp('last_activity')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

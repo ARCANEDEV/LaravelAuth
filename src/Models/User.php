@@ -29,6 +29,7 @@ use Illuminate\Support\Str;
  * @property  bool                                      is_confirmed       (Optional)
  * @property  string                                    confirmation_code  (Optional)
  * @property  \Carbon\Carbon                            confirmed_at       (Optional)
+ * @property  \Carbon\Carbon                            last_activity
  * @property  \Carbon\Carbon                            created_at
  * @property  \Carbon\Carbon                            updated_at
  * @property  \Carbon\Carbon                            deleted_at
@@ -37,6 +38,7 @@ use Illuminate\Support\Str;
  *
  * @method  static  bool                                   insert(array $values)
  * @method          \Illuminate\Database\Eloquent\Builder  unconfirmed(string $code)
+ * @method          \Illuminate\Database\Eloquent\Builder  lastActive(int $minutes = null)
  */
 class User extends Authenticatable implements UserContract
 {
@@ -56,7 +58,11 @@ class User extends Authenticatable implements UserContract
      * @var array
      */
     protected $fillable = [
-        'username', 'first_name', 'last_name', 'email', 'password',
+        'username',
+        'first_name',
+        'last_name',
+        'email',
+        'password',
     ];
 
     /**
@@ -64,9 +70,7 @@ class User extends Authenticatable implements UserContract
      *
      * @var array
      */
-    protected $hidden   = [
-        'password', 'remember_token', 'confirmation_code',
-    ];
+    protected $hidden   = ['password', 'remember_token', 'confirmation_code'];
 
     /**
      * The attributes that should be casted to native types.
@@ -84,9 +88,7 @@ class User extends Authenticatable implements UserContract
      *
      * @var array
      */
-    protected $dates = [
-        'confirmed_at', 'deleted_at'
-    ];
+    protected $dates = ['confirmed_at', 'last_activity', 'deleted_at'];
 
     /* ------------------------------------------------------------------------------------------------
      |  Constructor
@@ -126,6 +128,23 @@ class User extends Authenticatable implements UserContract
         return $query->where('is_confirmed', false)
             ->where('confirmation_code', $code)
             ->whereNull('confirmed_at');
+    }
+
+    /**
+     * Scope last active users.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int|null                               $minutes
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeLastActive($query, $minutes = null)
+    {
+        $minutes = $minutes ?: config('laravel_auth.track-activity.minutes', 5);
+
+        $date = \Carbon\Carbon::now()->subMinutes($minutes);
+
+        return $query->where('last_activity', '>=', $date->toDateTimeString());
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -200,6 +219,18 @@ class User extends Authenticatable implements UserContract
         $user = $this->findUnconfirmed($code);
 
         return (new UserConfirmator)->confirm($user);
+    }
+
+    /**
+     * Update the user's last activity.
+     *
+     * @param  bool  $save
+     */
+    public function updateLastActivity($save = true)
+    {
+        $this->forceFill(['last_activity' => \Carbon\Carbon::now()]);
+
+        if ($save) $this->save();
     }
 
     /* ------------------------------------------------------------------------------------------------
