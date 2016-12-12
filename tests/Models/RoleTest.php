@@ -4,6 +4,7 @@ use Arcanedev\LaravelAuth\Models\Permission;
 use Arcanedev\LaravelAuth\Models\Role;
 use Arcanedev\LaravelAuth\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 /**
@@ -105,7 +106,7 @@ class RoleTest extends ModelsTest
         $role = $this->createRole($attributes);
 
         $this->seeInDatabase('roles', $attributes);
-        $this->seeInDatabase('roles', $role->toArray());
+        $this->seeInDatabase('roles', Arr::except($role->toArray(), ['created_at', 'updated_at']));
 
         $this->assertTrue($role->is_active);
         $this->assertTrue($role->isActive());
@@ -121,7 +122,7 @@ class RoleTest extends ModelsTest
 
         $this->dontSeeInDatabase('roles', $attributes);
         $this->seeInDatabase('roles', $updatedAttributes);
-        $this->seeInDatabase('roles', $role->toArray());
+        $this->seeInDatabase('roles', Arr::except($role->toArray(), ['created_at', 'updated_at']));
 
         $this->assertTrue($role->is_active);
         $this->assertTrue($role->isActive());
