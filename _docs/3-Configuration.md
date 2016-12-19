@@ -37,25 +37,25 @@ return [
     'users'              => [
         'table'    => 'users',
         'model'    => Arcanedev\LaravelAuth\Models\User::class,
-        'observer' => Arcanedev\LaravelAuth\Observers\UserObserver::class,
+        'observer' => Arcanedev\LaravelAuth\Models\Observers\UserObserver::class,
     ],
     
     'roles'              => [
         'table'    => 'roles',
         'model'    => Arcanedev\LaravelAuth\Models\Role::class,
-        'observer' => Arcanedev\LaravelAuth\Observers\RoleObserver::class,
+        'observer' => Arcanedev\LaravelAuth\Models\Observers\RoleObserver::class,
     ],
     
     'permissions-groups' => [
         'table'    => 'permissions_groups',
         'model'    => Arcanedev\LaravelAuth\Models\PermissionsGroup::class,
-        'observer' => Arcanedev\LaravelAuth\Observers\PermissionsGroupObserver::class,
+        'observer' => Arcanedev\LaravelAuth\Models\Observers\PermissionsGroupObserver::class,
     ],
     
     'permissions'        => [
         'table'    => 'permissions',
         'model'    => Arcanedev\LaravelAuth\Models\Permission::class,
-        'observer' => Arcanedev\LaravelAuth\Observers\PermissionObserver::class,
+        'observer' => Arcanedev\LaravelAuth\Models\Observers\PermissionObserver::class,
     ],
     
     // ...
@@ -79,6 +79,103 @@ return [
     'user-confirmation'  => [
         'enabled'   => false,
         'length'    => 30,
+    ],
+    
+    // ...
+];
+```
+
+## User Impersonation
+
+You can enable the user impersonation feature by modifying the `enable` value and also you can change the session `key` used to store the impersonated user id.
+
+```php
+<?php
+
+return [
+    // ...
+    
+    /* ------------------------------------------------------------------------------------------------
+     |  User Impersonation
+     | ------------------------------------------------------------------------------------------------
+     */
+    'impersonation' => [
+        'enabled' => false,
+        'key'     => 'impersonate',
+    ],
+    
+    // ...
+];
+```
+
+## User Last Activity 
+
+You can enable or disable the user `last activity` tracking by modifying the `enable` value and also you can set the minutes value as a minimum online duration.
+
+```php
+<?php
+
+return [
+    // ...
+    
+    /* ------------------------------------------------------------------------------------------------
+     |  User Last Activity
+     | ------------------------------------------------------------------------------------------------
+     */
+    'track-activity' => [
+        'enabled' => true,
+
+        'minutes' => 5,
+    ],
+    
+    // ...
+];
+```
+
+## Socialite
+
+You can enable the socialite support by modifying the `enable` value.
+
+You can also manage any supported `drivers` by enable/disable it.
+
+```php
+<?php
+
+return [
+    // ...
+    
+    /* ------------------------------------------------------------------------------------------------
+     |  User Impersonation
+     | ------------------------------------------------------------------------------------------------
+     */
+    'socialite' => [
+        'enabled' => false,
+        
+        'drivers' => [
+            'bitbucket' => [
+                'enabled' => false,
+            ],
+
+            'facebook'  => [
+                'enabled' => true,
+            ],
+
+            'github'    => [
+                'enabled' => false,
+            ],
+
+            'google'    => [
+                'enabled' => true,
+            ],
+
+            'linkedin'  => [
+                'enabled' => false,
+            ],
+
+            'twitter'   => [
+                'enabled' => true,
+            ],
+        ],
     ],
     
     // ...
@@ -140,7 +237,7 @@ return [
 
 ## Other
 
-You can `enable` or `disable` the model observers by editing the `use-observers` value and for the `slugs-eparator` is used for attribute like role or permission slugs.  
+You can `enable` or `disable` the model observers by editing the `use-observers` value.  
 
 ```php
 <?php
@@ -153,6 +250,5 @@ return [
      | ------------------------------------------------------------------------------------------------
      */
     'use-observers'      => true,
-    'slug-separator'     => '.',
 ];
 ```
