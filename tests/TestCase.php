@@ -1,7 +1,8 @@
 <?php namespace Arcanedev\LaravelAuth\Tests;
 
 use Illuminate\Routing\Router;
-use Orchestra\Testbench\TestCase as BaseTestCase;
+use Orchestra\Testbench\BrowserKit\TestCase as BaseTestCase;
+use Arcanedev\LaravelAuth\Http\Middleware;
 
 /**
  * Class     TestCase
@@ -25,6 +26,7 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app)
     {
         return [
+            \Orchestra\Database\ConsoleServiceProvider::class,
             \Arcanedev\LaravelAuth\LaravelAuthServiceProvider::class,
         ];
     }
@@ -90,8 +92,15 @@ abstract class TestCase extends BaseTestCase
      */
     private function setAuthRoutes($router)
     {
-        $router->middleware('impersonate', \Arcanedev\LaravelAuth\Http\Middleware\Impersonate::class);
-        $router->middleware('track-activity', \Arcanedev\LaravelAuth\Http\Middleware\TrackLastActivity::class);
+        if (method_exists($router, 'aliasMiddleware')) {
+            $router->aliasMiddleware('impersonate', Middleware\Impersonate::class);
+            $router->aliasMiddleware('track-activity', Middleware\TrackLastActivity::class);
+        }
+        else {
+            $router->middleware('impersonate', Middleware\Impersonate::class);
+            $router->middleware('track-activity', Middleware\TrackLastActivity::class);
+        }
+
 
         $attributes = version_compare('5.2.0', app()->version(), '<=')
             ? ['middleware' => ['web', 'impersonate', 'track-activity']]
