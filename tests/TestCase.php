@@ -74,7 +74,7 @@ abstract class TestCase extends BaseTestCase
         ]);
 
         $config->set(
-            version_compare('5.2.0', app()->version(), '<=') ? 'auth.providers.users.model' : 'auth.model',
+            'auth.providers.users.model',
             \Arcanedev\LaravelAuth\Models\User::class
         );
 
@@ -101,12 +101,7 @@ abstract class TestCase extends BaseTestCase
             $router->middleware('track-activity', Middleware\TrackLastActivity::class);
         }
 
-
-        $attributes = version_compare('5.2.0', app()->version(), '<=')
-            ? ['middleware' => ['web', 'impersonate', 'track-activity']]
-            : ['middleware' => ['impersonate', 'track-activity']];
-
-        $router->group($attributes, function (Router $router) {
+        $router->group(['middleware' => ['web', 'impersonate', 'track-activity']], function (Router $router) {
             $router->get('/', function () {
                 return \Auth::user()->toJson();
             });
