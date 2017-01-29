@@ -18,7 +18,7 @@ Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/r
 
 ### Features
 
-  * Laravel `5.1 | 5.2 | 5.3` are supported.
+  * Laravel `5.1 | 5.2 | 5.3 | 5.4` are supported.
   * CRUD for Roles.
   * CRUD fot Permissions.
   * User confirmation system.
@@ -32,9 +32,10 @@ Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/r
 ## Table of contents
 
   1. [Requirements](_docs/1-Requirements.md)
-  2. [Installation and Setup](_docs/2-Installation-and-Setup.md)
-  3. [Configuration](_docs/3-Configuration.md)
-  4. [Usage](_docs/4-Usage.md)
+  2. [Version Compatibility](_docs/2-Version-Compatibility.md)
+  3. [Installation and Setup](_docs/3-Installation-and-Setup.md)
+  4. [Configuration](_docs/4-Configuration.md)
+  5. [Usage](_docs/5-Usage.md)
 
 ## TODO
 
@@ -56,7 +57,7 @@ Any ideas are welcome. Feel free to submit any issues or pull requests, please c
 - [All Contributors][link-contributors]
 
 [badge_license]:   https://img.shields.io/packagist/l/arcanedev/laravel-auth.svg?style=flat-square
-[badge_laravel]:   https://img.shields.io/badge/Laravel-%205.1|5.2|5.3-orange.svg?style=flat-square
+[badge_laravel]:   https://img.shields.io/badge/Laravel-%205.1%20to%205.4-orange.svg?style=flat-square
 [badge_build]:     https://img.shields.io/travis/ARCANEDEV/LaravelAuth.svg?style=flat-square
 [badge_coverage]:  https://img.shields.io/scrutinizer/coverage/g/ARCANEDEV/LaravelAuth.svg?style=flat-square
 [badge_quality]:   https://img.shields.io/scrutinizer/g/ARCANEDEV/LaravelAuth.svg?style=flat-square
