@@ -31,11 +31,9 @@ Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/r
 
 ## Table of contents
 
-  1. [Requirements](_docs/1-Requirements.md)
-  2. [Version Compatibility](_docs/2-Version-Compatibility.md)
-  3. [Installation and Setup](_docs/3-Installation-and-Setup.md)
-  4. [Configuration](_docs/4-Configuration.md)
-  5. [Usage](_docs/5-Usage.md)
+  1. [Installation and Setup](_docs/1-Installation-and-Setup.md)
+  2. [Configuration](_docs/2-Configuration.md)
+  3. [Usage](_docs/3-Usage.md)
 
 ## TODO
 
