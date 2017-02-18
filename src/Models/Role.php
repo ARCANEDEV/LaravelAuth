@@ -85,9 +85,7 @@ class Role extends Model implements RoleContract
         return $this
             ->belongsToMany(
                 config('laravel-auth.users.model', User::class),
-                config('laravel-auth.database.prefix').'role_user',
-                'role_id',
-                'user_id'
+                $this->getPrefix().config('laravel-auth.role-user.table', 'permission_role')
             )
             ->using(Pivots\RoleUser::class)
             ->withTimestamps();
@@ -103,9 +101,7 @@ class Role extends Model implements RoleContract
         return $this
             ->belongsToMany(
                 config('laravel-auth.permissions.model', Permission::class),
-                config('laravel-auth.database.prefix').'permission_role',
-                'role_id',
-                'permission_id'
+                $this->getPrefix().config('laravel-auth.permission-role.table', 'permission_role')
             )
             ->using(Pivots\PermissionRole::class)
             ->withTimestamps();

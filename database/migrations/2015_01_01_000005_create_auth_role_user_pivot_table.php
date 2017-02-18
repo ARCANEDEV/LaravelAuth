@@ -21,7 +21,7 @@ class CreateAuthRoleUserPivotTable extends Migration
     {
         parent::__construct();
 
-        $this->setTable('role_user');
+        $this->setTable(config('laravel-auth.role-user.table', 'role_user'));
     }
 
     /* -----------------------------------------------------------------

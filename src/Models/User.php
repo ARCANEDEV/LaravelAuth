@@ -147,9 +147,7 @@ class User extends Authenticatable implements UserContract
         return $this
             ->belongsToMany(
                 config('laravel-auth.roles.model', Role::class),
-                config('laravel-auth.database.prefix').'role_user',
-                'user_id',
-                'role_id'
+                $this->getPrefix().config('laravel-auth.role-user.table', 'role_user')
             )
             ->using(Pivots\RoleUser::class)
             ->withTimestamps();

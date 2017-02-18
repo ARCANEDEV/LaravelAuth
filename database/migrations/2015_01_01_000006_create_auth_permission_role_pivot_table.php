@@ -21,7 +21,7 @@ class CreateAuthPermissionRolePivotTable extends Migration
     {
         parent::__construct();
 
-        $this->setTable('permission_role');
+        $this->setTable(config('laravel-auth.permission-role.table', 'permission_role'));
     }
 
     /* -----------------------------------------------------------------
