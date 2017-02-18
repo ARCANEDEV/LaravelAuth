@@ -52,6 +52,8 @@ abstract class TestCase extends BaseTestCase
      */
     protected function getEnvironmentSetUp($app)
     {
+        \Arcanedev\LaravelAuth\Auth::publishMigrations();
+
         // Laravel App Configs
         $this->setAuthConfigs($app['config']);
 
@@ -186,5 +188,39 @@ abstract class TestCase extends BaseTestCase
         $this->artisan('vendor:publish', [
             '--tag' => ['migrations'],
         ]);
+    }
+
+    /**
+     * See in the database with prefixed table.
+     *
+     * @param  string       $table
+     * @param  array        $attributes
+     * @param  string|null  $connection
+     */
+    protected function seeInPrefixedDatabase($table, array $attributes, $connection = null)
+    {
+        $this->seeInDatabase($this->getTablePrefix().$table, $attributes, $connection);
+    }
+
+    /**
+     * Don't see in the database with prefixed table.
+     *
+     * @param  string       $table
+     * @param  array        $data
+     * @param  string|null  $connection
+     */
+    protected function dontSeeInPrefixedDatabase($table, array $data, $connection = null)
+    {
+        $this->dontSeeInDatabase($this->getTablePrefix().$table, $data, $connection);
+    }
+
+    /**
+     * Get the prefix for auth tables.
+     *
+     * @return string|null
+     */
+    protected function getTablePrefix()
+    {
+        return config('laravel-auth.database.prefix');
     }
 }

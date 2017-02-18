@@ -1,14 +1,14 @@
-<?php namespace Arcanedev\LaravelAuth\Bases;
+<?php namespace Arcanedev\LaravelAuth\Models\Observers;
 
 use Illuminate\Contracts\Events\Dispatcher;
 
 /**
- * Class     ModelObserver
+ * Class     AbstractObserver
  *
- * @package  Arcanedev\LaravelAuth\Bases
+ * @package  Arcanedev\LaravelAuth\Models\Observers
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-abstract class ModelObserver
+abstract class AbstractObserver
 {
     /* ------------------------------------------------------------------------------------------------
      |  Properties

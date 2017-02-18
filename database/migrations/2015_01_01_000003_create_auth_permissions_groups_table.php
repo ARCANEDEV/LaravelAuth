@@ -2,7 +2,6 @@
 
 use Arcanedev\LaravelAuth\Bases\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Class     CreatePermissionsTable
@@ -11,9 +10,9 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateAuthPermissionsGroupsTable extends Migration
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Constructor
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Make a migration instance.
@@ -25,16 +24,16 @@ class CreateAuthPermissionsGroupsTable extends Migration
         $this->setTable(config('laravel-auth.permissions-groups.table'));
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
+        $this->createSchema(function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('slug');

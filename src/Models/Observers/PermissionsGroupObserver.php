@@ -1,6 +1,5 @@
 <?php namespace Arcanedev\LaravelAuth\Models\Observers;
 
-use Arcanedev\LaravelAuth\Bases\ModelObserver;
 use Arcanesoft\Contracts\Auth\Models\PermissionsGroup;
 
 /**
@@ -9,7 +8,7 @@ use Arcanesoft\Contracts\Auth\Models\PermissionsGroup;
  * @package  Arcanedev\LaravelAuth\Observers
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class PermissionsGroupObserver extends ModelObserver
+class PermissionsGroupObserver extends AbstractObserver
 {
     /* ------------------------------------------------------------------------------------------------
      |  Model Events

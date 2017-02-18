@@ -88,7 +88,7 @@ class PermissionTest extends ModelsTest
 
         $this->permissionModel->create($attributes);
 
-        $this->seeInDatabase('permissions', $attributes);
+        $this->seeInPrefixedDatabase('permissions', $attributes);
     }
 
     /** @test */
@@ -107,12 +107,12 @@ class PermissionTest extends ModelsTest
             'description' => 'Allow to update users',
         ];
 
-        $this->seeInDatabase('permissions', $attributes);
+        $this->seeInPrefixedDatabase('permissions', $attributes);
 
         $permission->update($updatedAttributes);
 
-        $this->seeInDatabase('permissions',     $updatedAttributes);
-        $this->dontSeeInDatabase('permissions', $attributes);
+        $this->seeInPrefixedDatabase('permissions',     $updatedAttributes);
+        $this->dontSeeInPrefixedDatabase('permissions', $attributes);
     }
 
     /** @test */
@@ -126,11 +126,11 @@ class PermissionTest extends ModelsTest
 
         $permission = $this->permissionModel->create($attributes);
 
-        $this->seeInDatabase('permissions', $attributes);
+        $this->seeInPrefixedDatabase('permissions', $attributes);
 
         $permission->delete();
 
-        $this->dontSeeInDatabase('permissions', $attributes);
+        $this->dontSeeInPrefixedDatabase('permissions', $attributes);
     }
 
     /** @test */

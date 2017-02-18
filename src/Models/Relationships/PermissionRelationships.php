@@ -23,10 +23,13 @@ trait PermissionRelationships
      */
     public function roles()
     {
-        $model = config('laravel-auth.roles.model', Role::class);
-
         return $this
-            ->belongsToMany($model, 'permission_role', 'permission_id', 'role_id')
+            ->belongsToMany(
+                config('laravel-auth.roles.model', Role::class),
+                config('laravel-auth.database.prefix').'permission_role',
+                'permission_id',
+                'role_id'
+            )
             ->withTimestamps();
     }
 }

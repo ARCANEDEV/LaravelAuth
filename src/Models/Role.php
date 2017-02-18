@@ -1,7 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
 use Arcanedev\LaravelAuth\Bases\Model;
-use Arcanedev\LaravelAuth\Models\Relationships\RoleRelationships;
 use Arcanedev\LaravelAuth\Models\Traits\Activatable;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
@@ -22,8 +21,10 @@ use Illuminate\Support\Str;
  * @property  bool                                      is_locked
  * @property  \Carbon\Carbon                            created_at
  * @property  \Carbon\Carbon                            updated_at
- * @property  \Illuminate\Database\Eloquent\Collection  users
- * @property  \Illuminate\Database\Eloquent\Collection  permissions
+ *
+ * @property  \Illuminate\Database\Eloquent\Collection       users
+ * @property  \Illuminate\Database\Eloquent\Collection       permissions
+ * @property  \Arcanedev\LaravelAuth\Models\Pivots\RoleUser  pivot
  */
 class Role extends Model implements RoleContract
 {
@@ -31,7 +32,7 @@ class Role extends Model implements RoleContract
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use RoleRelationships, Activatable;
+    use Activatable;
 
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -68,6 +69,46 @@ class Role extends Model implements RoleContract
         $this->setTable(config('laravel-auth.roles.table', 'roles'));
 
         parent::__construct($attributes);
+    }
+
+    /* ------------------------------------------------------------------------------------------------
+     |  Relationships
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * Role belongs to many users.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users()
+    {
+        return $this
+            ->belongsToMany(
+                config('laravel-auth.users.model', User::class),
+                config('laravel-auth.database.prefix').'role_user',
+                'role_id',
+                'user_id'
+            )
+            ->using(Pivots\RoleUser::class)
+            ->withTimestamps();
+    }
+
+    /**
+     * Role belongs to many permissions.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function permissions()
+    {
+        return $this
+            ->belongsToMany(
+                config('laravel-auth.permissions.model', Permission::class),
+                config('laravel-auth.database.prefix').'permission_role',
+                'role_id',
+                'permission_id'
+            )
+            ->using(Pivots\PermissionRole::class)
+            ->withTimestamps();
     }
 
     /* ------------------------------------------------------------------------------------------------

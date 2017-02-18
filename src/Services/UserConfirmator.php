@@ -1,7 +1,10 @@
 <?php namespace Arcanedev\LaravelAuth\Services;
 
+use Arcanedev\LaravelAuth\Events\Users\ConfirmedUser;
+use Arcanedev\LaravelAuth\Events\Users\ConfirmingUser;
 use Arcanesoft\Contracts\Auth\Models\User as UserContract;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * Class     UserConfirmator
@@ -22,7 +25,7 @@ class UserConfirmator
      */
     public static function generateCode()
     {
-        return str_random(self::getLength());
+        return Str::random(self::getLength());
     }
 
     /**
@@ -34,14 +37,14 @@ class UserConfirmator
      */
     public function confirm(UserContract $user)
     {
-        event('auth.users.confirming', compact('user'));
+        event(new ConfirmingUser($user));
 
         $user->setAttribute('is_confirmed',      true);
         $user->setAttribute('confirmation_code', null);
         $user->setAttribute('confirmed_at',      Carbon::now());
         $user->save();
 
-        event('auth.users.confirmed', compact('user'));
+        event(new ConfirmedUser($user));
 
         return $user;
     }

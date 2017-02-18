@@ -2,7 +2,6 @@
 
 use Arcanedev\LaravelAuth\Bases\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Class     CreateRoleUserTable
@@ -11,29 +10,32 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateAuthRoleUserPivotTable extends Migration
 {
-    /* ------------------------------------------------------------------------------------------------
-     |  Properties
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Constructor
+     | -----------------------------------------------------------------
      */
     /**
-     * The table name
-     *
-     * @var string
+     * CreateAuthRoleUserPivotTable constructor.
      */
-    protected $table = 'role_user';
+    public function __construct()
+    {
+        parent::__construct();
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+        $this->setTable('role_user');
+    }
+
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
-            $table->integer('role_id')->unsigned();
-            $table->integer('user_id')->unsigned();
+        $this->createSchema(function (Blueprint $table) {
+            $table->unsignedInteger('role_id');
+            $table->unsignedInteger('user_id');
             $table->timestamps();
 
             $table->primary(['user_id', 'role_id']);

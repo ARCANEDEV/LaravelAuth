@@ -2,7 +2,6 @@
 
 use Arcanedev\LaravelAuth\Bases\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Class     CreateRolesTable
@@ -11,9 +10,9 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateAuthRolesTable extends Migration
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Constructor
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Make a migration instance.
@@ -25,22 +24,22 @@ class CreateAuthRolesTable extends Migration
         $this->setTable(config('laravel-auth.roles.table', 'roles'));
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
+        $this->createSchema(function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('slug');
             $table->string('description')->nullable();
-            $table->boolean('is_active')->default(1);
-            $table->boolean('is_locked')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->boolean('is_locked')->default(false);
             $table->timestamps();
 
             $table->unique('slug');

@@ -2,7 +2,6 @@
 
 use Arcanedev\LaravelAuth\Bases\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Class     CreatePermissionRoleTable
@@ -11,29 +10,32 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateAuthPermissionRolePivotTable extends Migration
 {
-    /* ------------------------------------------------------------------------------------------------
-     |  Properties
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Constructor
+     | -----------------------------------------------------------------
      */
     /**
-     * Table name.
-     *
-     * @var string
+     * CreateAuthPermissionRolePivotTable constructor.
      */
-    protected $table = 'permission_role';
+    public function __construct()
+    {
+        parent::__construct();
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+        $this->setTable('permission_role');
+    }
+
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
-            $table->integer('permission_id')->unsigned();
-            $table->integer('role_id')->unsigned();
+        $this->createSchema(function (Blueprint $table) {
+            $table->unsignedInteger('permission_id');
+            $table->unsignedInteger('role_id');
             $table->timestamps();
 
             $table->primary(['permission_id', 'role_id']);

@@ -6,7 +6,9 @@ use Arcanedev\LaravelAuth\Services\SocialAuthenticator;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Arcanedev\LaravelAuth\Models\Traits\Activatable;
 use Arcanedev\LaravelAuth\Models\Traits\AuthUserTrait;
+use Arcanedev\Support\Traits\PrefixedModel;
 use Arcanesoft\Contracts\Auth\Models\User as UserContract;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -33,8 +35,10 @@ use Illuminate\Support\Str;
  * @property  \Carbon\Carbon                            created_at
  * @property  \Carbon\Carbon                            updated_at
  * @property  \Carbon\Carbon                            deleted_at
- * @property  \Illuminate\Database\Eloquent\Collection  roles
- * @property  \Illuminate\Database\Eloquent\Collection  permissions
+ *
+ * @property  \Illuminate\Database\Eloquent\Collection       roles
+ * @property  \Illuminate\Database\Eloquent\Collection       permissions
+ * @property  \Arcanedev\LaravelAuth\Models\Pivots\RoleUser  pivot
  *
  * @method  static  bool                                   insert(array $values)
  * @method          \Illuminate\Database\Eloquent\Builder  unconfirmed(string $code)
@@ -46,7 +50,9 @@ class User extends Authenticatable implements UserContract
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use AuthUserTrait, Activatable, SoftDeletes;
+    use AuthUserTrait,
+        Activatable,
+        SoftDeletes;
 
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -70,7 +76,11 @@ class User extends Authenticatable implements UserContract
      *
      * @var array
      */
-    protected $hidden   = ['password', 'remember_token', 'confirmation_code'];
+    protected $hidden   = [
+        'password',
+        'remember_token',
+        'confirmation_code',
+    ];
 
     /**
      * The attributes that should be casted to native types.
@@ -88,7 +98,11 @@ class User extends Authenticatable implements UserContract
      *
      * @var array
      */
-    protected $dates = ['confirmed_at', 'last_activity', 'deleted_at'];
+    protected $dates = [
+        'confirmed_at',
+        'last_activity',
+        'deleted_at',
+    ];
 
     /* ------------------------------------------------------------------------------------------------
      |  Constructor
@@ -101,14 +115,44 @@ class User extends Authenticatable implements UserContract
      */
     public function __construct(array $attributes = [])
     {
+        parent::__construct($attributes);
+
+        $this->setupModel();
+    }
+
+    /**
+     * Setup the model.
+     */
+    protected function setupModel()
+    {
         $this->setTable(config('laravel-auth.users.table', 'users'));
 
         if (SocialAuthenticator::isEnabled()) {
             $this->hidden   = array_merge($this->hidden, ['social_provider_id']);
             $this->fillable = array_merge($this->fillable, ['social_provider', 'social_provider_id']);
         }
+    }
 
-        parent::__construct($attributes);
+    /* ------------------------------------------------------------------------------------------------
+     |  Relationships
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * User belongs to many roles.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function roles()
+    {
+        return $this
+            ->belongsToMany(
+                config('laravel-auth.roles.model', Role::class),
+                config('laravel-auth.database.prefix').'role_user',
+                'user_id',
+                'role_id'
+            )
+            ->using(Pivots\RoleUser::class)
+            ->withTimestamps();
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -126,8 +170,8 @@ class User extends Authenticatable implements UserContract
     public function scopeUnconfirmed($query, $code)
     {
         return $query->where('is_confirmed', false)
-            ->where('confirmation_code', $code)
-            ->whereNull('confirmed_at');
+                     ->where('confirmation_code', $code)
+                     ->whereNull('confirmed_at');
     }
 
     /**
@@ -142,7 +186,7 @@ class User extends Authenticatable implements UserContract
     {
         $minutes = $minutes ?: config('laravel_auth.track-activity.minutes', 5);
 
-        $date = \Carbon\Carbon::now()->subMinutes($minutes);
+        $date = Carbon::now()->subMinutes($minutes);
 
         return $query->where('last_activity', '>=', $date->toDateTimeString());
     }
@@ -168,7 +212,7 @@ class User extends Authenticatable implements UserContract
      */
     public function getFullNameAttribute()
     {
-        return $this->first_name . ' ' . $this->last_name;
+        return $this->first_name.' '.$this->last_name;
     }
 
     /**
@@ -228,7 +272,7 @@ class User extends Authenticatable implements UserContract
      */
     public function updateLastActivity($save = true)
     {
-        $this->forceFill(['last_activity' => \Carbon\Carbon::now()]);
+        $this->forceFill(['last_activity' => Carbon::now()]);
 
         if ($save) $this->save();
     }
@@ -276,19 +320,6 @@ class User extends Authenticatable implements UserContract
     public function isConfirmed()
     {
         return $this->is_confirmed;
-    }
-
-    /**
-     * Check if user is on force deleting.
-     *
-     * @deprecated since Laravel v5.3.11
-     * @see https://github.com/laravel/framework/pull/15580
-     *
-     * @return bool
-     */
-    public function isForceDeleting()
-    {
-        return $this->forceDeleting;
     }
 
     /**

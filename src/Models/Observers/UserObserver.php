@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Models\Observers;
 
-use Arcanedev\LaravelAuth\Bases\ModelObserver;
+use Arcanedev\LaravelAuth\Events\Users as UserEvents;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Arcanesoft\Contracts\Auth\Models\User;
 
@@ -10,7 +10,7 @@ use Arcanesoft\Contracts\Auth\Models\User;
  * @package  Arcanedev\LaravelAuth\Observers
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class UserObserver extends ModelObserver
+class UserObserver extends AbstractObserver
 {
     /* ------------------------------------------------------------------------------------------------
      |  Model Events
@@ -23,11 +23,10 @@ class UserObserver extends ModelObserver
      */
     public function creating(User $user)
     {
-        if (UserConfirmator::isEnabled()) {
+        if (UserConfirmator::isEnabled())
             $user->confirmation_code = UserConfirmator::generateCode();
-        }
 
-        $this->event->fire('auth.users.creating', compact('user'));
+        $this->event->dispatch(new UserEvents\CreatingUser($user));
     }
 
     /**
@@ -37,7 +36,7 @@ class UserObserver extends ModelObserver
      */
     public function created(User $user)
     {
-        $this->event->fire('auth.users.created', compact('user'));
+        $this->event->dispatch(new UserEvents\CreatedUser($user));
     }
 
     /**
@@ -47,7 +46,7 @@ class UserObserver extends ModelObserver
      */
     public function updating(User $user)
     {
-        $this->event->fire('auth.users.updating', compact('user'));
+        $this->event->dispatch(new UserEvents\UpdatingUser($user));
     }
 
     /**
@@ -57,7 +56,7 @@ class UserObserver extends ModelObserver
      */
     public function updated(User $user)
     {
-        $this->event->fire('auth.users.updated', compact('user'));
+        $this->event->dispatch(new UserEvents\UpdatedUser($user));
     }
 
     /**
@@ -67,7 +66,7 @@ class UserObserver extends ModelObserver
      */
     public function saving(User $user)
     {
-        $this->event->fire('auth.users.saving', compact('user'));
+        $this->event->dispatch(new UserEvents\SavingUser($user));
     }
 
     /**
@@ -77,7 +76,7 @@ class UserObserver extends ModelObserver
      */
     public function saved(User $user)
     {
-        $this->event->fire('auth.users.saved', compact('user'));
+        $this->event->dispatch(new UserEvents\SavedUser($user));
     }
 
     /**
@@ -89,13 +88,13 @@ class UserObserver extends ModelObserver
      */
     public function deleting(User $user)
     {
-        if ($user->isAdmin()) return false;
+        if ($user->isAdmin())
+            return false;
 
-        if ($user->isForceDeleting()) {
+        if ($user->isForceDeleting())
             $user->roles()->detach();
-        }
 
-        $this->event->fire('auth.users.deleting', compact('user'));
+        $this->event->dispatch(new UserEvents\DeletingUser($user));
 
         return true;
     }
@@ -107,7 +106,7 @@ class UserObserver extends ModelObserver
      */
     public function deleted(User $user)
     {
-        $this->event->fire('auth.users.deleted', compact('user'));
+        $this->event->dispatch(new UserEvents\DeletedUser($user));
     }
 
     /**
@@ -117,7 +116,7 @@ class UserObserver extends ModelObserver
      */
     public function restoring(User $user)
     {
-        $this->event->fire('auth.users.restoring', compact('user'));
+        $this->event->dispatch(new UserEvents\RestoringUser($user));
     }
 
     /**
@@ -127,6 +126,6 @@ class UserObserver extends ModelObserver
      */
     public function restored(User $user)
     {
-        $this->event->fire('auth.users.restored', compact('user'));
+        $this->event->dispatch(new UserEvents\RestoredUser($user));
     }
 }

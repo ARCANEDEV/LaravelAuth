@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Tests\Models;
 
 use Arcanedev\LaravelAuth\Models\Permission;
+use Arcanedev\LaravelAuth\Models\Pivots\RoleUser;
 use Arcanedev\LaravelAuth\Models\Role;
 use Arcanedev\LaravelAuth\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -79,6 +80,10 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_create()
     {
+        $this->checkFiredEvents([
+            'created', 'creating', 'saved', 'saving',
+        ]);
+
         $attributes = $this->getUserAttributes();
         $user       = $this->createUser();
 
@@ -86,7 +91,7 @@ class UserTest extends ModelsTest
         $this->assertEquals($attributes['first_name'],  $user->first_name);
         $this->assertEquals($attributes['last_name'],   $user->last_name);
         $this->assertEquals(
-            $attributes['first_name'] . ' ' . $attributes['last_name'], $user->full_name
+            $attributes['first_name'].' '.$attributes['last_name'], $user->full_name
         );
         $this->assertEquals($attributes['email'],       $user->email);
         $this->assertNotEquals($attributes['password'], $user->password);
@@ -106,6 +111,10 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_activate_and_deactivate()
     {
+        $this->checkFiredEvents([
+            'created', 'creating', 'saved', 'saving', 'updated', 'updating',
+        ]);
+
         $attributes = [
             'username'   => 'john.doe',
             'first_name' => 'John',
@@ -133,8 +142,8 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_attach_and_detach_a_role()
     {
-        $user          = $this->createUser();
-        $adminRole     = Role::create([
+        $user      = $this->createUser();
+        $adminRole = Role::create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ]);
@@ -154,6 +163,14 @@ class UserTest extends ModelsTest
         $this->assertTrue($user->hasRole($adminRole));
         $this->assertTrue($user->hasRole($moderatorRole));
 
+        // Assert the pivot table
+        foreach ($user->roles as $role) {
+            /** @var  \Arcanedev\LaravelAuth\Models\Role  $role */
+            $this->assertInstanceOf(RoleUser::class, $role->pivot);
+            $this->assertSame($user->id, $role->pivot->user_id);
+            $this->assertSame($role->id, $role->pivot->role_id);
+        }
+
         $user->detachRole($adminRole);
         $this->assertCount(1, $user->roles);
         $this->assertFalse($user->hasRole($adminRole));
@@ -168,8 +185,8 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_prevent_attaching_a_duplicated_role()
     {
-        $user          = $this->createUser();
-        $adminRole     = Role::create([
+        $user      = $this->createUser();
+        $adminRole = Role::create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ]);
@@ -189,13 +206,13 @@ class UserTest extends ModelsTest
         $user  = $this->createUser();
         $roles = collect([
             Role::create([
-            'name'        => 'Admin',
-            'description' => 'Admin role descriptions.',
-        ]),
+                'name'        => 'Admin',
+                'description' => 'Admin role descriptions.',
+            ]),
             Role::create([
-            'name'        => 'Moderator',
-            'description' => 'Moderator role descriptions.',
-        ])
+                'name'        => 'Moderator',
+                'description' => 'Moderator role descriptions.',
+            ])
         ]);
 
         $this->assertCount(0, $user->roles);
@@ -267,6 +284,11 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_confirm()
     {
+        $this->checkFiredEvents([
+            'created', 'creating', 'saved', 'saving', 'updated', 'updating',
+            'confirming', 'confirmed'
+        ]);
+
         $user = $this->createUser();
 
         $this->assertFalse($user->is_confirmed);
@@ -285,6 +307,11 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_confirm_by_code()
     {
+        $this->checkFiredEvents([
+            'created', 'creating', 'saved', 'saving', 'updated', 'updating',
+            'confirming', 'confirmed'
+        ]);
+
         $user = $this->createUser();
 
         $this->assertFalse($user->is_confirmed);
@@ -303,6 +330,10 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_delete()
     {
+        $this->checkFiredEvents([
+            'created', 'creating', 'saved', 'saving', 'deleting', 'deleted',
+        ]);
+
         $user   = $this->createUser();
         $userId = $user->id;
 
@@ -328,6 +359,10 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_not_delete_admin()
     {
+        $this->checkFiredEvents([
+            'created', 'creating', 'saved', 'saving', 'updating', 'updated',
+        ]);
+
         $user           = $this->createUser();
         $adminId        = $user->id;
         $user->is_admin = true;
@@ -347,6 +382,11 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_restore()
     {
+        $this->checkFiredEvents([
+            'created', 'creating', 'saved', 'saving', 'updating', 'updated',
+            'deleting', 'deleted', 'restoring', 'restored',
+        ]);
+
         $user   = $this->createUser();
         $userId = $user->id;
 
@@ -481,7 +521,10 @@ class UserTest extends ModelsTest
 
         $failedPermissions = [];
         $permissionToCheck = [
-            'auth.users.create', 'auth.users.update', 'blog.posts.create', 'blog.posts.update'
+            'auth.users.create',
+            'auth.users.update',
+            'blog.posts.create',
+            'blog.posts.update',
         ];
 
         $this->assertTrue($user->mayOne($permissionToCheck, $failedPermissions));
@@ -508,7 +551,10 @@ class UserTest extends ModelsTest
 
         $failedPermissions = [];
         $permissionToCheck = [
-            'auth.users.create', 'auth.users.update', 'blog.posts.create', 'blog.posts.update'
+            'auth.users.create',
+            'auth.users.update',
+            'blog.posts.create',
+            'blog.posts.update',
         ];
 
         $this->assertTrue($user->mayAll($permissionToCheck, $failedPermissions));
@@ -631,5 +677,42 @@ class UserTest extends ModelsTest
         ]));
 
         return $moderatorRole;
+    }
+
+    /**
+     * Get the events related to the users.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    protected function getEvents()
+    {
+        return collect([
+            'creating'   => \Arcanedev\LaravelAuth\Events\Users\CreatingUser::class,
+            'created'    => \Arcanedev\LaravelAuth\Events\Users\CreatedUser::class,
+            'saving'     => \Arcanedev\LaravelAuth\Events\Users\SavingUser::class,
+            'saved'      => \Arcanedev\LaravelAuth\Events\Users\SavedUser::class,
+            'updating'   => \Arcanedev\LaravelAuth\Events\Users\UpdatingUser::class,
+            'updated'    => \Arcanedev\LaravelAuth\Events\Users\UpdatedUser::class,
+            'deleting'   => \Arcanedev\LaravelAuth\Events\Users\DeletingUser::class,
+            'deleted'    => \Arcanedev\LaravelAuth\Events\Users\DeletedUser::class,
+            'confirming' => \Arcanedev\LaravelAuth\Events\Users\ConfirmingUser::class,
+            'confirmed'  => \Arcanedev\LaravelAuth\Events\Users\ConfirmedUser::class,
+        ]);
+    }
+
+    /**
+     * Check the fired & unfired events.
+     *
+     * @param  array  $keys
+     */
+    protected function checkFiredEvents(array $keys)
+    {
+        $this->expectsEvents(
+            $this->getEvents()->only($keys)->values()->toArray()
+        );
+
+        $this->doesntExpectEvents(
+            $this->getEvents()->except($keys)->values()->toArray()
+        );
     }
 }

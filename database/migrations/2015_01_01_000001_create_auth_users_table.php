@@ -4,7 +4,6 @@ use Arcanedev\LaravelAuth\Bases\Migration;
 use Arcanedev\LaravelAuth\Services\SocialAuthenticator;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Class     CreateUsersTable
@@ -13,9 +12,9 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateAuthUsersTable extends Migration
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Constructor
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Make a migration instance.
@@ -27,16 +26,16 @@ class CreateAuthUsersTable extends Migration
         $this->setTable(config('laravel-auth.users.table', 'users'));
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
+        $this->createSchema(function (Blueprint $table) {
             $table->increments('id');
             $table->string('username');
             $table->string('first_name', 30)->nullable();

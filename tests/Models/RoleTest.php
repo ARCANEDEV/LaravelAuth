@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Tests\Models;
 
 use Arcanedev\LaravelAuth\Models\Permission;
+use Arcanedev\LaravelAuth\Models\Pivots\RoleUser;
 use Arcanedev\LaravelAuth\Models\Role;
 use Arcanedev\LaravelAuth\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -105,8 +106,8 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole($attributes);
 
-        $this->seeInDatabase('roles', $attributes);
-        $this->seeInDatabase('roles', Arr::except($role->toArray(), ['created_at', 'updated_at']));
+        $this->seeInPrefixedDatabase('roles', $attributes);
+        $this->seeInPrefixedDatabase('roles', Arr::except($role->toArray(), ['created_at', 'updated_at']));
 
         $this->assertTrue($role->is_active);
         $this->assertTrue($role->isActive());
@@ -120,9 +121,9 @@ class RoleTest extends ModelsTest
 
         $role->update($updatedAttributes);
 
-        $this->dontSeeInDatabase('roles', $attributes);
-        $this->seeInDatabase('roles', $updatedAttributes);
-        $this->seeInDatabase('roles', Arr::except($role->toArray(), ['created_at', 'updated_at']));
+        $this->dontSeeInPrefixedDatabase('roles', $attributes);
+        $this->seeInPrefixedDatabase('roles', $updatedAttributes);
+        $this->seeInPrefixedDatabase('roles', Arr::except($role->toArray(), ['created_at', 'updated_at']));
 
         $this->assertTrue($role->is_active);
         $this->assertTrue($role->isActive());
@@ -165,11 +166,11 @@ class RoleTest extends ModelsTest
     {
         $role = $this->createRole();
 
-        $this->seeInDatabase('roles', $role->toArray());
+        $this->seeInPrefixedDatabase('roles', $role->toArray());
 
         $role->delete();
 
-        $this->dontSeeInDatabase('roles', $role->toArray());
+        $this->dontSeeInPrefixedDatabase('roles', $role->toArray());
     }
 
     /** @test */
@@ -207,6 +208,13 @@ class RoleTest extends ModelsTest
         $this->assertCount(2, $role->users);
         $this->assertTrue($role->hasUser($admin));
         $this->assertTrue($role->hasUser($member));
+
+        // Assert the pivot table
+        foreach ($role->users as $user) {
+            $this->assertInstanceOf(RoleUser::class, $user->pivot);
+            $this->assertSame($user->pivot->role_id, $role->id);
+            $this->assertSame($user->pivot->user_id, $user->id);
+        }
 
         $role->detachUser($admin);
 

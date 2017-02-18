@@ -1,5 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Bases;
 
+use Arcanedev\Support\Traits\PrefixedModel;
 use Illuminate\Database\Eloquent\Model as BaseModel;
 
 /**
@@ -7,12 +8,23 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
  *
  * @package  Arcanedev\LaravelAuth\Base
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @method  static  \Illuminate\Contracts\Pagination\LengthAwarePaginator  paginate(int $perPage = null, array $columns = ['*'], string $pageName = 'page', int|null $page = null)
+ * @method  static  \Illuminate\Contracts\Pagination\Paginator             simplePaginate(int $perPage = null, array $columns = ['*'], string $pageName = 'page', int|null $page = null)
+ * @method  static  \Illuminate\Database\Eloquent\Model                    create(array $attribute)
+ * @method  static  \Illuminate\Database\Eloquent\Model                    forceCreate(array $attributes)
  */
 abstract class Model extends BaseModel
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Traits
+     | -----------------------------------------------------------------
+     */
+    use PrefixedModel;
+
+    /* -----------------------------------------------------------------
      |  Constructor
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Create a new Eloquent model instance.
@@ -23,8 +35,7 @@ abstract class Model extends BaseModel
     {
         parent::__construct($attributes);
 
-        if ($connection = config('laravel-auth.database.connection')) {
-            $this->setConnection($connection);
-        }
+        $this->setConnection(config('laravel-auth.database.connection'));
+        $this->setPrefix(config('laravel-auth.database.prefix'));
     }
 }
