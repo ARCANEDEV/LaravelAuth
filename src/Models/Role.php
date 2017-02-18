@@ -24,7 +24,8 @@ use Illuminate\Support\Str;
  *
  * @property  \Illuminate\Database\Eloquent\Collection       users
  * @property  \Illuminate\Database\Eloquent\Collection       permissions
- * @property  \Arcanedev\LaravelAuth\Models\Pivots\RoleUser  pivot
+ *
+ * @property  \Arcanedev\LaravelAuth\Models\Pivots\RoleUser|\Arcanedev\LaravelAuth\Models\Pivots\PermissionRole  pivot
  */
 class Role extends Model implements RoleContract
 {

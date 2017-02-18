@@ -14,16 +14,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class UserTest extends ModelsTest
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Properties
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
-    /** @var User */
+    /** @var  \Arcanedev\LaravelAuth\Models\User */
     protected $userModel;
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Setup Methods
+     | -----------------------------------------------------------------
      */
     public function setUp()
     {
@@ -39,10 +39,11 @@ class UserTest extends ModelsTest
         unset($this->userModel);
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Test Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Tests
+     | -----------------------------------------------------------------
      */
+
     /** @test */
     public function it_can_be_instantiated()
     {
@@ -142,6 +143,11 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_attach_and_detach_a_role()
     {
+        $this->checkFiredEvents([
+            'created', 'creating', 'saved', 'saving',
+            'attaching-role', 'attached-role', 'detaching-role', 'detached-role',
+        ]);
+
         $user      = $this->createUser();
         $adminRole = Role::create([
             'name'        => 'Admin',
@@ -185,6 +191,10 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_prevent_attaching_a_duplicated_role()
     {
+        $this->checkFiredEvents([
+            'created', 'creating', 'saved', 'saving', 'attaching-role', 'attached-role',
+        ]);
+
         $user      = $this->createUser();
         $adminRole = Role::create([
             'name'        => 'Admin',
@@ -203,6 +213,11 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_sync_roles_by_its_slugs()
     {
+        $this->checkFiredEvents([
+            'created', 'creating', 'saved', 'saving',
+            'syncing-roles', 'synced-roles',
+        ]);
+
         $user  = $this->createUser();
         $roles = collect([
             Role::create([
@@ -230,8 +245,13 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_detach_all_roles()
     {
-        $user          = $this->createUser();
-        $adminRole     = Role::create([
+        $this->checkFiredEvents([
+            'created', 'creating', 'saved', 'saving',
+            'attaching-role', 'attached-role', 'detaching-roles', 'detached-roles',
+        ]);
+
+        $user      = $this->createUser();
+        $adminRole = Role::create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ]);
@@ -588,9 +608,9 @@ class UserTest extends ModelsTest
         $this->assertSame($authUser->id, $users->first()->id);
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Other Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Helpers
+     | -----------------------------------------------------------------
      */
     /**
      * Create a user.
@@ -687,16 +707,29 @@ class UserTest extends ModelsTest
     protected function getEvents()
     {
         return collect([
-            'creating'   => \Arcanedev\LaravelAuth\Events\Users\CreatingUser::class,
-            'created'    => \Arcanedev\LaravelAuth\Events\Users\CreatedUser::class,
-            'saving'     => \Arcanedev\LaravelAuth\Events\Users\SavingUser::class,
-            'saved'      => \Arcanedev\LaravelAuth\Events\Users\SavedUser::class,
-            'updating'   => \Arcanedev\LaravelAuth\Events\Users\UpdatingUser::class,
-            'updated'    => \Arcanedev\LaravelAuth\Events\Users\UpdatedUser::class,
-            'deleting'   => \Arcanedev\LaravelAuth\Events\Users\DeletingUser::class,
-            'deleted'    => \Arcanedev\LaravelAuth\Events\Users\DeletedUser::class,
-            'confirming' => \Arcanedev\LaravelAuth\Events\Users\ConfirmingUser::class,
-            'confirmed'  => \Arcanedev\LaravelAuth\Events\Users\ConfirmedUser::class,
+            // Laravel Events
+            'creating'        => \Arcanedev\LaravelAuth\Events\Users\CreatingUser::class,
+            'created'         => \Arcanedev\LaravelAuth\Events\Users\CreatedUser::class,
+            'saving'          => \Arcanedev\LaravelAuth\Events\Users\SavingUser::class,
+            'saved'           => \Arcanedev\LaravelAuth\Events\Users\SavedUser::class,
+            'updating'        => \Arcanedev\LaravelAuth\Events\Users\UpdatingUser::class,
+            'updated'         => \Arcanedev\LaravelAuth\Events\Users\UpdatedUser::class,
+            'deleting'        => \Arcanedev\LaravelAuth\Events\Users\DeletingUser::class,
+            'deleted'         => \Arcanedev\LaravelAuth\Events\Users\DeletedUser::class,
+            'restoring'       => \Arcanedev\LaravelAuth\Events\Users\RestoringUser::class,
+            'restored'        => \Arcanedev\LaravelAuth\Events\Users\RestoredUser::class,
+
+            // Custom events
+            'confirming'      => \Arcanedev\LaravelAuth\Events\Users\ConfirmingUser::class,
+            'confirmed'       => \Arcanedev\LaravelAuth\Events\Users\ConfirmedUser::class,
+            'syncing-roles'   => \Arcanedev\LaravelAuth\Events\Users\SyncingUserWithRoles::class,
+            'synced-roles'    => \Arcanedev\LaravelAuth\Events\Users\SyncedUserWithRoles::class,
+            'attaching-role'  => \Arcanedev\LaravelAuth\Events\Users\AttachingRoleToUser::class,
+            'attached-role'   => \Arcanedev\LaravelAuth\Events\Users\AttachedRoleToUser::class,
+            'detaching-role'  => \Arcanedev\LaravelAuth\Events\Users\DetachingRole::class,
+            'detached-role'   => \Arcanedev\LaravelAuth\Events\Users\DetachedRole::class,
+            'detaching-roles' => \Arcanedev\LaravelAuth\Events\Users\DetachingRoles::class,
+            'detached-roles'  => \Arcanedev\LaravelAuth\Events\Users\DetachedRoles::class,
         ]);
     }
 

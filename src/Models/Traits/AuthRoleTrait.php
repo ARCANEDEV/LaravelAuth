@@ -1,7 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Models\Traits;
 
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
-use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Trait     AuthRoleTrait
@@ -16,83 +15,9 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  */
 trait AuthRoleTrait
 {
-    /* ------------------------------------------------------------------------------------------------
-     |  Role CRUD Functions
-     | ------------------------------------------------------------------------------------------------
-     */
-    /**
-     * Attach a role to a user.
-     *
-     * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
-     * @param  bool                                    $reload
-     */
-    public function attachRole($role, $reload = true)
-    {
-        if ( ! $this->hasRole($role)) {
-            $this->roles()->attach($role);
-            $this->loadRoles($reload);
-        }
-    }
-
-    /**
-     * Sync the roles by its slugs.
-     *
-     * @param  array  $slugs
-     * @param  bool   $reload
-     *
-     * @return array
-     */
-    public function syncRoles(array $slugs, $reload = true)
-    {
-        /** @var \Illuminate\Database\Eloquent\Collection $roles */
-        $roles  = app(RoleContract::class)->whereIn('slug', $slugs)->get();
-        $synced = $this->roles()->sync(
-            $roles->pluck('id')->toArray()
-        );
-
-        $this->loadRoles($reload);
-
-        return $synced;
-    }
-
-    /**
-     * Detach a role from a user.
-     *
-     * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
-     * @param  bool                                        $reload
-     *
-     * @return int
-     */
-    public function detachRole($role, $reload = true)
-    {
-        if ($role instanceof Eloquent) {
-            $role = (array) $role->getKey();
-        }
-
-        $results = $this->roles()->detach($role);
-        $this->loadRoles($reload);
-
-        return $results;
-    }
-
-    /**
-     * Detach all roles from a user.
-     *
-     * @param  bool  $reload
-     *
-     * @return int
-     */
-    public function detachAllRoles($reload = true)
-    {
-        $results = $this->roles()->detach();
-        $this->loadRoles($reload);
-
-        return $results;
-    }
-
-    /* ------------------------------------------------------------------------------------------------
-     |  Check Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Check Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Check if user has the given role (Role Model or Id).
@@ -103,9 +28,6 @@ trait AuthRoleTrait
      */
     public function hasRole($id)
     {
-        if ($id instanceof Eloquent)
-            $id = $id->getKey();
-
         return $this->roles->contains($id);
     }
 
@@ -158,9 +80,9 @@ trait AuthRoleTrait
         return ! $roles->isEmpty();
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Other Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Other Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Load all roles.

@@ -1,7 +1,16 @@
 <?php namespace Arcanedev\LaravelAuth\Models\Traits;
 
+use Arcanedev\LaravelAuth\Events\Users\AttachedRoleToUser;
+use Arcanedev\LaravelAuth\Events\Users\AttachingRoleToUser;
+use Arcanedev\LaravelAuth\Events\Users\DetachedRole;
+use Arcanedev\LaravelAuth\Events\Users\DetachedRoles;
+use Arcanedev\LaravelAuth\Events\Users\DetachingRole;
+use Arcanedev\LaravelAuth\Events\Users\DetachingRoles;
+use Arcanedev\LaravelAuth\Events\Users\SyncedUserWithRoles;
+use Arcanedev\LaravelAuth\Events\Users\SyncingUserWithRoles;
 use Arcanedev\LaravelAuth\Models\Permission;
 use Arcanedev\LaravelAuth\Models\Role;
+use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
@@ -41,9 +50,88 @@ trait AuthUserTrait
         return $permissions;
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Permission Check Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
+     */
+    /**
+     * Attach a role to a user.
+     *
+     * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
+     * @param  bool                                    $reload
+     */
+    public function attachRole($role, $reload = true)
+    {
+        if ( ! $this->hasRole($role)) {
+            event(new AttachingRoleToUser($this, $role));
+            $this->roles()->attach($role);
+            $this->loadRoles($reload);
+            event(new AttachedRoleToUser($this, $role));
+        }
+    }
+
+    /**
+     * Sync the roles by its slugs.
+     *
+     * @param  array  $slugs
+     * @param  bool   $reload
+     *
+     * @return array
+     */
+    public function syncRoles(array $slugs, $reload = true)
+    {
+        /** @var \Illuminate\Database\Eloquent\Collection $roles */
+        $roles  = app(RoleContract::class)->whereIn('slug', $slugs)->get();
+
+        event(new SyncingUserWithRoles($this, $roles));
+        $synced = $this->roles()->sync($roles->pluck('id'));
+        event(new SyncedUserWithRoles($this, $roles, $synced));
+
+        $this->loadRoles($reload);
+
+        return $synced;
+    }
+
+    /**
+     * Detach a role from a user.
+     *
+     * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
+     * @param  bool                                        $reload
+     *
+     * @return int
+     */
+    public function detachRole($role, $reload = true)
+    {
+        event(new DetachingRole($this, $role));
+        $results = $this->roles()->detach($role);
+        event(new DetachedRole($this, $role, $results));
+
+        $this->loadRoles($reload);
+
+        return $results;
+    }
+
+    /**
+     * Detach all roles from a user.
+     *
+     * @param  bool  $reload
+     *
+     * @return int
+     */
+    public function detachAllRoles($reload = true)
+    {
+        event(new DetachingRoles($this));
+        $results = $this->roles()->detach();
+        event(new DetachedRoles($this, $results));
+
+        $this->loadRoles($reload);
+
+        return $results;
+    }
+
+    /* -----------------------------------------------------------------
+     |  Permission Check Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Check if the user has a permission.
