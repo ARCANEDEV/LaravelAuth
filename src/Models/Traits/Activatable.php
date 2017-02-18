@@ -12,9 +12,9 @@
  */
 trait Activatable
 {
-    /* ------------------------------------------------------------------------------------------------
-     |  CRUD Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Activate the model.
@@ -50,14 +50,23 @@ trait Activatable
      */
     protected function switchActive($active, $save = true)
     {
-        $this->is_active = boolval($active);
+        $this->forceFill(['is_active' => boolval($active)]);
 
         return $save ? $this->save() : false;
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Check Functions
-     | ------------------------------------------------------------------------------------------------
+    /**
+     * Fill the model with an array of attributes. Force mass assignment.
+     *
+     * @param  array  $attributes
+     *
+     * @return self
+     */
+    abstract public function forceFill(array $attributes);
+
+    /* -----------------------------------------------------------------
+     |  Check Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Check if the model is active.

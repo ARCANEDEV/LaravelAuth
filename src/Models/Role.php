@@ -1,8 +1,21 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
+use Arcanedev\LaravelAuth\Events\Roles\AttachedPermissionToRole;
+use Arcanedev\LaravelAuth\Events\Roles\AttachedUserToRole;
+use Arcanedev\LaravelAuth\Events\Roles\AttachingPermissionToRole;
+use Arcanedev\LaravelAuth\Events\Roles\AttachingUserToRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachedAllPermissionsFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachedAllUsersFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachedPermissionFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachedUserFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachingAllPermissionsFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachingAllUsersFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachingPermissionFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachingUserFromRole;
 use Arcanedev\LaravelAuth\Models\Traits\Activatable;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
+use Arcanesoft\Contracts\Auth\Models\User;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Str;
 
@@ -145,10 +158,15 @@ class Role extends AbstractModel implements RoleContract
     public function attachUser($user, $reload = true)
     {
         if ( ! $this->hasUser($user)) {
+            event(new AttachingUserToRole($this, $user));
             $this->users()->attach($user);
+            event(new AttachedUserToRole($this, $user));
+
             $this->loadUsers($reload);
         }
     }
+
+    // TODO: Adding attach multiple users to a role ?
 
     /**
      * Detach a user from a role.
@@ -160,14 +178,16 @@ class Role extends AbstractModel implements RoleContract
      */
     public function detachUser($user, $reload = true)
     {
-        if ($user instanceof Eloquent)
-            $user = (array) $user->getKey();
+        event(new DetachingUserFromRole($this, $user));
+        $results = $this->users()->detach($user);
+        event(new DetachedUserFromRole($this, $user, $results));
 
-        $result = $this->users()->detach($user);
         $this->loadUsers($reload);
 
-        return $result;
+        return $results;
     }
+
+    // TODO: Adding detach multiple users to a role ?
 
     /**
      * Detach all users from a role.
@@ -178,25 +198,13 @@ class Role extends AbstractModel implements RoleContract
      */
     public function detachAllUsers($reload = true)
     {
-        $result = $this->users()->detach();
+        event(new DetachingAllUsersFromRole($this));
+        $results = $this->users()->detach();
+        event(new DetachedAllUsersFromRole($this, $results));
+
         $this->loadUsers($reload);
 
-        return $result;
-    }
-
-    /**
-     * Check if role has the given user (User Model or Id).
-     *
-     * @param  \Arcanesoft\Contracts\Auth\Models\User|int  $id
-     *
-     * @return bool
-     */
-    public function hasUser($id)
-    {
-        if ($id instanceof Eloquent)
-            $id = $id->getKey();
-
-        return $this->users->contains($id);
+        return $results;
     }
 
     /**
@@ -207,11 +215,16 @@ class Role extends AbstractModel implements RoleContract
      */
     public function attachPermission($permission, $reload = true)
     {
-        if ( ! $this->hasPermission($permission)) {
-            $this->permissions()->attach($permission);
-            $this->loadPermissions($reload);
-        }
+        if ($this->hasPermission($permission)) return;
+
+        event(new AttachingPermissionToRole($this, $permission));
+        $this->permissions()->attach($permission);
+        event(new AttachedPermissionToRole($this, $permission));
+
+        $this->loadPermissions($reload);
     }
+
+    // TODO: Adding attach multiple permissions to a role ?
 
     /**
      * Detach a permission from a role.
@@ -223,14 +236,18 @@ class Role extends AbstractModel implements RoleContract
      */
     public function detachPermission($permission, $reload = true)
     {
-        if ($permission instanceof Eloquent)
-            $permission = (array) $permission->getKey();
+        if ( ! $this->hasPermission($permission)) return 0;
 
-        $result = $this->permissions()->detach($permission);
+        event(new DetachingPermissionFromRole($this, $permission));
+        $results = $this->permissions()->detach($permission);
+        event(new DetachedPermissionFromRole($this, $permission, $results));
+
         $this->loadPermissions($reload);
 
-        return $result;
+        return $results;
     }
+
+    // TODO: Adding detach multiple permissions to a role ?
 
     /**
      * Detach all permissions from a role.
@@ -241,31 +258,49 @@ class Role extends AbstractModel implements RoleContract
      */
     public function detachAllPermissions($reload = true)
     {
-        $result = $this->permissions()->detach();
+        if ($this->permissions->isEmpty()) return 0;
+
+        event(new DetachingAllPermissionsFromRole($this));
+        $results = $this->permissions()->detach();
+        event(new DetachedAllPermissionsFromRole($this, $results));
+
         $this->loadPermissions($reload);
 
-        return $result;
+        return $results;
+    }
+
+    /* -----------------------------------------------------------------
+     |  Check Methods
+     | -----------------------------------------------------------------
+     */
+    /**
+     * Check if role has the given user (User Model or Id).
+     *
+     * @param  \Arcanesoft\Contracts\Auth\Models\User|int  $id
+     *
+     * @return bool
+     */
+    public function hasUser($id)
+    {
+        if ($id instanceof Eloquent) $id = $id->getKey();
+
+        return $this->users->contains('id', $id);
     }
 
     /**
      * Check if role has the given permission (Permission Model or Id).
      *
-     * @param  mixed  $id
+     * @param  \Arcanesoft\Contracts\Auth\Models\User|int  $id
      *
      * @return bool
      */
     public function hasPermission($id)
     {
-        if ($id instanceof Eloquent)
-            $id = $id->getKey();
+        if ($id instanceof Eloquent) $id = $id->getKey();
 
-        return $this->permissions->contains($id);
+        return $this->permissions->contains('id', $id);
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Check Functions
-     | ------------------------------------------------------------------------------------------------
-     */
     /**
      * Check if role is associated with a permission by slug.
      *
@@ -275,11 +310,11 @@ class Role extends AbstractModel implements RoleContract
      */
     public function can($slug)
     {
-        $permissions = $this->permissions->filter(function(PermissionContract $permission) use ($slug) {
-            return $permission->checkSlug($slug);
-        });
-
-        return $permissions->count() === 1;
+        return $this->permissions
+                ->filter(function(PermissionContract $permission) use ($slug) {
+                    return $permission->checkSlug($slug);
+                })
+                ->first() !== null;
     }
 
     /**

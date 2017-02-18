@@ -16,16 +16,46 @@ use Illuminate\Support\Str;
  */
 class RoleTest extends ModelsTest
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Properties
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
-    /** @var Role */
+    /** @var  \Arcanedev\LaravelAuth\Models\Role */
     protected $roleModel;
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /** @var array */
+    protected $modelEvents = [
+        // Laravel Events
+        'creating'        => \Arcanedev\LaravelAuth\Events\Roles\CreatingRole::class,
+        'created'         => \Arcanedev\LaravelAuth\Events\Roles\CreatedRole::class,
+        'saving'          => \Arcanedev\LaravelAuth\Events\Roles\SavingRole::class,
+        'saved'           => \Arcanedev\LaravelAuth\Events\Roles\SavedRole::class,
+        'updating'        => \Arcanedev\LaravelAuth\Events\Roles\UpdatingRole::class,
+        'updated'         => \Arcanedev\LaravelAuth\Events\Roles\UpdatedRole::class,
+        'deleting'        => \Arcanedev\LaravelAuth\Events\Roles\DeletingRole::class,
+        'deleted'         => \Arcanedev\LaravelAuth\Events\Roles\DeletedRole::class,
+        'restoring'       => \Arcanedev\LaravelAuth\Events\Roles\RestoringRole::class,
+        'restored'        => \Arcanedev\LaravelAuth\Events\Roles\RestoredRole::class,
+
+        // Custom events
+        'attaching-user'  => \Arcanedev\LaravelAuth\Events\Roles\AttachingUserToRole::class,
+        'attached-user'   => \Arcanedev\LaravelAuth\Events\Roles\AttachedUserToRole::class,
+        'detaching-user'  => \Arcanedev\LaravelAuth\Events\Roles\DetachingUserFromRole::class,
+        'detached-user'   => \Arcanedev\LaravelAuth\Events\Roles\DetachedUserFromRole::class,
+        'detaching-users' => \Arcanedev\LaravelAuth\Events\Roles\DetachingAllUsersFromRole::class,
+        'detached-users'  => \Arcanedev\LaravelAuth\Events\Roles\DetachedAllUsersFromRole::class,
+
+        'attaching-permission'  => \Arcanedev\LaravelAuth\Events\Roles\AttachingPermissionToRole::class,
+        'attached-permission'   => \Arcanedev\LaravelAuth\Events\Roles\AttachedPermissionToRole::class,
+        'detaching-permission'  => \Arcanedev\LaravelAuth\Events\Roles\DetachingPermissionFromRole::class,
+        'detached-permission'   => \Arcanedev\LaravelAuth\Events\Roles\DetachedPermissionFromRole::class,
+        'detaching-permissions' => \Arcanedev\LaravelAuth\Events\Roles\DetachingAllPermissionsFromRole::class,
+        'detached-permissions'  => \Arcanedev\LaravelAuth\Events\Roles\DetachedAllPermissionsFromRole::class,
+    ];
+
+    /* -----------------------------------------------------------------
+     |  Setup Methods
+     | -----------------------------------------------------------------
      */
     public function setUp()
     {
@@ -41,10 +71,11 @@ class RoleTest extends ModelsTest
         unset($this->roleModel);
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Test Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Tests
+     | -----------------------------------------------------------------
      */
+
     /** @test */
     public function it_can_be_instantiated()
     {
@@ -69,8 +100,8 @@ class RoleTest extends ModelsTest
         $this->assertInstanceOf(BelongsToMany::class, $permissionsRelationship);
 
         /**
-         * @var  User        $user
-         * @var  Permission  $permission
+         * @var  \Arcanedev\LaravelAuth\Models\User        $user
+         * @var  \Arcanedev\LaravelAuth\Models\Permission  $permission
          */
         $user       = $usersRelationship->getRelated();
         $permission = $permissionsRelationship->getRelated();
@@ -82,6 +113,10 @@ class RoleTest extends ModelsTest
     /** @test */
     public function it_can_create()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+        ]);
+
         $attributes = [
             'name'        => 'Custom role',
             'slug'        => 'Custom role',
@@ -90,9 +125,9 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole($attributes);
 
-        $this->assertEquals($attributes['name'],                 $role->name);
-        $this->assertEquals(Str::slug($attributes['slug'], '-'), $role->slug);
-        $this->assertEquals($attributes['description'],          $role->description);
+        $this->assertSame($attributes['name'],                 $role->name);
+        $this->assertSame(Str::slug($attributes['slug'], '-'), $role->slug);
+        $this->assertSame($attributes['description'],          $role->description);
         $this->assertTrue($role->is_active);
         $this->assertTrue($role->isActive());
         $this->assertFalse($role->is_locked);
@@ -102,6 +137,10 @@ class RoleTest extends ModelsTest
     /** @test */
     public function it_can_update()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved', 'updating', 'updated',
+        ]);
+
         $attributes = $this->getAdminRoleAttributes();
 
         $role = $this->createRole($attributes);
@@ -134,6 +173,10 @@ class RoleTest extends ModelsTest
     /** @test */
     public function it_activate_and_disable()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved', 'updating', 'updated',
+        ]);
+
         $attributes = $this->getAdminRoleAttributes();
 
         $role = $this->createRole($attributes);
@@ -164,6 +207,10 @@ class RoleTest extends ModelsTest
     /** @test */
     public function it_can_delete()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved', 'deleting', 'deleted',
+        ]);
+
         $role = $this->createRole();
 
         $this->seeInPrefixedDatabase('roles', $role->toArray());
@@ -176,6 +223,11 @@ class RoleTest extends ModelsTest
     /** @test */
     public function it_can_attach_and_detach_user()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+            'attaching-user', 'attached-user', 'detaching-user', 'detached-user',
+        ]);
+
         $role = $this->createRole([
             'name'         => 'Custom role',
             'description'  => 'Custom role description.',
@@ -232,6 +284,10 @@ class RoleTest extends ModelsTest
     /** @test */
     public function it_can_prevent_attaching_a_duplicated_user()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved', 'attaching-user', 'attached-user',
+        ]);
+
         $role = $this->createRole();
         $user = User::create([
             'username'   => 'john-doe',
@@ -253,12 +309,17 @@ class RoleTest extends ModelsTest
     /** @test */
     public function it_can_detach_all_users()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+            'attaching-user', 'attached-user', 'detaching-users', 'detached-users',
+        ]);
+
         $role = $this->createRole([
             'name'         => 'Custom role',
             'description'  => 'Custom role description.',
         ]);
 
-        $admin = User::create([
+        $admin  = User::create([
             'username'   => 'super-admin',
             'first_name' => 'Super',
             'last_name'  => 'Admin',
@@ -296,6 +357,12 @@ class RoleTest extends ModelsTest
     /** @test */
     public function it_can_attach_and_detach_permission()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+            'attaching-permission', 'attached-permission',
+            'detaching-permission', 'detached-permission',
+        ]);
+
         $role                 = $this->createRole();
         $createUserPermission = Permission::create([
             'name'        => 'Create users',
@@ -338,6 +405,11 @@ class RoleTest extends ModelsTest
     /** @test */
     public function it_can_prevent_attaching_a_duplicated_permission()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+            'attaching-permission', 'attached-permission',
+        ]);
+
         $role                 = $this->createRole();
         $createUserPermission = Permission::create([
             'name'        => 'Create users',
@@ -357,7 +429,14 @@ class RoleTest extends ModelsTest
     /** @test */
     public function it_can_detach_all_permissions()
     {
-        $role                 = $this->createRole();
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+            'attaching-permission', 'attached-permission',
+            'detaching-permissions', 'detached-permissions',
+        ]);
+
+        $role = $this->createRole();
+
         $createUserPermission = Permission::create([
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
@@ -386,7 +465,12 @@ class RoleTest extends ModelsTest
     /** @test */
     public function it_can_check_has_same_permission()
     {
-        $role                 = $this->createRole();
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+            'attaching-permission', 'attached-permission',
+        ]);
+
+        $role = $this->createRole();
 
         $this->assertFalse($role->can('auth.users.create'));
 
@@ -404,7 +488,13 @@ class RoleTest extends ModelsTest
     /** @test */
     public function it_can_check_if_has_any_permissions()
     {
-        $role               = $this->createRole();
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+            'attaching-permission', 'attached-permission',
+        ]);
+
+        $role = $this->createRole();
+
         $failedPermissions  = [];
         $permissionsToCheck = [
             'auth.users.create',
@@ -414,7 +504,7 @@ class RoleTest extends ModelsTest
 
         $this->assertFalse($role->canAny($permissionsToCheck, $failedPermissions));
         $this->assertCount(3, $failedPermissions);
-        $this->assertEquals($permissionsToCheck, $failedPermissions);
+        $this->assertSame($permissionsToCheck, $failedPermissions);
 
         $createUserPermission = Permission::create([
             'name'        => 'Create users',
@@ -428,7 +518,7 @@ class RoleTest extends ModelsTest
 
         $this->assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
         $this->assertCount(2, $failedPermissions);
-        $this->assertEquals([
+        $this->assertSame([
             'auth.users.update',
             'auth.users.delete',
         ], $failedPermissions);
@@ -445,7 +535,7 @@ class RoleTest extends ModelsTest
 
         $this->assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
         $this->assertCount(1, $failedPermissions);
-        $this->assertEquals(['auth.users.delete'], $failedPermissions);
+        $this->assertSame(['auth.users.delete'], $failedPermissions);
 
         $deleteUserPermission = Permission::create([
             'name'        => 'Delete users',
@@ -464,7 +554,13 @@ class RoleTest extends ModelsTest
     /** @test */
     public function it_can_check_if_has_all_permissions()
     {
-        $role               = $this->createRole();
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+            'attaching-permission', 'attached-permission',
+        ]);
+
+        $role = $this->createRole();
+
         $failedPermissions  = [];
         $permissionsToCheck = [
             'auth.users.create',
@@ -474,7 +570,7 @@ class RoleTest extends ModelsTest
 
         $this->assertFalse($role->canAll($permissionsToCheck, $failedPermissions));
         $this->assertCount(3, $failedPermissions);
-        $this->assertEquals($permissionsToCheck, $failedPermissions);
+        $this->assertSame($permissionsToCheck, $failedPermissions);
 
         $createUserPermission = Permission::create([
             'name'        => 'Create users',
@@ -488,7 +584,7 @@ class RoleTest extends ModelsTest
 
         $this->assertFalse($role->canAll($permissionsToCheck, $failedPermissions));
         $this->assertCount(2, $failedPermissions);
-        $this->assertEquals([
+        $this->assertSame([
             'auth.users.update',
             'auth.users.delete',
         ], $failedPermissions);
@@ -505,7 +601,7 @@ class RoleTest extends ModelsTest
 
         $this->assertFalse($role->canAll($permissionsToCheck, $failedPermissions));
         $this->assertCount(1, $failedPermissions);
-        $this->assertEquals(['auth.users.delete'], $failedPermissions);
+        $this->assertSame(['auth.users.delete'], $failedPermissions);
 
         $deleteUserPermission = Permission::create([
             'name'        => 'Delete users',
@@ -521,9 +617,9 @@ class RoleTest extends ModelsTest
         $this->assertEmpty($failedPermissions);
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Other Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Helpers
+     | -----------------------------------------------------------------
      */
     /**
      * Create role model.
@@ -555,5 +651,23 @@ class RoleTest extends ModelsTest
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ];
+    }
+
+    /**
+     * Check the fired & unfired events.
+     *
+     * @param  array  $keys
+     */
+    protected function checkFiredEvents(array $keys)
+    {
+        $events = collect($this->modelEvents);
+
+        $this->expectsEvents(
+            $events->only($keys)->values()->toArray()
+        );
+
+        $this->doesntExpectEvents(
+            $events->except($keys)->values()->toArray()
+        );
     }
 }

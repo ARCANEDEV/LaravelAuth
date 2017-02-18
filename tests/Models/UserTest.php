@@ -21,6 +21,33 @@ class UserTest extends ModelsTest
     /** @var  \Arcanedev\LaravelAuth\Models\User */
     protected $userModel;
 
+    /** @var array */
+    protected $modelEvents = [
+        // Laravel Events
+        'creating'        => \Arcanedev\LaravelAuth\Events\Users\CreatingUser::class,
+        'created'         => \Arcanedev\LaravelAuth\Events\Users\CreatedUser::class,
+        'saving'          => \Arcanedev\LaravelAuth\Events\Users\SavingUser::class,
+        'saved'           => \Arcanedev\LaravelAuth\Events\Users\SavedUser::class,
+        'updating'        => \Arcanedev\LaravelAuth\Events\Users\UpdatingUser::class,
+        'updated'         => \Arcanedev\LaravelAuth\Events\Users\UpdatedUser::class,
+        'deleting'        => \Arcanedev\LaravelAuth\Events\Users\DeletingUser::class,
+        'deleted'         => \Arcanedev\LaravelAuth\Events\Users\DeletedUser::class,
+        'restoring'       => \Arcanedev\LaravelAuth\Events\Users\RestoringUser::class,
+        'restored'        => \Arcanedev\LaravelAuth\Events\Users\RestoredUser::class,
+
+        // Custom events
+        'confirming'      => \Arcanedev\LaravelAuth\Events\Users\ConfirmingUser::class,
+        'confirmed'       => \Arcanedev\LaravelAuth\Events\Users\ConfirmedUser::class,
+        'syncing-roles'   => \Arcanedev\LaravelAuth\Events\Users\SyncingUserWithRoles::class,
+        'synced-roles'    => \Arcanedev\LaravelAuth\Events\Users\SyncedUserWithRoles::class,
+        'attaching-role'  => \Arcanedev\LaravelAuth\Events\Users\AttachingRoleToUser::class,
+        'attached-role'   => \Arcanedev\LaravelAuth\Events\Users\AttachedRoleToUser::class,
+        'detaching-role'  => \Arcanedev\LaravelAuth\Events\Users\DetachingRole::class,
+        'detached-role'   => \Arcanedev\LaravelAuth\Events\Users\DetachedRole::class,
+        'detaching-roles' => \Arcanedev\LaravelAuth\Events\Users\DetachingRoles::class,
+        'detached-roles'  => \Arcanedev\LaravelAuth\Events\Users\DetachedRoles::class,
+    ];
+
     /* -----------------------------------------------------------------
      |  Setup Methods
      | -----------------------------------------------------------------
@@ -87,14 +114,14 @@ class UserTest extends ModelsTest
         $attributes = $this->getUserAttributes();
         $user       = $this->createUser();
 
-        $this->assertEquals($attributes['username'],    $user->username);
-        $this->assertEquals($attributes['first_name'],  $user->first_name);
-        $this->assertEquals($attributes['last_name'],   $user->last_name);
-        $this->assertEquals(
+        $this->assertSame($attributes['username'],    $user->username);
+        $this->assertSame($attributes['first_name'],  $user->first_name);
+        $this->assertSame($attributes['last_name'],   $user->last_name);
+        $this->assertSame(
             $attributes['first_name'].' '.$attributes['last_name'], $user->full_name
         );
-        $this->assertEquals($attributes['email'],       $user->email);
-        $this->assertNotEquals($attributes['password'], $user->password);
+        $this->assertSame($attributes['email'],       $user->email);
+        $this->assertNotSame($attributes['password'], $user->password);
 
         $this->assertFalse($user->is_admin);
         $this->assertFalse($user->isAdmin());
@@ -274,10 +301,10 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_find_an_unconfirmed_user()
     {
-        $user            = $this->createUser();
-        $unconfirmedUser = $this->userModel->findUnconfirmed($user->confirmation_code);
+        $user        = $this->createUser();
+        $unconfirmed = $this->userModel->findUnconfirmed($user->confirmation_code);
 
-        $this->assertEquals($user, $unconfirmedUser);
+        $this->assertEquals($user, $unconfirmed);
     }
 
     /** @test */
@@ -296,7 +323,7 @@ class UserTest extends ModelsTest
                 $this->assertInstanceOf($expected, $e);
             }
 
-            $this->assertEquals('Unconfirmed user was not found.', $e->getMessage());
+            $this->assertSame('Unconfirmed user was not found.', $e->getMessage());
         }
     }
 
@@ -456,7 +483,7 @@ class UserTest extends ModelsTest
         $failedRoles  = [];
         $this->assertFalse($user->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(2, $failedRoles);
-        $this->assertEquals(['admin', 'member'], $failedRoles);
+        $this->assertSame(['admin', 'member'], $failedRoles);
 
         $adminRole = Role::create([
             'name'        => 'Admin',
@@ -469,7 +496,7 @@ class UserTest extends ModelsTest
         $failedRoles = [];
         $this->assertTrue($user->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(1, $failedRoles);
-        $this->assertEquals(['member'], $failedRoles);
+        $this->assertSame(['member'], $failedRoles);
     }
 
     /** @test */
@@ -480,7 +507,7 @@ class UserTest extends ModelsTest
         $failedRoles  = [];
         $this->assertFalse($user->isAll(['admin', 'member'], $failedRoles));
         $this->assertCount(2, $failedRoles);
-        $this->assertEquals(['admin', 'member'], $failedRoles);
+        $this->assertSame(['admin', 'member'], $failedRoles);
 
         $adminRole = Role::create([
             'name'        => 'Admin',
@@ -493,7 +520,7 @@ class UserTest extends ModelsTest
         $failedRoles = [];
         $this->assertFalse($user->isAll(['admin', 'member'], $failedRoles));
         $this->assertCount(1, $failedRoles);
-        $this->assertEquals(['member'], $failedRoles);
+        $this->assertSame(['member'], $failedRoles);
 
         $memberRole = Role::create([
             'name'        => 'Member',
@@ -553,7 +580,7 @@ class UserTest extends ModelsTest
 
         $this->assertTrue($user->mayOne($permissionToCheck, $failedPermissions));
         $this->assertCount(2, $failedPermissions);
-        $this->assertEquals($failedPermissions, ['auth.users.delete', 'blog.posts.delete']);
+        $this->assertSame($failedPermissions, ['auth.users.delete', 'blog.posts.delete']);
     }
 
     /** @test */
@@ -583,7 +610,7 @@ class UserTest extends ModelsTest
 
         $this->assertFalse($user->mayAll($permissionToCheck, $failedPermissions));
         $this->assertCount(2, $failedPermissions);
-        $this->assertEquals($failedPermissions, ['auth.users.delete', 'blog.posts.delete']);
+        $this->assertSame($failedPermissions, ['auth.users.delete', 'blog.posts.delete']);
     }
 
     /** @test */
@@ -699,52 +726,20 @@ class UserTest extends ModelsTest
     }
 
     /**
-     * Get the events related to the users.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    protected function getEvents()
-    {
-        return collect([
-            // Laravel Events
-            'creating'        => \Arcanedev\LaravelAuth\Events\Users\CreatingUser::class,
-            'created'         => \Arcanedev\LaravelAuth\Events\Users\CreatedUser::class,
-            'saving'          => \Arcanedev\LaravelAuth\Events\Users\SavingUser::class,
-            'saved'           => \Arcanedev\LaravelAuth\Events\Users\SavedUser::class,
-            'updating'        => \Arcanedev\LaravelAuth\Events\Users\UpdatingUser::class,
-            'updated'         => \Arcanedev\LaravelAuth\Events\Users\UpdatedUser::class,
-            'deleting'        => \Arcanedev\LaravelAuth\Events\Users\DeletingUser::class,
-            'deleted'         => \Arcanedev\LaravelAuth\Events\Users\DeletedUser::class,
-            'restoring'       => \Arcanedev\LaravelAuth\Events\Users\RestoringUser::class,
-            'restored'        => \Arcanedev\LaravelAuth\Events\Users\RestoredUser::class,
-
-            // Custom events
-            'confirming'      => \Arcanedev\LaravelAuth\Events\Users\ConfirmingUser::class,
-            'confirmed'       => \Arcanedev\LaravelAuth\Events\Users\ConfirmedUser::class,
-            'syncing-roles'   => \Arcanedev\LaravelAuth\Events\Users\SyncingUserWithRoles::class,
-            'synced-roles'    => \Arcanedev\LaravelAuth\Events\Users\SyncedUserWithRoles::class,
-            'attaching-role'  => \Arcanedev\LaravelAuth\Events\Users\AttachingRoleToUser::class,
-            'attached-role'   => \Arcanedev\LaravelAuth\Events\Users\AttachedRoleToUser::class,
-            'detaching-role'  => \Arcanedev\LaravelAuth\Events\Users\DetachingRole::class,
-            'detached-role'   => \Arcanedev\LaravelAuth\Events\Users\DetachedRole::class,
-            'detaching-roles' => \Arcanedev\LaravelAuth\Events\Users\DetachingRoles::class,
-            'detached-roles'  => \Arcanedev\LaravelAuth\Events\Users\DetachedRoles::class,
-        ]);
-    }
-
-    /**
      * Check the fired & unfired events.
      *
      * @param  array  $keys
      */
     protected function checkFiredEvents(array $keys)
     {
+        $events = collect($this->modelEvents);
+
         $this->expectsEvents(
-            $this->getEvents()->only($keys)->values()->toArray()
+            $events->only($keys)->values()->toArray()
         );
 
         $this->doesntExpectEvents(
-            $this->getEvents()->except($keys)->values()->toArray()
+            $events->except($keys)->values()->toArray()
         );
     }
 }

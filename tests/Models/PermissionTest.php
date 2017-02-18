@@ -13,11 +13,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class PermissionTest extends ModelsTest
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Properties
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
-    /** @var Permission */
+    /** @var  \Arcanesoft\Contracts\Auth\Models\Permission */
     protected $permissionModel;
 
     /* ------------------------------------------------------------------------------------------------
@@ -27,8 +27,6 @@ class PermissionTest extends ModelsTest
     public function setUp()
     {
         parent::setUp();
-
-        $this->migrate();
 
         $this->permissionModel = new Permission;
     }
@@ -303,7 +301,7 @@ class PermissionTest extends ModelsTest
         $failedRoles  = [];
         $this->assertFalse($permission->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(2, $failedRoles);
-        $this->assertEquals(['admin', 'member'], $failedRoles);
+        $this->assertSame(['admin', 'member'], $failedRoles);
 
         $adminRole = Role::create([
             'name'        => 'Admin',
@@ -316,7 +314,7 @@ class PermissionTest extends ModelsTest
         $failedRoles = [];
         $this->assertTrue($permission->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(1, $failedRoles);
-        $this->assertEquals(['member'], $failedRoles);
+        $this->assertSame(['member'], $failedRoles);
     }
 
     /** @test */
@@ -331,7 +329,7 @@ class PermissionTest extends ModelsTest
         $failedRoles  = [];
         $this->assertFalse($permission->isAll(['admin', 'member'], $failedRoles));
         $this->assertCount(2, $failedRoles);
-        $this->assertEquals(['admin', 'member'], $failedRoles);
+        $this->assertSame(['admin', 'member'], $failedRoles);
 
         $adminRole = Role::create([
             'name'        => 'Admin',
@@ -344,7 +342,7 @@ class PermissionTest extends ModelsTest
         $failedRoles = [];
         $this->assertFalse($permission->isAll(['admin', 'member'], $failedRoles));
         $this->assertCount(1, $failedRoles);
-        $this->assertEquals(['member'], $failedRoles);
+        $this->assertSame(['member'], $failedRoles);
 
         $memberRole = Role::create([
             'name'        => 'Member',
