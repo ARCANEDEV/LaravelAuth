@@ -1,6 +1,5 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanedev\LaravelAuth\Models\Traits\Activatable;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
@@ -27,7 +26,7 @@ use Illuminate\Support\Str;
  *
  * @property  \Arcanedev\LaravelAuth\Models\Pivots\RoleUser|\Arcanedev\LaravelAuth\Models\Pivots\PermissionRole  pivot
  */
-class Role extends Model implements RoleContract
+class Role extends AbstractModel implements RoleContract
 {
     /* ------------------------------------------------------------------------------------------------
      |  Traits

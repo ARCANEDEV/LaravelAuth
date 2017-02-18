@@ -56,7 +56,6 @@ class UserTest extends ModelsTest
 
             // Arcanedev
             \Arcanesoft\Contracts\Auth\Models\User::class,
-            \Arcanedev\LaravelAuth\Bases\User::class,
             \Arcanedev\LaravelAuth\Models\User::class,
         ];
 

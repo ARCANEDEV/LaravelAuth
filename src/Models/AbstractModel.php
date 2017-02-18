@@ -1,7 +1,7 @@
-<?php namespace Arcanedev\LaravelAuth\Bases;
+<?php namespace Arcanedev\LaravelAuth\Models;
 
 use Arcanedev\Support\Traits\PrefixedModel;
-use Illuminate\Database\Eloquent\Model as BaseModel;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class     Model
@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
  * @method  static  \Illuminate\Database\Eloquent\Model                    create(array $attribute)
  * @method  static  \Illuminate\Database\Eloquent\Model                    forceCreate(array $attributes)
  */
-abstract class Model extends BaseModel
+abstract class AbstractModel extends Model
 {
     /* -----------------------------------------------------------------
      |  Traits

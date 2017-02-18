@@ -1,6 +1,5 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Bases\Model;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\PermissionsGroup as PermissionsGroupContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -20,7 +19,7 @@ use Illuminate\Support\Str;
  * @property  \Carbon\Carbon                            updated_at
  * @property  \Illuminate\Database\Eloquent\Collection  permissions
  */
-class PermissionsGroup extends Model implements PermissionsGroupContract
+class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
 {
     /* ------------------------------------------------------------------------------------------------
      |  Properties

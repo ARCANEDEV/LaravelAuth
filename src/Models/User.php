@@ -1,15 +1,19 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Bases\User as Authenticatable;
 use Arcanedev\LaravelAuth\Exceptions\UserConfirmationException;
-use Arcanedev\LaravelAuth\Services\SocialAuthenticator;
-use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Arcanedev\LaravelAuth\Models\Traits\Activatable;
 use Arcanedev\LaravelAuth\Models\Traits\AuthUserTrait;
-use Arcanedev\Support\Traits\PrefixedModel;
+use Arcanedev\LaravelAuth\Services\SocialAuthenticator;
+use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Arcanesoft\Contracts\Auth\Models\User as UserContract;
 use Carbon\Carbon;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Support\Str;
 
 /**
@@ -44,13 +48,18 @@ use Illuminate\Support\Str;
  * @method          \Illuminate\Database\Eloquent\Builder  unconfirmed(string $code)
  * @method          \Illuminate\Database\Eloquent\Builder  lastActive(int $minutes = null)
  */
-class User extends Authenticatable implements UserContract
+class User
+    extends AbstractModel
+    implements UserContract, AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
     /* ------------------------------------------------------------------------------------------------
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
     use AuthUserTrait,
+        Authenticatable,
+        Authorizable,
+        CanResetPassword,
         Activatable,
         SoftDeletes;
 
