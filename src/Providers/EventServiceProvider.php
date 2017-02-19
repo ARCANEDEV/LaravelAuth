@@ -31,14 +31,10 @@ class EventServiceProvider extends ServiceProvider
      */
     protected function registerObservers()
     {
-        $observers = [
-            'users'              => \Arcanesoft\Contracts\Auth\Models\User::class,
-            'roles'              => \Arcanesoft\Contracts\Auth\Models\Role::class,
-            'permissions-groups' => \Arcanesoft\Contracts\Auth\Models\PermissionsGroup::class,
-            'permissions'        => \Arcanesoft\Contracts\Auth\Models\Permission::class,
-        ];
+        /** @var  \Illuminate\Contracts\Config\Repository  $config */
+        $config = $this->app['config'];
 
-        foreach ($observers as $name => $abstract) {
+        foreach ($config->get('laravel-auth.observers.bindings') as $name => $abstract) {
             $this->observe($name, $abstract);
         }
     }

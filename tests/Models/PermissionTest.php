@@ -4,6 +4,7 @@ use Arcanedev\LaravelAuth\Models\Permission;
 use Arcanedev\LaravelAuth\Models\Role;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Arcanedev\LaravelAuth\Events\Permissions as PermissionEvents;
 
 /**
  * Class     PermissionTest
@@ -13,37 +14,59 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class PermissionTest extends ModelsTest
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Properties
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
-    /** @var Permission */
-    protected $permissionModel;
+    /** @var  \Arcanesoft\Contracts\Auth\Models\Permission */
+    protected $permission;
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /** @var array */
+    protected $modelEvents = [
+        // Laravel Events
+        'creating'        => PermissionEvents\CreatingPermission::class,
+        'created'         => PermissionEvents\CreatedPermission::class,
+        'saving'          => PermissionEvents\SavingPermission::class,
+        'saved'           => PermissionEvents\SavedPermission::class,
+        'updating'        => PermissionEvents\UpdatingPermission::class,
+        'updated'         => PermissionEvents\UpdatedPermission::class,
+        'deleting'        => PermissionEvents\DeletingPermission::class,
+        'deleted'         => PermissionEvents\DeletedPermission::class,
+
+        // Custom events
+        'attaching-role'  => PermissionEvents\AttachingRoleToPermission::class,
+        'attached-role'   => PermissionEvents\AttachedRoleToPermission::class,
+        'syncing-roles'   => PermissionEvents\SyncingRolesWithPermission::class,
+        'synced-roles'    => PermissionEvents\SyncedRolesWithPermission::class,
+        'detaching-role'  => PermissionEvents\DetachingRoleFromPermission::class,
+        'detached-role'   => PermissionEvents\DetachedRoleFromPermission::class,
+        'detaching-roles' => PermissionEvents\DetachingAllRolesFromPermission::class,
+        'detached-roles'  => PermissionEvents\DetachedAllRolesFromPermission::class,
+    ];
+
+    /* -----------------------------------------------------------------
+     |  Setup Methods
+     | -----------------------------------------------------------------
      */
     public function setUp()
     {
         parent::setUp();
 
-        $this->migrate();
-
-        $this->permissionModel = new Permission;
+        $this->permission = new Permission;
     }
 
     public function tearDown()
     {
         parent::tearDown();
 
-        unset($this->permissionModel);
+        unset($this->permission);
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Test Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Tests
+     | -----------------------------------------------------------------
      */
+
     /** @test */
     public function it_can_be_instantiated()
     {
@@ -54,15 +77,15 @@ class PermissionTest extends ModelsTest
         ];
 
         foreach ($expectations as $expected) {
-            $this->assertInstanceOf($expected, $this->permissionModel);
+            $this->assertInstanceOf($expected, $this->permission);
         }
     }
 
     /** @test */
     public function it_has_relationships()
     {
-        $groupRelationship = $this->permissionModel->group();
-        $rolesRelationship = $this->permissionModel->roles();
+        $groupRelationship = $this->permission->group();
+        $rolesRelationship = $this->permission->roles();
 
         $this->assertInstanceOf(BelongsTo::class,     $groupRelationship);
         $this->assertInstanceOf(BelongsToMany::class, $rolesRelationship);
@@ -80,133 +103,164 @@ class PermissionTest extends ModelsTest
     /** @test */
     public function it_can_create()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+        ]);
+
         $attributes = [
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
             'description' => 'Allow to create users',
         ];
 
-        $this->permissionModel->create($attributes);
+        $this->permission->create($attributes);
 
-        $this->seeInDatabase('permissions', $attributes);
+        $this->seeInPrefixedDatabase('permissions', $attributes);
     }
 
     /** @test */
     public function it_can_update()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved', 'updating', 'updated'
+        ]);
+
         $attributes = [
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
             'description' => 'Allow to create users',
         ];
 
-        $permission        = $this->permissionModel->create($attributes);
+        $permission        = $this->permission->create($attributes);
         $updatedAttributes = [
             'name'        => 'Update users',
             'slug'        => 'auth.users.update',
             'description' => 'Allow to update users',
         ];
 
-        $this->seeInDatabase('permissions', $attributes);
+        $this->seeInPrefixedDatabase('permissions', $attributes);
 
         $permission->update($updatedAttributes);
 
-        $this->seeInDatabase('permissions',     $updatedAttributes);
-        $this->dontSeeInDatabase('permissions', $attributes);
+        $this->seeInPrefixedDatabase('permissions',     $updatedAttributes);
+        $this->dontSeeInPrefixedDatabase('permissions', $attributes);
     }
 
     /** @test */
     public function it_can_delete()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved', 'deleting', 'deleted'
+        ]);
+
         $attributes = [
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
             'description' => 'Allow to create users',
         ];
 
-        $permission = $this->permissionModel->create($attributes);
+        $permission = $this->permission->create($attributes);
 
-        $this->seeInDatabase('permissions', $attributes);
+        $this->seeInPrefixedDatabase('permissions', $attributes);
 
         $permission->delete();
 
-        $this->dontSeeInDatabase('permissions', $attributes);
+        $this->dontSeeInPrefixedDatabase('permissions', $attributes);
     }
 
     /** @test */
     public function it_can_attach_and_detach_roles()
     {
-        $permission    = Permission::create([
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+            'attaching-role', 'attached-role', 'detaching-role', 'detached-role',
+        ]);
+
+        $this->permission = Permission::create([
             'name'        => 'Custom permission',
             'slug'        => 'permissions.custom',
             'description' => 'Custom permission description.',
         ]);
 
-        $adminRole     = Role::create([
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
+        $adminRole = Role::create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ]);
+
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $moderatorRole */
         $moderatorRole = Role::create([
             'name'        => 'Moderator',
             'description' => 'Moderator role descriptions.',
         ]);
 
-        $this->assertCount(0, $permission->roles);
+        $this->assertCount(0, $this->permission->roles);
 
-        $permission->attachRole($adminRole);
+        $this->permission->attachRole($adminRole);
 
-        $this->assertCount(1, $permission->roles);
-        $this->assertTrue($permission->hasRole($adminRole));
+        $this->assertCount(1, $this->permission->roles);
+        $this->assertTrue($this->permission->hasRole($adminRole));
 
-        $permission->attachRole($moderatorRole);
+        $this->permission->attachRole($moderatorRole);
 
-        $this->assertCount(2, $permission->roles);
-        $this->assertTrue($permission->hasRole($adminRole));
-        $this->assertTrue($permission->hasRole($moderatorRole));
+        $this->assertCount(2, $this->permission->roles);
+        $this->assertTrue($this->permission->hasRole($adminRole));
+        $this->assertTrue($this->permission->hasRole($moderatorRole));
 
-        $permission->detachRole($adminRole);
+        $this->permission->detachRole($adminRole);
 
-        $this->assertCount(1, $permission->roles);
-        $this->assertFalse($permission->hasRole($adminRole));
-        $this->assertTrue($permission->hasRole($moderatorRole));
+        $this->assertCount(1, $this->permission->roles);
+        $this->assertFalse($this->permission->hasRole($adminRole));
+        $this->assertTrue($this->permission->hasRole($moderatorRole));
 
-        $permission->detachRole($moderatorRole);
+        $this->permission->detachRole($moderatorRole);
 
-        $this->assertCount(0, $permission->roles);
-        $this->assertFalse($permission->hasRole($adminRole));
-        $this->assertFalse($permission->hasRole($moderatorRole));
+        $this->assertCount(0, $this->permission->roles);
+        $this->assertFalse($this->permission->hasRole($adminRole));
+        $this->assertFalse($this->permission->hasRole($moderatorRole));
     }
 
     /** @test */
     public function it_can_prevent_attaching_a_duplicated_role()
     {
-        $permission    = Permission::create([
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved', 'attaching-role', 'attached-role',
+        ]);
+
+        $this->permission = Permission::create([
             'name'        => 'Custom permission',
             'slug'        => 'permissions.custom',
             'description' => 'Custom permission description.',
         ]);
-        $adminRole     = Role::create([
+
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
+        $adminRole = Role::create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ]);
 
-        $this->assertCount(0, $permission->roles);
+        $this->assertCount(0, $this->permission->roles);
 
         for ($i = 0; $i < 5; $i++) {
-            $permission->attachRole($adminRole);
-            $this->assertCount(1, $permission->roles);
-            $this->assertTrue($permission->hasRole($adminRole));
+            $this->permission->attachRole($adminRole);
+            $this->assertCount(1, $this->permission->roles);
+            $this->assertTrue($this->permission->hasRole($adminRole));
         }
     }
 
     /** @test */
     public function it_can_sync_roles_by_its_slugs()
     {
-        $permission = Permission::create([
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved', 'syncing-roles', 'synced-roles',
+        ]);
+
+        $this->permission = Permission::create([
             'name'        => 'Custom permission',
             'slug'        => 'permissions.custom',
             'description' => 'Custom permission description.',
         ]);
+
         $roles = collect([
             Role::create([
                 'name'        => 'Admin',
@@ -218,10 +272,10 @@ class PermissionTest extends ModelsTest
             ])
         ]);
 
-        $this->assertCount(0, $permission->roles);
+        $this->assertCount(0, $this->permission->roles);
 
-        $synced = $permission->syncRoles(
-            $roles->pluck('slug')->toArray()
+        $synced = $this->permission->syncRoles(
+            $roles->pluck('slug')
         );
 
         $this->assertCount($roles->count(),               $synced['attached']);
@@ -233,129 +287,137 @@ class PermissionTest extends ModelsTest
     /** @test */
     public function it_can_detach_all_roles()
     {
-        $permission    = Permission::create([
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+            'attaching-role', 'attached-role', 'detaching-roles', 'detached-roles'
+        ]);
+
+        $this->permission = Permission::create([
             'name'        => 'Custom permission',
             'slug'        => 'permissions.custom',
             'description' => 'Custom permission description.',
         ]);
 
-        $adminRole     = Role::create([
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
+        $adminRole = Role::create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ]);
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $moderatorRole */
         $moderatorRole = Role::create([
             'name'        => 'Moderator',
             'description' => 'Moderator role descriptions.',
         ]);
 
-        $this->assertCount(0, $permission->roles);
+        $this->assertCount(0, $this->permission->roles);
 
-        $permission->attachRole($adminRole);
+        $this->permission->attachRole($adminRole);
 
-        $this->assertCount(1, $permission->roles);
-        $this->assertTrue($permission->hasRole($adminRole));
+        $this->assertCount(1, $this->permission->roles);
+        $this->assertTrue($this->permission->hasRole($adminRole));
 
-        $permission->attachRole($moderatorRole);
+        $this->permission->attachRole($moderatorRole);
 
-        $this->assertCount(2, $permission->roles);
-        $this->assertTrue($permission->hasRole($adminRole));
-        $this->assertTrue($permission->hasRole($moderatorRole));
+        $this->assertCount(2, $this->permission->roles);
+        $this->assertTrue($this->permission->hasRole($adminRole));
+        $this->assertTrue($this->permission->hasRole($moderatorRole));
 
-        $permission->detachAllRoles();
+        $this->permission->detachAllRoles();
 
-        $this->assertCount(0, $permission->roles);
-        $this->assertFalse($permission->hasRole($adminRole));
-        $this->assertFalse($permission->hasRole($moderatorRole));
+        $this->assertCount(0, $this->permission->roles);
+        $this->assertFalse($this->permission->hasRole($adminRole));
+        $this->assertFalse($this->permission->hasRole($moderatorRole));
     }
 
     /** @test */
     public function it_can_check_has_same_role()
     {
-        $permission    = Permission::create([
+        $this->permission = Permission::create([
             'name'        => 'Custom permission',
             'slug'        => 'permissions.custom',
             'description' => 'Custom permission description.',
         ]);
 
-        $this->assertFalse($permission->hasRoleSlug('admin'));
+        $this->assertFalse($this->permission->hasRoleSlug('admin'));
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
         $adminRole = Role::create([
             'name'        => 'Admin',
             'slug'        => 'admin',
             'description' => 'Admin role descriptions.',
         ]);
 
-        $permission->attachRole($adminRole);
+        $this->permission->attachRole($adminRole);
 
-        $this->assertTrue($permission->hasRoleSlug('Admin'));
-        $this->assertTrue($permission->hasRoleSlug('admin'));
+        $this->assertTrue($this->permission->hasRoleSlug('Admin'));
+        $this->assertTrue($this->permission->hasRoleSlug('admin'));
     }
 
     /** @test */
     public function it_can_check_has_any_role()
     {
-        $permission    = Permission::create([
+        $this->permission = Permission::create([
             'name'        => 'Custom permission',
             'slug'        => 'permissions.custom',
             'description' => 'Custom permission description.',
         ]);
 
-        $failedRoles  = [];
-        $this->assertFalse($permission->isOne(['admin', 'member'], $failedRoles));
+        /** @var  \Illuminate\Support\Collection  $failedRoles */
+        $this->assertFalse($this->permission->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(2, $failedRoles);
-        $this->assertEquals(['admin', 'member'], $failedRoles);
+        $this->assertSame(['admin', 'member'], $failedRoles->all());
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
         $adminRole = Role::create([
             'name'        => 'Admin',
             'slug'        => 'admin',
             'description' => 'Admin role descriptions.',
         ]);
 
-        $permission->attachRole($adminRole);
+        $this->permission->attachRole($adminRole);
 
-        $failedRoles = [];
-        $this->assertTrue($permission->isOne(['admin', 'member'], $failedRoles));
+        $this->assertTrue($this->permission->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(1, $failedRoles);
-        $this->assertEquals(['member'], $failedRoles);
+        $this->assertSame(['member'], $failedRoles->all());
     }
 
     /** @test */
     public function it_can_check_has_all_roles()
     {
-        $permission    = Permission::create([
+        $this->permission = Permission::create([
             'name'        => 'Custom permission',
             'slug'        => 'permissions.custom',
             'description' => 'Custom permission description.',
         ]);
 
-        $failedRoles  = [];
-        $this->assertFalse($permission->isAll(['admin', 'member'], $failedRoles));
+        /** @var  \Illuminate\Support\Collection  $failedRoles */
+        $this->assertFalse($this->permission->isAll(['admin', 'member'], $failedRoles));
         $this->assertCount(2, $failedRoles);
-        $this->assertEquals(['admin', 'member'], $failedRoles);
+        $this->assertSame(['admin', 'member'], $failedRoles->all());
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
         $adminRole = Role::create([
             'name'        => 'Admin',
             'slug'        => 'admin',
             'description' => 'Admin role descriptions.',
         ]);
 
-        $permission->attachRole($adminRole);
+        $this->permission->attachRole($adminRole);
 
-        $failedRoles = [];
-        $this->assertFalse($permission->isAll(['admin', 'member'], $failedRoles));
+        $this->assertFalse($this->permission->isAll(['admin', 'member'], $failedRoles));
         $this->assertCount(1, $failedRoles);
-        $this->assertEquals(['member'], $failedRoles);
+        $this->assertSame(['member'], $failedRoles->all());
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $memberRole */
         $memberRole = Role::create([
             'name'        => 'Member',
             'slug'        => 'member',
             'description' => 'Member role descriptions.',
         ]);
 
-        $permission->attachRole($memberRole);
+        $this->permission->attachRole($memberRole);
 
-        $failedRoles = [];
-        $this->assertTrue($permission->isAll(['admin', 'member'], $failedRoles));
-        $this->assertEmpty($failedRoles);
+        $this->assertTrue($this->permission->isAll(['admin', 'member'], $failedRoles));
+        $this->assertEmpty($failedRoles->all());
     }
 }

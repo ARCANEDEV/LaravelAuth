@@ -2,7 +2,6 @@
 
 use Arcanedev\LaravelAuth\Bases\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Class     CreatePasswordResetsTable
@@ -11,30 +10,36 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateAuthPasswordResetsTable extends Migration
 {
-    /* ------------------------------------------------------------------------------------------------
-     |  Properties
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Constructor
+     | -----------------------------------------------------------------
      */
     /**
-     * The table name.
-     *
-     * @var string
+     * CreateAuthPasswordResetsTable constructor.
      */
-    protected $table = 'password_resets';
+    public function __construct()
+    {
+        parent::__construct();
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+        $this->setConnection(null)->setPrefix(null);
+        $this->setTable(config('auth.passwords.users.table', 'password_resets'));
+    }
+
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
-            $table->string('email')->index();
-            $table->string('token')->index();
+        $this->createSchema(function (Blueprint $table) {
+            $table->string('email');
+            $table->string('token');
             $table->timestamp('created_at')->nullable();
+
+            $table->index(['email', 'token']);
         });
     }
 }

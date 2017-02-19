@@ -20,5 +20,6 @@ abstract class Migration extends BaseMigration
     public function __construct()
     {
         $this->setConnection(config('laravel-auth.database.connection'));
+        $this->setPrefix(config('laravel-auth.database.prefix'));
     }
 }

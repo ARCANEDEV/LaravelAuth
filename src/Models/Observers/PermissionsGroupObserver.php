@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Models\Observers;
 
-use Arcanedev\LaravelAuth\Bases\ModelObserver;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups as PermissionsGroupEvents;
 use Arcanesoft\Contracts\Auth\Models\PermissionsGroup;
 
 /**
@@ -9,7 +9,7 @@ use Arcanesoft\Contracts\Auth\Models\PermissionsGroup;
  * @package  Arcanedev\LaravelAuth\Observers
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class PermissionsGroupObserver extends ModelObserver
+class PermissionsGroupObserver extends AbstractObserver
 {
     /* ------------------------------------------------------------------------------------------------
      |  Model Events
@@ -22,7 +22,7 @@ class PermissionsGroupObserver extends ModelObserver
      */
     public function creating(PermissionsGroup $group)
     {
-        $this->event->fire('auth.permission-groups.creating', compact('group'));
+        $this->event->dispatch(new PermissionsGroupEvents\CreatingPermissionsGroup($group));
     }
 
     /**
@@ -32,7 +32,7 @@ class PermissionsGroupObserver extends ModelObserver
      */
     public function created(PermissionsGroup $group)
     {
-        $this->event->fire('auth.permission-groups.created', compact('group'));
+        $this->event->dispatch(new PermissionsGroupEvents\CreatedPermissionsGroup($group));
     }
 
     /**
@@ -42,7 +42,7 @@ class PermissionsGroupObserver extends ModelObserver
      */
     public function updating(PermissionsGroup $group)
     {
-        $this->event->fire('auth.permission-groups.updating', compact('group'));
+        $this->event->dispatch(new PermissionsGroupEvents\UpdatingPermissionsGroup($group));
     }
 
     /**
@@ -52,7 +52,7 @@ class PermissionsGroupObserver extends ModelObserver
      */
     public function updated(PermissionsGroup $group)
     {
-        $this->event->fire('auth.permission-groups.updated', compact('group'));
+        $this->event->dispatch(new PermissionsGroupEvents\UpdatedPermissionsGroup($group));
     }
 
     /**
@@ -62,7 +62,7 @@ class PermissionsGroupObserver extends ModelObserver
      */
     public function saving(PermissionsGroup $group)
     {
-        $this->event->fire('auth.permission-groups.saving', compact('group'));
+        $this->event->dispatch(new PermissionsGroupEvents\SavingPermissionsGroup($group));
     }
 
     /**
@@ -72,7 +72,7 @@ class PermissionsGroupObserver extends ModelObserver
      */
     public function saved(PermissionsGroup $group)
     {
-        $this->event->fire('auth.permission-groups.saved', compact('group'));
+        $this->event->dispatch(new PermissionsGroupEvents\SavedPermissionsGroup($group));
     }
 
     /**
@@ -84,7 +84,7 @@ class PermissionsGroupObserver extends ModelObserver
     {
         $group->detachAllPermissions(false);
 
-        $this->event->fire('auth.permission-groups.deleting', compact('group'));
+        $this->event->dispatch(new PermissionsGroupEvents\DeletingPermissionsGroup($group));
     }
 
     /**
@@ -94,6 +94,6 @@ class PermissionsGroupObserver extends ModelObserver
      */
     public function deleted(PermissionsGroup $group)
     {
-        $this->event->fire('auth.permission-groups.deleted', compact('group'));
+        $this->event->dispatch(new PermissionsGroupEvents\DeletedPermissionsGroup($group));
     }
 }

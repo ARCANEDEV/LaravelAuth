@@ -39,8 +39,21 @@ class MigrationsTest extends TestCase
     {
         $this->migrate();
 
+        $prefix = config('laravel-auth.database.prefix');
+
         foreach ($this->getTablesNames() as $table) {
-            $this->assertTrue(Schema::hasTable($table), "The table [$table] not found in the database.");
+            $this->assertTrue(
+                Schema::hasTable($prefix.$table),
+                "The table [{$prefix}{$table}] not found in the database."
+            );
         }
+
+        /**  password_resets table */
+        $table = config('auth.passwords.users.table');
+
+        $this->assertTrue(
+            Schema::hasTable($table),
+            "The table [{$table}] not found in the database."
+        );
     }
 }

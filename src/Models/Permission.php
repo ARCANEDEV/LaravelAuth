@@ -1,9 +1,16 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Bases\Model;
-use Arcanedev\LaravelAuth\Models\Relationships\PermissionRelationships;
-use Arcanedev\LaravelAuth\Models\Traits\AuthRoleTrait;
+use Arcanedev\LaravelAuth\Events\Permissions\AttachedRoleToPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\AttachingRoleToPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\DetachedAllRolesFromPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\DetachedRoleFromPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\DetachingAllRolesFromPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\DetachingRoleFromPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\SyncedRolesWithPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\SyncingRolesWithPermission;
+use Arcanedev\LaravelAuth\Models\Traits\Roleable;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
+use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 use Illuminate\Support\Str;
 
 /**
@@ -19,20 +26,22 @@ use Illuminate\Support\Str;
  * @property  string                                         description
  * @property  \Carbon\Carbon                                 created_at
  * @property  \Carbon\Carbon                                 updated_at
- * @property  \Illuminate\Database\Eloquent\Collection       roles
- * @property  \Arcanedev\LaravelAuth\Models\PermissionsGroup group
+ *
+ * @property  \Illuminate\Database\Eloquent\Collection             roles
+ * @property  \Arcanedev\LaravelAuth\Models\PermissionsGroup       group
+ * @property  \Arcanedev\LaravelAuth\Models\Pivots\PermissionRole  pivot
  */
-class Permission extends Model implements PermissionContract
+class Permission extends AbstractModel implements PermissionContract
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Traits
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
-    use PermissionRelationships, AuthRoleTrait;
+    use Roleable;
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Properties
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * The attributes that are mass assignable.
@@ -41,9 +50,9 @@ class Permission extends Model implements PermissionContract
      */
     protected $fillable = ['group_id', 'name', 'slug', 'description'];
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Constructor
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Create a new Eloquent model instance.
@@ -57,9 +66,9 @@ class Permission extends Model implements PermissionContract
         parent::__construct($attributes);
     }
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Relationships
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Permission belongs to one group.
@@ -74,9 +83,24 @@ class Permission extends Model implements PermissionContract
         );
     }
 
-    /* ------------------------------------------------------------------------------------------------
+    /**
+     * Permission belongs to many roles.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function roles()
+    {
+        return $this
+            ->belongsToMany(
+                config('laravel-auth.roles.model', Role::class),
+                $this->getPrefix().'permission_role'
+            )
+            ->withTimestamps();
+    }
+
+    /* -----------------------------------------------------------------
      |  Setters & Getters
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Set the slug attribute.
@@ -88,25 +112,105 @@ class Permission extends Model implements PermissionContract
         $this->attributes['slug'] = $this->slugify($slug);
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Check Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
     /**
-     * Check if slug is the same as the given value.
+     * Attach a role to a user.
      *
-     * @param  string  $value
+     * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
+     * @param  bool                                        $reload
+     */
+    public function attachRole($role, $reload = true)
+    {
+        if ($this->hasRole($role)) return;
+
+        event(new AttachingRoleToPermission($this, $role));
+        $this->roles()->attach($role);
+        event(new AttachedRoleToPermission($this, $role));
+
+        $this->loadRoles($reload);
+    }
+
+    /**
+     * Sync the roles by its slugs.
+     *
+     * @param  array|\Illuminate\Support\Collection  $slugs
+     * @param  bool                                  $reload
+     *
+     * @return array
+     */
+    public function syncRoles($slugs, $reload = true)
+    {
+        /** @var \Illuminate\Database\Eloquent\Collection $roles */
+        $roles = app(RoleContract::class)->whereIn('slug', $slugs)->get();
+
+        event(new SyncingRolesWithPermission($this, $roles));
+        $synced = $this->roles()->sync($roles->pluck('id'));
+        event(new SyncedRolesWithPermission($this, $roles, $synced));
+
+        $this->loadRoles($reload);
+
+        return $synced;
+    }
+
+    /**
+     * Detach a role from a user.
+     *
+     * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
+     * @param  bool                                        $reload
+     *
+     * @return int
+     */
+    public function detachRole($role, $reload = true)
+    {
+        event(new DetachingRoleFromPermission($this, $role));
+        $results = $this->roles()->detach($role);
+        event(new DetachedRoleFromPermission($this, $role, $results));
+
+        $this->loadRoles($reload);
+
+        return $results;
+    }
+
+    /**
+     * Detach all roles from a user.
+     *
+     * @param  bool  $reload
+     *
+     * @return int
+     */
+    public function detachAllRoles($reload = true)
+    {
+        event(new DetachingAllRolesFromPermission($this));
+        $results = $this->roles()->detach();
+        event(new DetachedAllRolesFromPermission($this, $results));
+
+        $this->loadRoles($reload);
+
+        return $results;
+    }
+
+    /* -----------------------------------------------------------------
+     |  Check Methods
+     | -----------------------------------------------------------------
+     */
+    /**
+     * Check if the permission has the same slug.
+     *
+     * @param  string  $slug
      *
      * @return bool
      */
-    public function checkSlug($value)
+    public function hasSlug($slug)
     {
-        return $this->slug === $this->slugify($value);
+        return $this->slug === $this->slugify($slug);
     }
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Other Functions
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Slugify the value.

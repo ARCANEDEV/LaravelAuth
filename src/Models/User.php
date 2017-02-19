@@ -1,13 +1,22 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Bases\User as Authenticatable;
+use Arcanedev\LaravelAuth\Events\Users as UserEvents;
 use Arcanedev\LaravelAuth\Exceptions\UserConfirmationException;
+use Arcanedev\LaravelAuth\Models\Traits\Activatable;
+use Arcanedev\LaravelAuth\Models\Traits\Roleable;
 use Arcanedev\LaravelAuth\Services\SocialAuthenticator;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
-use Arcanedev\LaravelAuth\Models\Traits\Activatable;
-use Arcanedev\LaravelAuth\Models\Traits\AuthUserTrait;
+use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
+use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 use Arcanesoft\Contracts\Auth\Models\User as UserContract;
+use Carbon\Carbon;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Support\Str;
 
 /**
@@ -33,20 +42,29 @@ use Illuminate\Support\Str;
  * @property  \Carbon\Carbon                            created_at
  * @property  \Carbon\Carbon                            updated_at
  * @property  \Carbon\Carbon                            deleted_at
- * @property  \Illuminate\Database\Eloquent\Collection  roles
- * @property  \Illuminate\Database\Eloquent\Collection  permissions
+ *
+ * @property  \Illuminate\Database\Eloquent\Collection       roles
+ * @property  \Illuminate\Support\Collection                 permissions
+ * @property  \Arcanedev\LaravelAuth\Models\Pivots\RoleUser  pivot
  *
  * @method  static  bool                                   insert(array $values)
  * @method          \Illuminate\Database\Eloquent\Builder  unconfirmed(string $code)
  * @method          \Illuminate\Database\Eloquent\Builder  lastActive(int $minutes = null)
  */
-class User extends Authenticatable implements UserContract
+class User
+    extends AbstractModel
+    implements UserContract, AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
     /* ------------------------------------------------------------------------------------------------
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use AuthUserTrait, Activatable, SoftDeletes;
+    use Roleable,
+        Authenticatable,
+        Authorizable,
+        CanResetPassword,
+        Activatable,
+        SoftDeletes;
 
     /* ------------------------------------------------------------------------------------------------
      |  Properties
@@ -70,7 +88,11 @@ class User extends Authenticatable implements UserContract
      *
      * @var array
      */
-    protected $hidden   = ['password', 'remember_token', 'confirmation_code'];
+    protected $hidden   = [
+        'password',
+        'remember_token',
+        'confirmation_code',
+    ];
 
     /**
      * The attributes that should be casted to native types.
@@ -88,7 +110,11 @@ class User extends Authenticatable implements UserContract
      *
      * @var array
      */
-    protected $dates = ['confirmed_at', 'last_activity', 'deleted_at'];
+    protected $dates = [
+        'confirmed_at',
+        'last_activity',
+        'deleted_at',
+    ];
 
     /* ------------------------------------------------------------------------------------------------
      |  Constructor
@@ -101,14 +127,56 @@ class User extends Authenticatable implements UserContract
      */
     public function __construct(array $attributes = [])
     {
+        parent::__construct($attributes);
+
+        $this->setupModel();
+    }
+
+    /**
+     * Setup the model.
+     */
+    protected function setupModel()
+    {
         $this->setTable(config('laravel-auth.users.table', 'users'));
 
         if (SocialAuthenticator::isEnabled()) {
             $this->hidden   = array_merge($this->hidden, ['social_provider_id']);
             $this->fillable = array_merge($this->fillable, ['social_provider', 'social_provider_id']);
         }
+    }
 
-        parent::__construct($attributes);
+    /* ------------------------------------------------------------------------------------------------
+     |  Relationships
+     | ------------------------------------------------------------------------------------------------
+     */
+    /**
+     * User belongs to many roles.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function roles()
+    {
+        return $this
+            ->belongsToMany(
+                config('laravel-auth.roles.model', Role::class),
+                $this->getPrefix().config('laravel-auth.role-user.table', 'role_user')
+            )
+            ->using(Pivots\RoleUser::class)
+            ->withTimestamps();
+    }
+
+    /**
+     * Get all user permissions.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getPermissionsAttribute()
+    {
+        return $this->roles->pluck('permissions')
+            ->flatten()
+            ->unique(function (PermissionContract $permission) {
+                return $permission->getKey();
+            });
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -126,8 +194,8 @@ class User extends Authenticatable implements UserContract
     public function scopeUnconfirmed($query, $code)
     {
         return $query->where('is_confirmed', false)
-            ->where('confirmation_code', $code)
-            ->whereNull('confirmed_at');
+                     ->where('confirmation_code', $code)
+                     ->whereNull('confirmed_at');
     }
 
     /**
@@ -142,7 +210,7 @@ class User extends Authenticatable implements UserContract
     {
         $minutes = $minutes ?: config('laravel_auth.track-activity.minutes', 5);
 
-        $date = \Carbon\Carbon::now()->subMinutes($minutes);
+        $date = Carbon::now()->subMinutes($minutes);
 
         return $query->where('last_activity', '>=', $date->toDateTimeString());
     }
@@ -168,7 +236,7 @@ class User extends Authenticatable implements UserContract
      */
     public function getFullNameAttribute()
     {
-        return $this->first_name . ' ' . $this->last_name;
+        return $this->first_name.' '.$this->last_name;
     }
 
     /**
@@ -181,10 +249,86 @@ class User extends Authenticatable implements UserContract
         $this->attributes['password'] = bcrypt($password);
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  CRUD Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
+    /**
+     * Attach a role to a user.
+     *
+     * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
+     * @param  bool                                        $reload
+     */
+    public function attachRole($role, $reload = true)
+    {
+        if ($this->hasRole($role)) return;
+
+        event(new UserEvents\AttachingRoleToUser($this, $role));
+        $this->roles()->attach($role);
+        event(new UserEvents\AttachedRoleToUser($this, $role));
+
+        $this->loadRoles($reload);
+    }
+
+    /**
+     * Sync the roles by its slugs.
+     *
+     * @param  array|\Illuminate\Support\Collection  $slugs
+     * @param  bool                                  $reload
+     *
+     * @return array
+     */
+    public function syncRoles($slugs, $reload = true)
+    {
+        /** @var  \Illuminate\Database\Eloquent\Collection  $roles */
+        $roles = app(RoleContract::class)->whereIn('slug', $slugs)->get();
+
+        event(new UserEvents\SyncingUserWithRoles($this, $roles));
+        $synced = $this->roles()->sync($roles->pluck('id'));
+        event(new UserEvents\SyncedUserWithRoles($this, $roles, $synced));
+
+        $this->loadRoles($reload);
+
+        return $synced;
+    }
+
+    /**
+     * Detach a role from a user.
+     *
+     * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
+     * @param  bool                                        $reload
+     *
+     * @return int
+     */
+    public function detachRole($role, $reload = true)
+    {
+        event(new UserEvents\DetachingRole($this, $role));
+        $results = $this->roles()->detach($role);
+        event(new UserEvents\DetachedRole($this, $role, $results));
+
+        $this->loadRoles($reload);
+
+        return $results;
+    }
+
+    /**
+     * Detach all roles from a user.
+     *
+     * @param  bool  $reload
+     *
+     * @return int
+     */
+    public function detachAllRoles($reload = true)
+    {
+        event(new UserEvents\DetachingRoles($this));
+        $results = $this->roles()->detach();
+        event(new UserEvents\DetachedRoles($this, $results));
+
+        $this->loadRoles($reload);
+
+        return $results;
+    }
+
     /**
      * Confirm the unconfirmed user account by confirmation code.
      *
@@ -196,12 +340,13 @@ class User extends Authenticatable implements UserContract
      */
     public function findUnconfirmed($code)
     {
-        $unconfirmedUser = self::unconfirmed($code)->first();
+        /** @var  \Arcanesoft\Contracts\Auth\Models\User|null  $unconfirmed */
+        $unconfirmed = static::unconfirmed($code)->first();
 
-        if ( ! $unconfirmedUser instanceof self)
-            throw (new UserConfirmationException)->setModel(self::class);
+        if ( ! $unconfirmed instanceof self)
+            throw (new UserConfirmationException)->setModel(static::class);
 
-        return $unconfirmedUser;
+        return $unconfirmed;
     }
 
     /**
@@ -216,9 +361,9 @@ class User extends Authenticatable implements UserContract
         if ($code instanceof self)
             $code = $code->confirmation_code;
 
-        $user = $this->findUnconfirmed($code);
-
-        return (new UserConfirmator)->confirm($user);
+        return (new UserConfirmator)->confirm(
+            $this->findUnconfirmed($code)
+        );
     }
 
     /**
@@ -228,14 +373,66 @@ class User extends Authenticatable implements UserContract
      */
     public function updateLastActivity($save = true)
     {
-        $this->forceFill(['last_activity' => \Carbon\Carbon::now()]);
+        $this->forceFill(['last_activity' => Carbon::now()]);
 
         if ($save) $this->save();
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Check Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Permission Check Methods
+     | -----------------------------------------------------------------
+     */
+    /**
+     * Check if the user has a permission.
+     *
+     * @param  string  $slug
+     *
+     * @return bool
+     */
+    public function may($slug)
+    {
+        return ! $this->permissions->filter->hasSlug($slug)->isEmpty();
+    }
+
+    /**
+     * Check if the user has at least one permission.
+     *
+     * @param  \Illuminate\Support\Collection|array  $permissions
+     * @param  \Illuminate\Support\Collection        &$failed
+     *
+     * @return bool
+     */
+    public function mayOne($permissions, &$failed = null)
+    {
+        $permissions = is_array($permissions) ? collect($permissions) : $permissions;
+
+        $failed = $permissions->reject(function ($permission) {
+            return $this->may($permission);
+        })->values();
+
+        return $permissions->count() !== $failed->count();
+    }
+
+    /**
+     * Check if the user has all permissions.
+     *
+     * @param  \Illuminate\Support\Collection|array  $permissions
+     * @param  \Illuminate\Support\Collection        &$failed
+     *
+     * @return bool
+     */
+    public function mayAll($permissions, &$failed = null)
+    {
+        $this->mayOne($permissions, $failed);
+
+        return $failed instanceof \Illuminate\Support\Collection
+            ? $failed->isEmpty()
+            : false;
+    }
+
+    /* -----------------------------------------------------------------
+     |  Check Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Check if user is an administrator.
@@ -276,19 +473,6 @@ class User extends Authenticatable implements UserContract
     public function isConfirmed()
     {
         return $this->is_confirmed;
-    }
-
-    /**
-     * Check if user is on force deleting.
-     *
-     * @deprecated since Laravel v5.3.11
-     * @see https://github.com/laravel/framework/pull/15580
-     *
-     * @return bool
-     */
-    public function isForceDeleting()
-    {
-        return $this->forceDeleting;
     }
 
     /**

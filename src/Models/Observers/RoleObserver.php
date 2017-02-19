@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Models\Observers;
 
-use Arcanedev\LaravelAuth\Bases\ModelObserver;
+use Arcanedev\LaravelAuth\Events\Roles as RoleEvents;
 use Arcanesoft\Contracts\Auth\Models\Role;
 
 /**
@@ -9,7 +9,7 @@ use Arcanesoft\Contracts\Auth\Models\Role;
  * @package  Arcanedev\LaravelAuth\Observers
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class RoleObserver extends ModelObserver
+class RoleObserver extends AbstractObserver
 {
     /* ------------------------------------------------------------------------------------------------
      |  Model Events
@@ -22,7 +22,7 @@ class RoleObserver extends ModelObserver
      */
     public function creating(Role $role)
     {
-        $this->event->fire('auth.roles.creating', compact('role'));
+        $this->event->dispatch(new RoleEvents\CreatingRole($role));
     }
 
     /**
@@ -32,7 +32,7 @@ class RoleObserver extends ModelObserver
      */
     public function created(Role $role)
     {
-        $this->event->fire('auth.roles.created', compact('role'));
+        $this->event->dispatch(new RoleEvents\CreatedRole($role));
     }
 
     /**
@@ -42,7 +42,7 @@ class RoleObserver extends ModelObserver
      */
     public function updating(Role $role)
     {
-        $this->event->fire('auth.roles.updating', compact('role'));
+        $this->event->dispatch(new RoleEvents\UpdatingRole($role));
     }
 
     /**
@@ -52,7 +52,7 @@ class RoleObserver extends ModelObserver
      */
     public function updated(Role $role)
     {
-        $this->event->fire('auth.roles.updated', compact('role'));
+        $this->event->dispatch(new RoleEvents\UpdatedRole($role));
     }
 
     /**
@@ -62,7 +62,7 @@ class RoleObserver extends ModelObserver
      */
     public function saving(Role $role)
     {
-        $this->event->fire('auth.roles.saving', compact('role'));
+        $this->event->dispatch(new RoleEvents\SavingRole($role));
     }
 
     /**
@@ -72,7 +72,7 @@ class RoleObserver extends ModelObserver
      */
     public function saved(Role $role)
     {
-        $this->event->fire('auth.roles.saved', compact('role'));
+        $this->event->dispatch(new RoleEvents\SavedRole($role));
     }
 
     /**
@@ -85,7 +85,7 @@ class RoleObserver extends ModelObserver
         $role->users()->detach();
         $role->permissions()->detach();
 
-        $this->event->fire('auth.roles.deleting', compact('role'));
+        $this->event->dispatch(new RoleEvents\DeletingRole($role));
     }
 
     /**
@@ -95,6 +95,6 @@ class RoleObserver extends ModelObserver
      */
     public function deleted(Role $role)
     {
-        $this->event->fire('auth.roles.deleted', compact('role'));
+        $this->event->dispatch(new RoleEvents\DeletedRole($role));
     }
 }

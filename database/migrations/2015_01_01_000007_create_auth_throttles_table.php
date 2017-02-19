@@ -2,7 +2,6 @@
 
 use Arcanedev\LaravelAuth\Bases\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Class     CreatePermissionRoleTable
@@ -35,9 +34,9 @@ class CreateAuthThrottlesTable extends Migration
     public function up()
     {
         if ($this->isThrottlable()) {
-            Schema::connection($this->connection)->create($this->table, function (Blueprint $table) {
+            $this->createSchema(function (Blueprint $table) {
                 $table->increments('id');
-                $table->integer('user_id')->unsigned()->nullable();
+                $table->unsignedInteger('user_id')->nullable();
                 $table->string('type');
                 $table->string('ip')->nullable();
                 $table->timestamps();

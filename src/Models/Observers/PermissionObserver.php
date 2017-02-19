@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Models\Observers;
 
-use Arcanedev\LaravelAuth\Bases\ModelObserver;
+use Arcanedev\LaravelAuth\Events\Permissions as PermissionEvents;
 use Arcanesoft\Contracts\Auth\Models\Permission;
 
 /**
@@ -9,7 +9,7 @@ use Arcanesoft\Contracts\Auth\Models\Permission;
  * @package  Arcanedev\LaravelAuth\Observers
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class PermissionObserver extends ModelObserver
+class PermissionObserver extends AbstractObserver
 {
     /* ------------------------------------------------------------------------------------------------
      |  Model Events
@@ -22,7 +22,7 @@ class PermissionObserver extends ModelObserver
      */
     public function creating(Permission $permission)
     {
-        $this->event->fire('auth.permissions.creating', compact('permission'));
+        $this->event->dispatch(new PermissionEvents\CreatingPermission($permission));
     }
 
     /**
@@ -32,7 +32,7 @@ class PermissionObserver extends ModelObserver
      */
     public function created(Permission $permission)
     {
-        $this->event->fire('auth.permissions.created', compact('permission'));
+        $this->event->dispatch(new PermissionEvents\CreatedPermission($permission));
     }
 
     /**
@@ -42,7 +42,7 @@ class PermissionObserver extends ModelObserver
      */
     public function updating(Permission $permission)
     {
-        $this->event->fire('auth.permissions.updating', compact('permission'));
+        $this->event->dispatch(new PermissionEvents\UpdatingPermission($permission));
     }
 
     /**
@@ -52,7 +52,7 @@ class PermissionObserver extends ModelObserver
      */
     public function updated(Permission $permission)
     {
-        $this->event->fire('auth.permissions.updated', compact('permission'));
+        $this->event->dispatch(new PermissionEvents\UpdatedPermission($permission));
     }
 
     /**
@@ -62,7 +62,7 @@ class PermissionObserver extends ModelObserver
      */
     public function saving(Permission $permission)
     {
-        $this->event->fire('auth.permissions.saving', compact('permission'));
+        $this->event->dispatch(new PermissionEvents\SavingPermission($permission));
     }
 
     /**
@@ -72,7 +72,7 @@ class PermissionObserver extends ModelObserver
      */
     public function saved(Permission $permission)
     {
-        $this->event->fire('auth.permissions.saved', compact('permission'));
+        $this->event->dispatch(new PermissionEvents\SavedPermission($permission));
     }
 
     /**
@@ -84,7 +84,7 @@ class PermissionObserver extends ModelObserver
     {
         $permission->roles()->detach();
 
-        $this->event->fire('auth.permissions.deleting', compact('permission'));
+        $this->event->dispatch(new PermissionEvents\DeletingPermission($permission));
     }
 
     /**
@@ -94,6 +94,6 @@ class PermissionObserver extends ModelObserver
      */
     public function deleted(Permission $permission)
     {
-        $this->event->fire('auth.permissions.deleted', compact('permission'));
+        $this->event->dispatch(new PermissionEvents\DeletedPermission($permission));
     }
 }
