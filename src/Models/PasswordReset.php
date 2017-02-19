@@ -50,7 +50,8 @@ class PasswordReset extends AbstractModel
      */
     public function __construct(array $attributes = [])
     {
-        $this->setTable(config('laravel-auth.password-resets.table', 'password_resets'));
+        $this->setConnection(null)->setPrefix(null);
+        $this->setTable(config('auth.passwords.users.table', 'password_resets'));
 
         parent::__construct($attributes);
     }

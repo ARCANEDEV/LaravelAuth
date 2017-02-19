@@ -53,7 +53,6 @@ return [
     ],
 
     'password-resets' => [
-        'table' => 'password_resets',
         'model' => \Arcanedev\LaravelAuth\Models\PasswordReset::class,
     ],
 

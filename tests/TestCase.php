@@ -145,7 +145,6 @@ abstract class TestCase extends BaseTestCase
             'role_user',
             'permission_role',
             'throttles',
-            'password_resets',
         ];
     }
 

@@ -47,5 +47,13 @@ class MigrationsTest extends TestCase
                 "The table [{$prefix}{$table}] not found in the database."
             );
         }
+
+        /**  password_resets table */
+        $table = config('auth.passwords.users.table');
+
+        $this->assertTrue(
+            Schema::hasTable($table),
+            "The table [{$table}] not found in the database."
+        );
     }
 }
