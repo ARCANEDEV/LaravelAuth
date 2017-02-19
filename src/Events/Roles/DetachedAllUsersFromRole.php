@@ -2,7 +2,13 @@
 
 use Arcanesoft\Contracts\Auth\Models\Role;
 
-class DetachedAllUsersFromRole
+/**
+ * Class     DetachedAllUsersFromRole
+ *
+ * @package  Arcanedev\LaravelAuth\Events\Roles
+ * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ */
+class DetachedAllUsersFromRole extends AbstractRoleEvent
 {
     /* -----------------------------------------------------------------
      |  Properties
@@ -19,14 +25,15 @@ class DetachedAllUsersFromRole
      | -----------------------------------------------------------------
      */
     /**
-     * DetachingAllUsersFromRole constructor.
+     * DetachedAllUsersFromRole constructor.
      *
      * @param  \Arcanesoft\Contracts\Auth\Models\Role  $role
      * @param  int                                     $results
      */
     public function __construct(Role $role, $results)
     {
-        $this->role    = $role;
+        parent::__construct($role);
+
         $this->results = $results;
     }
 }

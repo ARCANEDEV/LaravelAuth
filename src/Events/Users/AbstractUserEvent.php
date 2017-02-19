@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Events\Users;
 
-use Arcanesoft\Contracts\Auth\Models\User as UserContract;
+use Arcanesoft\Contracts\Auth\Models\User;
 
 /**
  * Class     AbstractUserEvent
@@ -14,9 +14,7 @@ abstract class AbstractUserEvent
      |  Properties
      | -----------------------------------------------------------------
      */
-    /**
-     * @var \Arcanesoft\Contracts\Auth\Models\User|\Arcanedev\LaravelAuth\Models\User
-     */
+    /** @var  \Arcanesoft\Contracts\Auth\Models\User */
     public $user;
 
     /* -----------------------------------------------------------------
@@ -24,11 +22,11 @@ abstract class AbstractUserEvent
      | -----------------------------------------------------------------
      */
     /**
-     * UserEvent constructor.
+     * AbstractUserEvent constructor.
      *
-     * @param  \Arcanesoft\Contracts\Auth\Models\User|\Arcanedev\LaravelAuth\Models\User  $user
+     * @param  \Arcanesoft\Contracts\Auth\Models\User  $user
      */
-    public function __construct(UserContract $user)
+    public function __construct(User $user)
     {
         $this->user = $user;
     }

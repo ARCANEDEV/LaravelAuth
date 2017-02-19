@@ -8,15 +8,12 @@ use Arcanesoft\Contracts\Auth\Models\Role;
  * @package  Arcanedev\LaravelAuth\Events\Roles
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class DetachedAllPermissionsFromRole
+class DetachedAllPermissionsFromRole extends AbstractRoleEvent
 {
     /* -----------------------------------------------------------------
      |  Properties
      | -----------------------------------------------------------------
      */
-    /** @var  \Arcanesoft\Contracts\Auth\Models\Role */
-    public $role;
-
     /** @var  int */
     public $results;
 
@@ -32,7 +29,8 @@ class DetachedAllPermissionsFromRole
      */
     public function __construct(Role $role, $results)
     {
-        $this->role    = $role;
+        parent::__construct($role);
+
         $this->results = $results;
     }
 }

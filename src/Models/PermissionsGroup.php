@@ -1,5 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
+use Arcanedev\LaravelAuth\Events\PermissionsGroups as PermissionsGroupEvents;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\PermissionsGroup as PermissionsGroupContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -104,7 +105,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      */
     public function createPermission(array $attributes, $reload = true)
     {
-        $this->permissions()->create($attributes);
+        event(new PermissionsGroupEvents\CreatingPermission($this, $attributes));
+        $permission = $this->permissions()->create($attributes);
+        event(new PermissionsGroupEvents\CreatedPermission($this, $permission));
 
         $this->loadPermissions($reload);
     }
@@ -119,7 +122,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
     {
         if ($this->hasPermission($permission)) return;
 
+        event(new PermissionsGroupEvents\AttachingPermissionToGroup($this, $permission));
         $permission = $this->permissions()->save($permission);
+        event(new PermissionsGroupEvents\AttachedPermissionToGroup($this, $permission));
 
         $this->loadPermissions($reload);
     }
@@ -130,12 +135,13 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      * @param  int   $id
      * @param  bool  $reload
      *
-     * @return \Arcanesoft\Contracts\Auth\Models\Permission
+     * @return \Arcanesoft\Contracts\Auth\Models\Permission|null
      */
     public function attachPermissionById($id, $reload = true)
     {
-        if ( ! is_null($permission = $this->getPermissionById($id)))
-            $this->attachPermission($permission, $reload);
+        $permission = $this->getPermissionById($id);
+
+        if ($permission !== null) $this->attachPermission($permission, $reload);
 
         return $permission;
     }
@@ -150,7 +156,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      */
     public function attachPermissions($permissions, $reload = true)
     {
+        event(new PermissionsGroupEvents\AttachingPermissionsToGroup($this, $permissions));
         $permissions = $this->permissions()->saveMany($permissions);
+        event(new PermissionsGroupEvents\AttachedPermissionsToGroup($this, $permissions));
 
         $this->loadPermissions($reload);
 
@@ -167,8 +175,12 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
     {
         if ( ! $this->hasPermission($permission)) return;
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $permission */
         $permission = $this->getPermissionFromGroup($permission);
+
+        event(new PermissionsGroupEvents\DetachingPermissionFromGroup($this, $permission));
         $permission->update(['group_id' => 0]);
+        event(new PermissionsGroupEvents\DetachedPermissionFromGroup($this, $permission));
 
         $this->loadPermissions($reload);
     }
@@ -199,9 +211,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      */
     public function detachPermissions(array $ids, $reload = true)
     {
-        $detached = $this->permissions()
-            ->whereIn('id', $ids)
-            ->update(['group_id' => 0]);
+        event(new PermissionsGroupEvents\DetachingPermissionsFromGroup($this, $ids));
+        $detached = $this->permissions()->whereIn('id', $ids)->update(['group_id' => 0]);
+        event(new PermissionsGroupEvents\DetachedPermissionsFromGroup($this, $ids, $detached));
 
         $this->loadPermissions($reload);
 
@@ -217,7 +229,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      */
     public function detachAllPermissions($reload = true)
     {
+        event(new PermissionsGroupEvents\DetachingAllPermissionsFromGroup($this));
         $detached = $this->permissions()->update(['group_id' => 0]);
+        event(new PermissionsGroupEvents\DetachedAllPermissionsFromGroup($this, $detached));
 
         $this->loadPermissions($reload);
 
@@ -239,7 +253,7 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
     {
         if ($id instanceof Eloquent) $id = $id->getKey();
 
-        return ! is_null($this->getPermissionFromGroup($id));
+        return $this->getPermissionFromGroup($id) !== null;
     }
 
     /* ------------------------------------------------------------------------------------------------
@@ -261,7 +275,7 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
 
         return $this->permissions
             ->filter(function (PermissionContract $permission) use ($id) {
-                return $permission->id == $id;
+                return $permission->getKey() == $id;
             })
             ->first();
     }
@@ -275,10 +289,7 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      */
     private function getPermissionById($id)
     {
-        return $this->permissions()
-            ->getRelated()
-            ->where('id', $id)
-            ->first();
+        return $this->permissions()->getRelated()->where('id', $id)->first();
     }
 
     /**

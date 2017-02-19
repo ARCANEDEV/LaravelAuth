@@ -1,5 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Tests\Models;
 
+use Arcanedev\LaravelAuth\Events\Roles as RoleEvents;
 use Arcanedev\LaravelAuth\Models\Permission;
 use Arcanedev\LaravelAuth\Models\Pivots\RoleUser;
 use Arcanedev\LaravelAuth\Models\Role;
@@ -26,31 +27,31 @@ class RoleTest extends ModelsTest
     /** @var array */
     protected $modelEvents = [
         // Laravel Events
-        'creating'        => \Arcanedev\LaravelAuth\Events\Roles\CreatingRole::class,
-        'created'         => \Arcanedev\LaravelAuth\Events\Roles\CreatedRole::class,
-        'saving'          => \Arcanedev\LaravelAuth\Events\Roles\SavingRole::class,
-        'saved'           => \Arcanedev\LaravelAuth\Events\Roles\SavedRole::class,
-        'updating'        => \Arcanedev\LaravelAuth\Events\Roles\UpdatingRole::class,
-        'updated'         => \Arcanedev\LaravelAuth\Events\Roles\UpdatedRole::class,
-        'deleting'        => \Arcanedev\LaravelAuth\Events\Roles\DeletingRole::class,
-        'deleted'         => \Arcanedev\LaravelAuth\Events\Roles\DeletedRole::class,
-        'restoring'       => \Arcanedev\LaravelAuth\Events\Roles\RestoringRole::class,
-        'restored'        => \Arcanedev\LaravelAuth\Events\Roles\RestoredRole::class,
+        'creating'        => RoleEvents\CreatingRole::class,
+        'created'         => RoleEvents\CreatedRole::class,
+        'saving'          => RoleEvents\SavingRole::class,
+        'saved'           => RoleEvents\SavedRole::class,
+        'updating'        => RoleEvents\UpdatingRole::class,
+        'updated'         => RoleEvents\UpdatedRole::class,
+        'deleting'        => RoleEvents\DeletingRole::class,
+        'deleted'         => RoleEvents\DeletedRole::class,
+        'restoring'       => RoleEvents\RestoringRole::class,
+        'restored'        => RoleEvents\RestoredRole::class,
 
         // Custom events
-        'attaching-user'  => \Arcanedev\LaravelAuth\Events\Roles\AttachingUserToRole::class,
-        'attached-user'   => \Arcanedev\LaravelAuth\Events\Roles\AttachedUserToRole::class,
-        'detaching-user'  => \Arcanedev\LaravelAuth\Events\Roles\DetachingUserFromRole::class,
-        'detached-user'   => \Arcanedev\LaravelAuth\Events\Roles\DetachedUserFromRole::class,
-        'detaching-users' => \Arcanedev\LaravelAuth\Events\Roles\DetachingAllUsersFromRole::class,
-        'detached-users'  => \Arcanedev\LaravelAuth\Events\Roles\DetachedAllUsersFromRole::class,
+        'attaching-user'  => RoleEvents\AttachingUserToRole::class,
+        'attached-user'   => RoleEvents\AttachedUserToRole::class,
+        'detaching-user'  => RoleEvents\DetachingUserFromRole::class,
+        'detached-user'   => RoleEvents\DetachedUserFromRole::class,
+        'detaching-users' => RoleEvents\DetachingAllUsersFromRole::class,
+        'detached-users'  => RoleEvents\DetachedAllUsersFromRole::class,
 
-        'attaching-permission'  => \Arcanedev\LaravelAuth\Events\Roles\AttachingPermissionToRole::class,
-        'attached-permission'   => \Arcanedev\LaravelAuth\Events\Roles\AttachedPermissionToRole::class,
-        'detaching-permission'  => \Arcanedev\LaravelAuth\Events\Roles\DetachingPermissionFromRole::class,
-        'detached-permission'   => \Arcanedev\LaravelAuth\Events\Roles\DetachedPermissionFromRole::class,
-        'detaching-permissions' => \Arcanedev\LaravelAuth\Events\Roles\DetachingAllPermissionsFromRole::class,
-        'detached-permissions'  => \Arcanedev\LaravelAuth\Events\Roles\DetachedAllPermissionsFromRole::class,
+        'attaching-permission'  => RoleEvents\AttachingPermissionToRole::class,
+        'attached-permission'   => RoleEvents\AttachedPermissionToRole::class,
+        'detaching-permission'  => RoleEvents\DetachingPermissionFromRole::class,
+        'detached-permission'   => RoleEvents\DetachedPermissionFromRole::class,
+        'detaching-permissions' => RoleEvents\DetachingAllPermissionsFromRole::class,
+        'detached-permissions'  => RoleEvents\DetachedAllPermissionsFromRole::class,
     ];
 
     /* -----------------------------------------------------------------

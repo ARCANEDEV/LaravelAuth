@@ -9,25 +9,16 @@ use Illuminate\Database\Eloquent\Collection;
  * @package  Arcanedev\LaravelAuth\Events\Users
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class SyncedUserWithRoles
+class SyncedUserWithRoles extends AbstractUserEvent
 {
     /* -----------------------------------------------------------------
      |  Properties
      | -----------------------------------------------------------------
      */
-    /**
-     * @var \Arcanesoft\Contracts\Auth\Models\User
-     */
-    public $user;
-
-    /**
-     * @var \Illuminate\Database\Eloquent\Collection
-     */
+    /** @var  \Illuminate\Database\Eloquent\Collection */
     public $roles;
 
-    /**
-     * @var array
-     */
+    /** @var  array */
     public $synced;
 
     /* -----------------------------------------------------------------
@@ -42,7 +33,8 @@ class SyncedUserWithRoles
      */
     public function __construct(User $user, Collection $roles, array $synced)
     {
-        $this->user   = $user;
+        parent::__construct($user);
+
         $this->roles  = $roles;
         $this->synced = $synced;
     }

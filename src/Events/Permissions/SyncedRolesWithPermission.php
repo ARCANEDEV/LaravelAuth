@@ -9,15 +9,12 @@ use Illuminate\Database\Eloquent\Collection;
  * @package  Arcanedev\LaravelAuth\Events\Permissions
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class SyncedRolesWithPermission
+class SyncedRolesWithPermission extends AbstractPermissionEvent
 {
     /* -----------------------------------------------------------------
      |  Properties
      | -----------------------------------------------------------------
      */
-    /** @var  \Arcanesoft\Contracts\Auth\Models\Permission */
-    public $permission;
-
     /** @var  \Illuminate\Database\Eloquent\Collection */
     public $roles;
 
@@ -37,8 +34,9 @@ class SyncedRolesWithPermission
      */
     public function __construct(Permission $permission, Collection $roles, array $results)
     {
-        $this->permission = $permission;
-        $this->roles      = $roles;
-        $this->results    = $results;
+        parent::__construct($permission);
+
+        $this->roles   = $roles;
+        $this->results = $results;
     }
 }

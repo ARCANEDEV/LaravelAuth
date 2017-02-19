@@ -1,5 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Tests\Models;
 
+use Arcanedev\LaravelAuth\Events\Users as UserEvents;
 use Arcanedev\LaravelAuth\Models\Permission;
 use Arcanedev\LaravelAuth\Models\Pivots\RoleUser;
 use Arcanedev\LaravelAuth\Models\Role;
@@ -24,28 +25,28 @@ class UserTest extends ModelsTest
     /** @var array */
     protected $modelEvents = [
         // Laravel Events
-        'creating'        => \Arcanedev\LaravelAuth\Events\Users\CreatingUser::class,
-        'created'         => \Arcanedev\LaravelAuth\Events\Users\CreatedUser::class,
-        'saving'          => \Arcanedev\LaravelAuth\Events\Users\SavingUser::class,
-        'saved'           => \Arcanedev\LaravelAuth\Events\Users\SavedUser::class,
-        'updating'        => \Arcanedev\LaravelAuth\Events\Users\UpdatingUser::class,
-        'updated'         => \Arcanedev\LaravelAuth\Events\Users\UpdatedUser::class,
-        'deleting'        => \Arcanedev\LaravelAuth\Events\Users\DeletingUser::class,
-        'deleted'         => \Arcanedev\LaravelAuth\Events\Users\DeletedUser::class,
-        'restoring'       => \Arcanedev\LaravelAuth\Events\Users\RestoringUser::class,
-        'restored'        => \Arcanedev\LaravelAuth\Events\Users\RestoredUser::class,
+        'creating'        => UserEvents\CreatingUser::class,
+        'created'         => UserEvents\CreatedUser::class,
+        'saving'          => UserEvents\SavingUser::class,
+        'saved'           => UserEvents\SavedUser::class,
+        'updating'        => UserEvents\UpdatingUser::class,
+        'updated'         => UserEvents\UpdatedUser::class,
+        'deleting'        => UserEvents\DeletingUser::class,
+        'deleted'         => UserEvents\DeletedUser::class,
+        'restoring'       => UserEvents\RestoringUser::class,
+        'restored'        => UserEvents\RestoredUser::class,
 
         // Custom events
-        'confirming'      => \Arcanedev\LaravelAuth\Events\Users\ConfirmingUser::class,
-        'confirmed'       => \Arcanedev\LaravelAuth\Events\Users\ConfirmedUser::class,
-        'syncing-roles'   => \Arcanedev\LaravelAuth\Events\Users\SyncingUserWithRoles::class,
-        'synced-roles'    => \Arcanedev\LaravelAuth\Events\Users\SyncedUserWithRoles::class,
-        'attaching-role'  => \Arcanedev\LaravelAuth\Events\Users\AttachingRoleToUser::class,
-        'attached-role'   => \Arcanedev\LaravelAuth\Events\Users\AttachedRoleToUser::class,
-        'detaching-role'  => \Arcanedev\LaravelAuth\Events\Users\DetachingRole::class,
-        'detached-role'   => \Arcanedev\LaravelAuth\Events\Users\DetachedRole::class,
-        'detaching-roles' => \Arcanedev\LaravelAuth\Events\Users\DetachingRoles::class,
-        'detached-roles'  => \Arcanedev\LaravelAuth\Events\Users\DetachedRoles::class,
+        'confirming'      => UserEvents\ConfirmingUser::class,
+        'confirmed'       => UserEvents\ConfirmedUser::class,
+        'syncing-roles'   => UserEvents\SyncingUserWithRoles::class,
+        'synced-roles'    => UserEvents\SyncedUserWithRoles::class,
+        'attaching-role'  => UserEvents\AttachingRoleToUser::class,
+        'attached-role'   => UserEvents\AttachedRoleToUser::class,
+        'detaching-role'  => UserEvents\DetachingRole::class,
+        'detached-role'   => UserEvents\DetachedRole::class,
+        'detaching-roles' => UserEvents\DetachingRoles::class,
+        'detached-roles'  => UserEvents\DetachedRoles::class,
     ];
 
     /* -----------------------------------------------------------------

@@ -4,6 +4,7 @@ use Arcanedev\LaravelAuth\Models\Permission;
 use Arcanedev\LaravelAuth\Models\Role;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Arcanedev\LaravelAuth\Events\Permissions as PermissionEvents;
 
 /**
  * Class     PermissionTest
@@ -23,24 +24,24 @@ class PermissionTest extends ModelsTest
     /** @var array */
     protected $modelEvents = [
         // Laravel Events
-        'creating'        => \Arcanedev\LaravelAuth\Events\Permissions\CreatingPermission::class,
-        'created'         => \Arcanedev\LaravelAuth\Events\Permissions\CreatedPermission::class,
-        'saving'          => \Arcanedev\LaravelAuth\Events\Permissions\SavingPermission::class,
-        'saved'           => \Arcanedev\LaravelAuth\Events\Permissions\SavedPermission::class,
-        'updating'        => \Arcanedev\LaravelAuth\Events\Permissions\UpdatingPermission::class,
-        'updated'         => \Arcanedev\LaravelAuth\Events\Permissions\UpdatedPermission::class,
-        'deleting'        => \Arcanedev\LaravelAuth\Events\Permissions\DeletingPermission::class,
-        'deleted'         => \Arcanedev\LaravelAuth\Events\Permissions\DeletedPermission::class,
+        'creating'        => PermissionEvents\CreatingPermission::class,
+        'created'         => PermissionEvents\CreatedPermission::class,
+        'saving'          => PermissionEvents\SavingPermission::class,
+        'saved'           => PermissionEvents\SavedPermission::class,
+        'updating'        => PermissionEvents\UpdatingPermission::class,
+        'updated'         => PermissionEvents\UpdatedPermission::class,
+        'deleting'        => PermissionEvents\DeletingPermission::class,
+        'deleted'         => PermissionEvents\DeletedPermission::class,
 
         // Custom events
-        'attaching-role'  => \Arcanedev\LaravelAuth\Events\Permissions\AttachingRoleToPermission::class,
-        'attached-role'   => \Arcanedev\LaravelAuth\Events\Permissions\AttachedRoleToPermission::class,
-        'syncing-roles'   => \Arcanedev\LaravelAuth\Events\Permissions\SyncingRolesWithPermission::class,
-        'synced-roles'    => \Arcanedev\LaravelAuth\Events\Permissions\SyncedRolesWithPermission::class,
-        'detaching-role'  => \Arcanedev\LaravelAuth\Events\Permissions\DetachingRoleFromPermission::class,
-        'detached-role'   => \Arcanedev\LaravelAuth\Events\Permissions\DetachedRoleFromPermission::class,
-        'detaching-roles' => \Arcanedev\LaravelAuth\Events\Permissions\DetachingAllRolesFromPermission::class,
-        'detached-roles'  => \Arcanedev\LaravelAuth\Events\Permissions\DetachedAllRolesFromPermission::class,
+        'attaching-role'  => PermissionEvents\AttachingRoleToPermission::class,
+        'attached-role'   => PermissionEvents\AttachedRoleToPermission::class,
+        'syncing-roles'   => PermissionEvents\SyncingRolesWithPermission::class,
+        'synced-roles'    => PermissionEvents\SyncedRolesWithPermission::class,
+        'detaching-role'  => PermissionEvents\DetachingRoleFromPermission::class,
+        'detached-role'   => PermissionEvents\DetachedRoleFromPermission::class,
+        'detaching-roles' => PermissionEvents\DetachingAllRolesFromPermission::class,
+        'detached-roles'  => PermissionEvents\DetachedAllRolesFromPermission::class,
     ];
 
     /* -----------------------------------------------------------------

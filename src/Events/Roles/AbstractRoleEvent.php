@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Events\Roles;
 
-use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
+use Arcanesoft\Contracts\Auth\Models\Role;
 
 /**
  * Class     AbstractRoleEvent
@@ -14,9 +14,7 @@ abstract class AbstractRoleEvent
      |  Properties
      | -----------------------------------------------------------------
      */
-    /**
-     * @var \Arcanesoft\Contracts\Auth\Models\Role|\Arcanedev\LaravelAuth\Models\Role
-     */
+    /** @var  \Arcanesoft\Contracts\Auth\Models\Role */
     public $role;
 
     /* -----------------------------------------------------------------
@@ -24,11 +22,11 @@ abstract class AbstractRoleEvent
      | -----------------------------------------------------------------
      */
     /**
-     * UserEvent constructor.
+     * AbstractRoleEvent constructor.
      *
-     * @param  \Arcanesoft\Contracts\Auth\Models\Role|\Arcanedev\LaravelAuth\Models\Role  $role
+     * @param  \Arcanesoft\Contracts\Auth\Models\Role  $role
      */
-    public function __construct(RoleContract $role)
+    public function __construct(Role $role)
     {
         $this->role = $role;
     }

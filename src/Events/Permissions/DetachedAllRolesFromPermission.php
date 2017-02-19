@@ -8,15 +8,12 @@ use Arcanesoft\Contracts\Auth\Models\Permission;
  * @package  Arcanedev\LaravelAuth\Events\Permissions
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class DetachedAllRolesFromPermission
+class DetachedAllRolesFromPermission extends AbstractPermissionEvent
 {
     /* -----------------------------------------------------------------
      |  Properties
      | -----------------------------------------------------------------
      */
-    /** @var  \Arcanesoft\Contracts\Auth\Models\Permission */
-    public $permission;
-
     /** @var  int */
     private $results;
 
@@ -32,7 +29,8 @@ class DetachedAllRolesFromPermission
      */
     public function __construct(Permission $permission, $results)
     {
-        $this->permission = $permission;
-        $this->results    = $results;
+        parent::__construct($permission);
+
+        $this->results = $results;
     }
 }

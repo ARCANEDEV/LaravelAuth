@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Events\Permissions;
 
-use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
+use Arcanesoft\Contracts\Auth\Models\Permission;
 
 /**
  * Class     AbstractPermissionEvent
@@ -28,7 +28,7 @@ abstract class AbstractPermissionEvent
      *
      * @param  \Arcanesoft\Contracts\Auth\Models\Permission|\Arcanedev\LaravelAuth\Models\Permission  $permission
      */
-    public function __construct(PermissionContract $permission)
+    public function __construct(Permission $permission)
     {
         $this->permission = $permission;
     }

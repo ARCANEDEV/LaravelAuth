@@ -8,15 +8,12 @@ use Arcanesoft\Contracts\Auth\Models\Role;
  * @package  Arcanedev\LaravelAuth\Events\Roles
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class AttachingUserToRole
+class AttachingUserToRole extends AbstractRoleEvent
 {
     /* -----------------------------------------------------------------
      |  Properties
      | -----------------------------------------------------------------
      */
-    /** @var  \Arcanesoft\Contracts\Auth\Models\Role */
-    public $role;
-
     /** @var  \Arcanesoft\Contracts\Auth\Models\User|int */
     public $user;
 
@@ -32,7 +29,8 @@ class AttachingUserToRole
      */
     public function __construct(Role $role, $user)
     {
-        $this->role = $role;
+        parent::__construct($role);
+
         $this->user = $user;
     }
 }
