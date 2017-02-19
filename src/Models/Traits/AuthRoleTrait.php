@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Models\Traits;
 
-use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
+use Arcanesoft\Contracts\Auth\Models\Role;
 
 /**
  * Trait     AuthRoleTrait
@@ -22,13 +22,15 @@ trait AuthRoleTrait
     /**
      * Check if user has the given role (Role Model or Id).
      *
-     * @param  mixed  $id
+     * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $id
      *
      * @return bool
      */
     public function hasRole($id)
     {
-        return $this->roles->contains($id);
+        if ($id instanceof Role) $id = $id->getKey();
+
+        return $this->roles->contains('id', $id);
     }
 
     /**
@@ -57,8 +59,7 @@ trait AuthRoleTrait
     public function isOne(array $roles, array &$failedRoles = [])
     {
         foreach ($roles as $role) {
-            if ( ! $this->hasRoleSlug($role))
-                $failedRoles[] = $role;
+            if ( ! $this->hasRoleSlug($role)) $failedRoles[] = $role;
         }
 
         return count($roles) !== count($failedRoles);
@@ -73,11 +74,7 @@ trait AuthRoleTrait
      */
     public function hasRoleSlug($slug)
     {
-        $roles = $this->roles->filter(function(RoleContract $role) use ($slug) {
-            return $role->checkSlug($slug);
-        });
-
-        return ! $roles->isEmpty();
+        return ! $this->roles->filter->hasSlug($slug)->isEmpty();
     }
 
     /* -----------------------------------------------------------------

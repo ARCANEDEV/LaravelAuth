@@ -1,21 +1,8 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Events\Roles\AttachedPermissionToRole;
-use Arcanedev\LaravelAuth\Events\Roles\AttachedUserToRole;
-use Arcanedev\LaravelAuth\Events\Roles\AttachingPermissionToRole;
-use Arcanedev\LaravelAuth\Events\Roles\AttachingUserToRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachedAllPermissionsFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachedAllUsersFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachedPermissionFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachedUserFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachingAllPermissionsFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachingAllUsersFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachingPermissionFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachingUserFromRole;
+use Arcanedev\LaravelAuth\Events\Roles as RoleEvents;
 use Arcanedev\LaravelAuth\Models\Traits\Activatable;
-use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
-use Arcanesoft\Contracts\Auth\Models\User;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Str;
 
@@ -157,13 +144,13 @@ class Role extends AbstractModel implements RoleContract
      */
     public function attachUser($user, $reload = true)
     {
-        if ( ! $this->hasUser($user)) {
-            event(new AttachingUserToRole($this, $user));
-            $this->users()->attach($user);
-            event(new AttachedUserToRole($this, $user));
+        if ($this->hasUser($user)) return;
 
-            $this->loadUsers($reload);
-        }
+        event(new RoleEvents\AttachingUserToRole($this, $user));
+        $this->users()->attach($user);
+        event(new RoleEvents\AttachedUserToRole($this, $user));
+
+        $this->loadUsers($reload);
     }
 
     // TODO: Adding attach multiple users to a role ?
@@ -178,9 +165,9 @@ class Role extends AbstractModel implements RoleContract
      */
     public function detachUser($user, $reload = true)
     {
-        event(new DetachingUserFromRole($this, $user));
+        event(new RoleEvents\DetachingUserFromRole($this, $user));
         $results = $this->users()->detach($user);
-        event(new DetachedUserFromRole($this, $user, $results));
+        event(new RoleEvents\DetachedUserFromRole($this, $user, $results));
 
         $this->loadUsers($reload);
 
@@ -198,9 +185,9 @@ class Role extends AbstractModel implements RoleContract
      */
     public function detachAllUsers($reload = true)
     {
-        event(new DetachingAllUsersFromRole($this));
+        event(new RoleEvents\DetachingAllUsersFromRole($this));
         $results = $this->users()->detach();
-        event(new DetachedAllUsersFromRole($this, $results));
+        event(new RoleEvents\DetachedAllUsersFromRole($this, $results));
 
         $this->loadUsers($reload);
 
@@ -217,9 +204,9 @@ class Role extends AbstractModel implements RoleContract
     {
         if ($this->hasPermission($permission)) return;
 
-        event(new AttachingPermissionToRole($this, $permission));
+        event(new RoleEvents\AttachingPermissionToRole($this, $permission));
         $this->permissions()->attach($permission);
-        event(new AttachedPermissionToRole($this, $permission));
+        event(new RoleEvents\AttachedPermissionToRole($this, $permission));
 
         $this->loadPermissions($reload);
     }
@@ -238,9 +225,9 @@ class Role extends AbstractModel implements RoleContract
     {
         if ( ! $this->hasPermission($permission)) return 0;
 
-        event(new DetachingPermissionFromRole($this, $permission));
+        event(new RoleEvents\DetachingPermissionFromRole($this, $permission));
         $results = $this->permissions()->detach($permission);
-        event(new DetachedPermissionFromRole($this, $permission, $results));
+        event(new RoleEvents\DetachedPermissionFromRole($this, $permission, $results));
 
         $this->loadPermissions($reload);
 
@@ -260,9 +247,9 @@ class Role extends AbstractModel implements RoleContract
     {
         if ($this->permissions->isEmpty()) return 0;
 
-        event(new DetachingAllPermissionsFromRole($this));
+        event(new RoleEvents\DetachingAllPermissionsFromRole($this));
         $results = $this->permissions()->detach();
-        event(new DetachedAllPermissionsFromRole($this, $results));
+        event(new RoleEvents\DetachedAllPermissionsFromRole($this, $results));
 
         $this->loadPermissions($reload);
 
@@ -310,11 +297,7 @@ class Role extends AbstractModel implements RoleContract
      */
     public function can($slug)
     {
-        return $this->permissions
-                ->filter(function(PermissionContract $permission) use ($slug) {
-                    return $permission->checkSlug($slug);
-                })
-                ->first() !== null;
+        return $this->permissions->filter->hasSlug($slug)->first() !== null;
     }
 
     /**
@@ -328,8 +311,7 @@ class Role extends AbstractModel implements RoleContract
     public function canAny(array $permissions, array &$failedPermissions = [])
     {
         foreach ($permissions as $permission) {
-            if ( ! $this->can($permission))
-                $failedPermissions[] = $permission;
+            if ( ! $this->can($permission)) $failedPermissions[] = $permission;
         }
 
         return count($permissions) !== count($failedPermissions);
@@ -367,7 +349,7 @@ class Role extends AbstractModel implements RoleContract
      *
      * @return bool
      */
-    public function checkSlug($value)
+    public function hasSlug($value)
     {
         return $this->slug === $this->slugify($value);
     }

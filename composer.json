@@ -18,7 +18,7 @@
     "require": {
         "php":                  ">=5.6",
         "arcanedev/support":    "~4.0",
-        "arcanesoft/contracts": "~1.5"
+        "arcanesoft/contracts": "~2.0"
     },
     "require-dev": {
         "phpunit/phpcov":  "~3.0",

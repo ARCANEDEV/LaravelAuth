@@ -177,15 +177,15 @@ class Permission extends AbstractModel implements PermissionContract
      | -----------------------------------------------------------------
      */
     /**
-     * Check if slug is the same as the given value.
+     * Check if the permission has the same slug.
      *
-     * @param  string  $value
+     * @param  string  $slug
      *
      * @return bool
      */
-    public function checkSlug($value)
+    public function hasSlug($slug)
     {
-        return $this->slug === $this->slugify($value);
+        return $this->slug === $this->slugify($slug);
     }
 
     /* -----------------------------------------------------------------
