@@ -20,9 +20,32 @@ class PermissionTest extends ModelsTest
     /** @var  \Arcanesoft\Contracts\Auth\Models\Permission */
     protected $permission;
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /** @var array */
+    protected $modelEvents = [
+        // Laravel Events
+        'creating'        => \Arcanedev\LaravelAuth\Events\Permissions\CreatingPermission::class,
+        'created'         => \Arcanedev\LaravelAuth\Events\Permissions\CreatedPermission::class,
+        'saving'          => \Arcanedev\LaravelAuth\Events\Permissions\SavingPermission::class,
+        'saved'           => \Arcanedev\LaravelAuth\Events\Permissions\SavedPermission::class,
+        'updating'        => \Arcanedev\LaravelAuth\Events\Permissions\UpdatingPermission::class,
+        'updated'         => \Arcanedev\LaravelAuth\Events\Permissions\UpdatedPermission::class,
+        'deleting'        => \Arcanedev\LaravelAuth\Events\Permissions\DeletingPermission::class,
+        'deleted'         => \Arcanedev\LaravelAuth\Events\Permissions\DeletedPermission::class,
+
+        // Custom events
+        'attaching-role'  => \Arcanedev\LaravelAuth\Events\Permissions\AttachingRoleToPermission::class,
+        'attached-role'   => \Arcanedev\LaravelAuth\Events\Permissions\AttachedRoleToPermission::class,
+        'syncing-roles'   => \Arcanedev\LaravelAuth\Events\Permissions\SyncingRolesWithPermission::class,
+        'synced-roles'    => \Arcanedev\LaravelAuth\Events\Permissions\SyncedRolesWithPermission::class,
+        'detaching-role'  => \Arcanedev\LaravelAuth\Events\Permissions\DetachingRoleFromPermission::class,
+        'detached-role'   => \Arcanedev\LaravelAuth\Events\Permissions\DetachedRoleFromPermission::class,
+        'detaching-roles' => \Arcanedev\LaravelAuth\Events\Permissions\DetachingAllRolesFromPermission::class,
+        'detached-roles'  => \Arcanedev\LaravelAuth\Events\Permissions\DetachedAllRolesFromPermission::class,
+    ];
+
+    /* -----------------------------------------------------------------
+     |  Setup Methods
+     | -----------------------------------------------------------------
      */
     public function setUp()
     {
@@ -38,10 +61,11 @@ class PermissionTest extends ModelsTest
         unset($this->permission);
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Test Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Tests
+     | -----------------------------------------------------------------
      */
+
     /** @test */
     public function it_can_be_instantiated()
     {
@@ -78,6 +102,10 @@ class PermissionTest extends ModelsTest
     /** @test */
     public function it_can_create()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+        ]);
+
         $attributes = [
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
@@ -92,6 +120,10 @@ class PermissionTest extends ModelsTest
     /** @test */
     public function it_can_update()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved', 'updating', 'updated'
+        ]);
+
         $attributes = [
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
@@ -116,6 +148,10 @@ class PermissionTest extends ModelsTest
     /** @test */
     public function it_can_delete()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved', 'deleting', 'deleted'
+        ]);
+
         $attributes = [
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
@@ -134,6 +170,11 @@ class PermissionTest extends ModelsTest
     /** @test */
     public function it_can_attach_and_detach_roles()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+            'attaching-role', 'attached-role', 'detaching-role', 'detached-role',
+        ]);
+
         $this->permission = Permission::create([
             'name'        => 'Custom permission',
             'slug'        => 'permissions.custom',
@@ -141,10 +182,11 @@ class PermissionTest extends ModelsTest
         ]);
 
         /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
-        $adminRole     = Role::create([
+        $adminRole = Role::create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ]);
+
         /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $moderatorRole */
         $moderatorRole = Role::create([
             'name'        => 'Moderator',
@@ -180,6 +222,10 @@ class PermissionTest extends ModelsTest
     /** @test */
     public function it_can_prevent_attaching_a_duplicated_role()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved', 'attaching-role', 'attached-role',
+        ]);
+
         $this->permission = Permission::create([
             'name'        => 'Custom permission',
             'slug'        => 'permissions.custom',
@@ -204,6 +250,10 @@ class PermissionTest extends ModelsTest
     /** @test */
     public function it_can_sync_roles_by_its_slugs()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved', 'syncing-roles', 'synced-roles',
+        ]);
+
         $this->permission = Permission::create([
             'name'        => 'Custom permission',
             'slug'        => 'permissions.custom',
@@ -224,7 +274,7 @@ class PermissionTest extends ModelsTest
         $this->assertCount(0, $this->permission->roles);
 
         $synced = $this->permission->syncRoles(
-            $roles->pluck('slug')->toArray()
+            $roles->pluck('slug')
         );
 
         $this->assertCount($roles->count(),               $synced['attached']);
@@ -236,6 +286,11 @@ class PermissionTest extends ModelsTest
     /** @test */
     public function it_can_detach_all_roles()
     {
+        $this->checkFiredEvents([
+            'creating', 'created', 'saving', 'saved',
+            'attaching-role', 'attached-role', 'detaching-roles', 'detached-roles'
+        ]);
+
         $this->permission = Permission::create([
             'name'        => 'Custom permission',
             'slug'        => 'permissions.custom',
@@ -243,7 +298,7 @@ class PermissionTest extends ModelsTest
         ]);
 
         /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
-        $adminRole     = Role::create([
+        $adminRole = Role::create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ]);
@@ -306,10 +361,10 @@ class PermissionTest extends ModelsTest
             'description' => 'Custom permission description.',
         ]);
 
-        $failedRoles  = [];
+        /** @var  \Illuminate\Support\Collection  $failedRoles */
         $this->assertFalse($this->permission->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(2, $failedRoles);
-        $this->assertSame(['admin', 'member'], $failedRoles);
+        $this->assertSame(['admin', 'member'], $failedRoles->all());
 
         /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
         $adminRole = Role::create([
@@ -320,10 +375,9 @@ class PermissionTest extends ModelsTest
 
         $this->permission->attachRole($adminRole);
 
-        $failedRoles = [];
         $this->assertTrue($this->permission->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(1, $failedRoles);
-        $this->assertSame(['member'], $failedRoles);
+        $this->assertSame(['member'], $failedRoles->all());
     }
 
     /** @test */
@@ -335,10 +389,10 @@ class PermissionTest extends ModelsTest
             'description' => 'Custom permission description.',
         ]);
 
-        $failedRoles  = [];
+        /** @var  \Illuminate\Support\Collection  $failedRoles */
         $this->assertFalse($this->permission->isAll(['admin', 'member'], $failedRoles));
         $this->assertCount(2, $failedRoles);
-        $this->assertSame(['admin', 'member'], $failedRoles);
+        $this->assertSame(['admin', 'member'], $failedRoles->all());
 
         /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
         $adminRole = Role::create([
@@ -349,10 +403,9 @@ class PermissionTest extends ModelsTest
 
         $this->permission->attachRole($adminRole);
 
-        $failedRoles = [];
         $this->assertFalse($this->permission->isAll(['admin', 'member'], $failedRoles));
         $this->assertCount(1, $failedRoles);
-        $this->assertSame(['member'], $failedRoles);
+        $this->assertSame(['member'], $failedRoles->all());
 
         /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $memberRole */
         $memberRole = Role::create([
@@ -363,8 +416,7 @@ class PermissionTest extends ModelsTest
 
         $this->permission->attachRole($memberRole);
 
-        $failedRoles = [];
         $this->assertTrue($this->permission->isAll(['admin', 'member'], $failedRoles));
-        $this->assertEmpty($failedRoles);
+        $this->assertEmpty($failedRoles->all());
     }
 }

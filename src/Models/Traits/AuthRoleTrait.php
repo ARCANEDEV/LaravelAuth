@@ -36,33 +36,35 @@ trait AuthRoleTrait
     /**
      * Check if has all roles.
      *
-     * @param  array  $roles
-     * @param  array  &$failedRoles
+     * @param  \Illuminate\Support\Collection|array  $roles
+     * @param  \Illuminate\Support\Collection        &$failed
      *
      * @return bool
      */
-    public function isAll(array $roles, array &$failedRoles = [])
+    public function isAll($roles, &$failed = null)
     {
-        $this->isOne($roles, $failedRoles);
+        $this->isOne($roles, $failed);
 
-        return count($failedRoles) === 0;
+        return $failed->isEmpty();
     }
 
     /**
      * Check if has at least one role.
      *
-     * @param  array  $roles
-     * @param  array  &$failedRoles
+     * @param  \Illuminate\Support\Collection|array  $roles
+     * @param  \Illuminate\Support\Collection        &$failed
      *
      * @return bool
      */
-    public function isOne(array $roles, array &$failedRoles = [])
+    public function isOne($roles, &$failed = null)
     {
-        foreach ($roles as $role) {
-            if ( ! $this->hasRoleSlug($role)) $failedRoles[] = $role;
-        }
+        $roles = is_array($roles) ? collect($roles) : $roles;
 
-        return count($roles) !== count($failedRoles);
+        $failed = $roles->reject(function ($role) {
+            return $this->hasRoleSlug($role);
+        })->values();
+
+        return $roles->count() !== $failed->count();
     }
 
     /**

@@ -478,13 +478,14 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_check_has_any_role()
     {
-        $user         = $this->createUser();
+        $user = $this->createUser();
 
-        $failedRoles  = [];
+        /** @var  \Illuminate\Support\Collection  $failedRoles */
         $this->assertFalse($user->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(2, $failedRoles);
-        $this->assertSame(['admin', 'member'], $failedRoles);
+        $this->assertSame(['admin', 'member'], $failedRoles->all());
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
         $adminRole = Role::create([
             'name'        => 'Admin',
             'slug'        => 'admin',
@@ -496,19 +497,20 @@ class UserTest extends ModelsTest
         $failedRoles = [];
         $this->assertTrue($user->isOne(['admin', 'member'], $failedRoles));
         $this->assertCount(1, $failedRoles);
-        $this->assertSame(['member'], $failedRoles);
+        $this->assertSame(['member'], $failedRoles->all());
     }
 
     /** @test */
     public function it_can_check_has_all_roles()
     {
-        $user      = $this->createUser();
+        $user = $this->createUser();
 
-        $failedRoles  = [];
+        /** @var  \Illuminate\Support\Collection  $failedRoles */
         $this->assertFalse($user->isAll(['admin', 'member'], $failedRoles));
         $this->assertCount(2, $failedRoles);
-        $this->assertSame(['admin', 'member'], $failedRoles);
+        $this->assertSame(['admin', 'member'], $failedRoles->all());
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
         $adminRole = Role::create([
             'name'        => 'Admin',
             'slug'        => 'admin',
@@ -517,11 +519,11 @@ class UserTest extends ModelsTest
 
         $user->attachRole($adminRole);
 
-        $failedRoles = [];
         $this->assertFalse($user->isAll(['admin', 'member'], $failedRoles));
         $this->assertCount(1, $failedRoles);
-        $this->assertSame(['member'], $failedRoles);
+        $this->assertSame(['member'], $failedRoles->all());
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $memberRole */
         $memberRole = Role::create([
             'name'        => 'Member',
             'slug'        => 'member',
@@ -530,7 +532,6 @@ class UserTest extends ModelsTest
 
         $user->attachRole($memberRole);
 
-        $failedRoles = [];
         $this->assertTrue($user->isAll(['admin', 'member'], $failedRoles));
         $this->assertEmpty($failedRoles);
     }
@@ -565,7 +566,6 @@ class UserTest extends ModelsTest
 
         $this->assertCount(4, $user->permissions);
 
-        $failedPermissions = [];
         $permissionToCheck = [
             'auth.users.create',
             'auth.users.update',
@@ -573,14 +573,15 @@ class UserTest extends ModelsTest
             'blog.posts.update',
         ];
 
-        $this->assertTrue($user->mayOne($permissionToCheck, $failedPermissions));
-        $this->assertEmpty($failedPermissions);
+        /** @var  \Illuminate\Support\Collection  $failed */
+        $this->assertTrue($user->mayOne($permissionToCheck, $failed));
+        $this->assertEmpty($failed);
 
         $permissionToCheck = array_merge($permissionToCheck, ['auth.users.delete', 'blog.posts.delete']);
 
-        $this->assertTrue($user->mayOne($permissionToCheck, $failedPermissions));
-        $this->assertCount(2, $failedPermissions);
-        $this->assertSame($failedPermissions, ['auth.users.delete', 'blog.posts.delete']);
+        $this->assertTrue($user->mayOne($permissionToCheck, $failed));
+        $this->assertCount(2, $failed);
+        $this->assertSame(['auth.users.delete', 'blog.posts.delete'], $failed->all());
     }
 
     /** @test */
@@ -595,7 +596,6 @@ class UserTest extends ModelsTest
 
         $this->assertCount(4, $user->permissions);
 
-        $failedPermissions = [];
         $permissionToCheck = [
             'auth.users.create',
             'auth.users.update',
@@ -603,14 +603,15 @@ class UserTest extends ModelsTest
             'blog.posts.update',
         ];
 
-        $this->assertTrue($user->mayAll($permissionToCheck, $failedPermissions));
-        $this->assertEmpty($failedPermissions);
+        /** @var  \Illuminate\Support\Collection  $failed */
+        $this->assertTrue($user->mayAll($permissionToCheck, $failed));
+        $this->assertEmpty($failed);
 
         $permissionToCheck = array_merge($permissionToCheck, ['auth.users.delete', 'blog.posts.delete']);
 
-        $this->assertFalse($user->mayAll($permissionToCheck, $failedPermissions));
-        $this->assertCount(2, $failedPermissions);
-        $this->assertSame($failedPermissions, ['auth.users.delete', 'blog.posts.delete']);
+        $this->assertFalse($user->mayAll($permissionToCheck, $failed));
+        $this->assertCount(2, $failed);
+        $this->assertSame(['auth.users.delete', 'blog.posts.delete'], $failed->all());
     }
 
     /** @test */

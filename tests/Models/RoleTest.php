@@ -21,7 +21,7 @@ class RoleTest extends ModelsTest
      | -----------------------------------------------------------------
      */
     /** @var  \Arcanedev\LaravelAuth\Models\Role */
-    protected $roleModel;
+    protected $role;
 
     /** @var array */
     protected $modelEvents = [
@@ -61,14 +61,14 @@ class RoleTest extends ModelsTest
     {
         parent::setUp();
 
-        $this->roleModel = new Role;
+        $this->role = new Role;
     }
 
     public function tearDown()
     {
         parent::tearDown();
 
-        unset($this->roleModel);
+        unset($this->role);
     }
 
     /* -----------------------------------------------------------------
@@ -86,15 +86,15 @@ class RoleTest extends ModelsTest
         ];
 
         foreach ($expectations as $expected) {
-            $this->assertInstanceOf($expected, $this->roleModel);
+            $this->assertInstanceOf($expected, $this->role);
         }
     }
 
     /** @test */
     public function it_has_relationships()
     {
-        $usersRelationship       = $this->roleModel->users();
-        $permissionsRelationship = $this->roleModel->permissions();
+        $usersRelationship       = $this->role->users();
+        $permissionsRelationship = $this->role->permissions();
 
         $this->assertInstanceOf(BelongsToMany::class, $usersRelationship);
         $this->assertInstanceOf(BelongsToMany::class, $permissionsRelationship);
@@ -233,13 +233,15 @@ class RoleTest extends ModelsTest
             'description'  => 'Custom role description.',
         ]);
 
-        $admin = User::create([
+        /** @var  \Arcanesoft\Contracts\Auth\Models\User  $admin */
+        $admin  = User::create([
             'username'   => 'super-admin',
             'first_name' => 'Super',
             'last_name'  => 'Admin',
             'email'      => 'sys.admin@gmail.com',
             'password'   => 'SuPeR-PaSsWoRd',
         ]);
+        /** @var  \Arcanesoft\Contracts\Auth\Models\User  $member */
         $member = User::create([
             'username'   => 'john-doe',
             'first_name' => 'John',
@@ -289,6 +291,8 @@ class RoleTest extends ModelsTest
         ]);
 
         $role = $this->createRole();
+
+        /** @var \Arcanesoft\Contracts\Auth\Models\User $user */
         $user = User::create([
             'username'   => 'john-doe',
             'first_name' => 'John',
@@ -319,6 +323,7 @@ class RoleTest extends ModelsTest
             'description'  => 'Custom role description.',
         ]);
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\User  $admin */
         $admin  = User::create([
             'username'   => 'super-admin',
             'first_name' => 'Super',
@@ -326,6 +331,8 @@ class RoleTest extends ModelsTest
             'email'      => 'sys.admin@gmail.com',
             'password'   => 'SuPeR-PaSsWoRd',
         ]);
+
+        /** @var  \Arcanesoft\Contracts\Auth\Models\User  $member */
         $member = User::create([
             'username'   => 'john-doe',
             'first_name' => 'John',
@@ -364,11 +371,14 @@ class RoleTest extends ModelsTest
         ]);
 
         $role                 = $this->createRole();
+
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $createUserPermission */
         $createUserPermission = Permission::create([
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
             'description' => 'Create users permission description.',
         ]);
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $updateUserPermission */
         $updateUserPermission = Permission::create([
             'name'        => 'Update users',
             'slug'        => 'auth.users.update',
@@ -410,7 +420,9 @@ class RoleTest extends ModelsTest
             'attaching-permission', 'attached-permission',
         ]);
 
-        $role                 = $this->createRole();
+        $role = $this->createRole();
+
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $createUserPermission */
         $createUserPermission = Permission::create([
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
@@ -437,11 +449,13 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole();
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $createUserPermission */
         $createUserPermission = Permission::create([
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
             'description' => 'Create users permission description.',
         ]);
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $updateUserPermission */
         $updateUserPermission = Permission::create([
             'name'        => 'Update users',
             'slug'        => 'auth.users.update',
@@ -474,6 +488,7 @@ class RoleTest extends ModelsTest
 
         $this->assertFalse($role->can('auth.users.create'));
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $createUserPermission */
         $createUserPermission = Permission::create([
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
@@ -495,17 +510,18 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole();
 
-        $failedPermissions  = [];
         $permissionsToCheck = [
             'auth.users.create',
             'auth.users.update',
             'auth.users.delete',
         ];
 
+        /** @var  \Illuminate\Support\Collection  $failedPermissions */
         $this->assertFalse($role->canAny($permissionsToCheck, $failedPermissions));
         $this->assertCount(3, $failedPermissions);
-        $this->assertSame($permissionsToCheck, $failedPermissions);
+        $this->assertSame($permissionsToCheck, $failedPermissions->all());
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $createUserPermission */
         $createUserPermission = Permission::create([
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
@@ -514,15 +530,14 @@ class RoleTest extends ModelsTest
 
         $role->attachPermission($createUserPermission);
 
-        $failedPermissions  = [];
-
         $this->assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
         $this->assertCount(2, $failedPermissions);
         $this->assertSame([
             'auth.users.update',
             'auth.users.delete',
-        ], $failedPermissions);
+        ], $failedPermissions->all());
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $updateUserPermission */
         $updateUserPermission = Permission::create([
             'name'        => 'Update users',
             'slug'        => 'auth.users.update',
@@ -531,12 +546,11 @@ class RoleTest extends ModelsTest
 
         $role->attachPermission($updateUserPermission);
 
-        $failedPermissions  = [];
-
         $this->assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
         $this->assertCount(1, $failedPermissions);
-        $this->assertSame(['auth.users.delete'], $failedPermissions);
+        $this->assertSame(['auth.users.delete'], $failedPermissions->all());
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $deleteUserPermission */
         $deleteUserPermission = Permission::create([
             'name'        => 'Delete users',
             'slug'        => 'auth.users.delete',
@@ -545,10 +559,8 @@ class RoleTest extends ModelsTest
 
         $role->attachPermission($deleteUserPermission);
 
-        $failedPermissions  = [];
-
         $this->assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
-        $this->assertEmpty($failedPermissions);
+        $this->assertEmpty($failedPermissions->all());
     }
 
     /** @test */
@@ -561,17 +573,18 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole();
 
-        $failedPermissions  = [];
         $permissionsToCheck = [
             'auth.users.create',
             'auth.users.update',
             'auth.users.delete',
         ];
 
-        $this->assertFalse($role->canAll($permissionsToCheck, $failedPermissions));
-        $this->assertCount(3, $failedPermissions);
-        $this->assertSame($permissionsToCheck, $failedPermissions);
+        /** @var  \Illuminate\Support\Collection  $failed */
+        $this->assertFalse($role->canAll($permissionsToCheck, $failed));
+        $this->assertCount(3, $failed);
+        $this->assertSame($permissionsToCheck, $failed->all());
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $createUserPermission */
         $createUserPermission = Permission::create([
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
@@ -580,15 +593,14 @@ class RoleTest extends ModelsTest
 
         $role->attachPermission($createUserPermission);
 
-        $failedPermissions  = [];
-
-        $this->assertFalse($role->canAll($permissionsToCheck, $failedPermissions));
-        $this->assertCount(2, $failedPermissions);
+        $this->assertFalse($role->canAll($permissionsToCheck, $failed));
+        $this->assertCount(2, $failed);
         $this->assertSame([
             'auth.users.update',
             'auth.users.delete',
-        ], $failedPermissions);
+        ], $failed->all());
 
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $updateUserPermission */
         $updateUserPermission = Permission::create([
             'name'        => 'Update users',
             'slug'        => 'auth.users.update',
@@ -597,12 +609,11 @@ class RoleTest extends ModelsTest
 
         $role->attachPermission($updateUserPermission);
 
-        $failedPermissions  = [];
+        $this->assertFalse($role->canAll($permissionsToCheck, $failed));
+        $this->assertCount(1, $failed);
+        $this->assertSame(['auth.users.delete'], $failed->all());
 
-        $this->assertFalse($role->canAll($permissionsToCheck, $failedPermissions));
-        $this->assertCount(1, $failedPermissions);
-        $this->assertSame(['auth.users.delete'], $failedPermissions);
-
+        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $deleteUserPermission */
         $deleteUserPermission = Permission::create([
             'name'        => 'Delete users',
             'slug'        => 'auth.users.delete',
@@ -611,10 +622,8 @@ class RoleTest extends ModelsTest
 
         $role->attachPermission($deleteUserPermission);
 
-        $failedPermissions  = [];
-
-        $this->assertTrue($role->canAll($permissionsToCheck, $failedPermissions));
-        $this->assertEmpty($failedPermissions);
+        $this->assertTrue($role->canAll($permissionsToCheck, $failed));
+        $this->assertEmpty($failed->all());
     }
 
     /* -----------------------------------------------------------------
@@ -626,7 +635,7 @@ class RoleTest extends ModelsTest
      *
      * @param  array  $attributes
      *
-     * @return Role
+     * @return \Arcanedev\LaravelAuth\Models\Role
      */
     private function createRole(array $attributes = [])
     {
@@ -634,10 +643,9 @@ class RoleTest extends ModelsTest
             $attributes = $this->getAdminRoleAttributes();
         }
 
-        /** @var Role $role */
-        $role = $this->roleModel->create($attributes);
+        $role = $this->role->create($attributes);
 
-        return $this->roleModel->find($role->id);
+        return $this->role->find($role->id);
     }
 
     /**
@@ -651,23 +659,5 @@ class RoleTest extends ModelsTest
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ];
-    }
-
-    /**
-     * Check the fired & unfired events.
-     *
-     * @param  array  $keys
-     */
-    protected function checkFiredEvents(array $keys)
-    {
-        $events = collect($this->modelEvents);
-
-        $this->expectsEvents(
-            $events->only($keys)->values()->toArray()
-        );
-
-        $this->doesntExpectEvents(
-            $events->except($keys)->values()->toArray()
-        );
     }
 }

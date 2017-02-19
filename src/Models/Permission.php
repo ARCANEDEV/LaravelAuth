@@ -1,5 +1,13 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
+use Arcanedev\LaravelAuth\Events\Permissions\AttachedRoleToPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\AttachingRoleToPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\DetachedAllRolesFromPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\DetachedRoleFromPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\DetachingAllRolesFromPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\DetachingRoleFromPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\SyncedRolesWithPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\SyncingRolesWithPermission;
 use Arcanedev\LaravelAuth\Models\Traits\AuthRoleTrait;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
@@ -112,32 +120,35 @@ class Permission extends AbstractModel implements PermissionContract
      * Attach a role to a user.
      *
      * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
-     * @param  bool                                    $reload
+     * @param  bool                                        $reload
      */
     public function attachRole($role, $reload = true)
     {
-        if ( ! $this->hasRole($role)) {
-            $this->roles()->attach($role);
-            $this->loadRoles($reload);
-        }
+        if ($this->hasRole($role)) return;
+
+        event(new AttachingRoleToPermission($this, $role));
+        $this->roles()->attach($role);
+        event(new AttachedRoleToPermission($this, $role));
+
+        $this->loadRoles($reload);
     }
 
     /**
      * Sync the roles by its slugs.
      *
-     * @param  array  $slugs
-     * @param  bool   $reload
+     * @param  array|\Illuminate\Support\Collection  $slugs
+     * @param  bool                                  $reload
      *
      * @return array
      */
-    public function syncRoles(array $slugs, $reload = true)
+    public function syncRoles($slugs, $reload = true)
     {
         /** @var \Illuminate\Database\Eloquent\Collection $roles */
-        $roles  = app(RoleContract::class)->whereIn('slug', $slugs)->get();
+        $roles = app(RoleContract::class)->whereIn('slug', $slugs)->get();
 
-//        event(new SyncingPermissionWithRoles($this, $roles));
+        event(new SyncingRolesWithPermission($this, $roles));
         $synced = $this->roles()->sync($roles->pluck('id'));
-//        event(new SyncedPermissionWithRoles($this, $roles, $synced));
+        event(new SyncedRolesWithPermission($this, $roles, $synced));
 
         $this->loadRoles($reload);
 
@@ -154,7 +165,10 @@ class Permission extends AbstractModel implements PermissionContract
      */
     public function detachRole($role, $reload = true)
     {
+        event(new DetachingRoleFromPermission($this, $role));
         $results = $this->roles()->detach($role);
+        event(new DetachedRoleFromPermission($this, $role, $results));
+
         $this->loadRoles($reload);
 
         return $results;
@@ -169,7 +183,13 @@ class Permission extends AbstractModel implements PermissionContract
      */
     public function detachAllRoles($reload = true)
     {
-        return $this->detachRole(null, $reload);
+        event(new DetachingAllRolesFromPermission($this));
+        $results = $this->roles()->detach();
+        event(new DetachedAllRolesFromPermission($this, $results));
+
+        $this->loadRoles($reload);
+
+        return $results;
     }
 
     /* -----------------------------------------------------------------

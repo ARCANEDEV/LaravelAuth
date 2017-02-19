@@ -257,7 +257,7 @@ class User
      * Attach a role to a user.
      *
      * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
-     * @param  bool                                       $reload
+     * @param  bool                                        $reload
      */
     public function attachRole($role, $reload = true)
     {
@@ -273,12 +273,12 @@ class User
     /**
      * Sync the roles by its slugs.
      *
-     * @param  array  $slugs
-     * @param  bool   $reload
+     * @param  array|\Illuminate\Support\Collection  $slugs
+     * @param  bool                                  $reload
      *
      * @return array
      */
-    public function syncRoles(array $slugs, $reload = true)
+    public function syncRoles($slugs, $reload = true)
     {
         /** @var  \Illuminate\Database\Eloquent\Collection  $roles */
         $roles = app(RoleContract::class)->whereIn('slug', $slugs)->get();
@@ -397,33 +397,35 @@ class User
     /**
      * Check if the user has at least one permission.
      *
-     * @param  array  $permissions
-     * @param  array  $failedPermissions
+     * @param  \Illuminate\Support\Collection|array  $permissions
+     * @param  \Illuminate\Support\Collection        &$failed
      *
      * @return bool
      */
-    public function mayOne(array $permissions, array &$failedPermissions = [])
+    public function mayOne($permissions, &$failed = null)
     {
-        foreach ($permissions as $permission) {
-            if ( ! $this->may($permission)) $failedPermissions[] = $permission;
-        }
+        $permissions = is_array($permissions) ? collect($permissions) : $permissions;
 
-        return count($permissions) !== count($failedPermissions);
+        $failed = $permissions->reject(function ($permission) {
+            return $this->may($permission);
+        })->values();
+
+        return $permissions->count() !== $failed->count();
     }
 
     /**
      * Check if the user has all permissions.
      *
-     * @param  array  $permissions
-     * @param  array  $failedPermissions
+     * @param  \Illuminate\Support\Collection|array  $permissions
+     * @param  \Illuminate\Support\Collection        &$failed
      *
      * @return bool
      */
-    public function mayAll(array $permissions, array &$failedPermissions = [])
+    public function mayAll($permissions, &$failed = null)
     {
-        $this->mayOne($permissions, $failedPermissions);
+        $this->mayOne($permissions, $failed);
 
-        return count($failedPermissions) === 0;
+        return $failed->isEmpty();
     }
 
     /* -----------------------------------------------------------------

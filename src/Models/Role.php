@@ -277,7 +277,7 @@ class Role extends AbstractModel implements RoleContract
     /**
      * Check if role has the given permission (Permission Model or Id).
      *
-     * @param  \Arcanesoft\Contracts\Auth\Models\User|int  $id
+     * @param  \Arcanesoft\Contracts\Auth\Models\Permission|int  $id
      *
      * @return bool
      */
@@ -303,33 +303,35 @@ class Role extends AbstractModel implements RoleContract
     /**
      * Check if a role is associated with any of given permissions.
      *
-     * @param  array  $permissions
-     * @param  array  &$failedPermissions
+     * @param  \Illuminate\Support\Collection|array  $permissions
+     * @param  \Illuminate\Support\Collection        &$failed
      *
      * @return bool
      */
-    public function canAny(array $permissions, array &$failedPermissions = [])
+    public function canAny($permissions, &$failed = null)
     {
-        foreach ($permissions as $permission) {
-            if ( ! $this->can($permission)) $failedPermissions[] = $permission;
-        }
+        $permissions = is_array($permissions) ? collect($permissions) : $permissions;
 
-        return count($permissions) !== count($failedPermissions);
+        $failed = $permissions->reject(function ($permission) {
+            return $this->can($permission);
+        })->values();
+
+        return $permissions->count() !== $failed->count();
     }
 
     /**
      * Check if role is associated with all given permissions.
      *
-     * @param  array  $permissions
-     * @param  array  &$failedPermissions
+     * @param  \Illuminate\Support\Collection|array  $permissions
+     * @param  \Illuminate\Support\Collection        &$failed
      *
      * @return bool
      */
-    public function canAll(array $permissions, array &$failedPermissions = [])
+    public function canAll($permissions, &$failed = null)
     {
-        $this->canAny($permissions, $failedPermissions);
+        $this->canAny($permissions, $failed);
 
-        return count($failedPermissions) === 0;
+        return $failed->isEmpty();
     }
 
     /**
