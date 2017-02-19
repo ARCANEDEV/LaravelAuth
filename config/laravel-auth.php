@@ -52,6 +52,11 @@ return [
         'model' => \Arcanedev\LaravelAuth\Models\Pivots\PermissionRole::class,
     ],
 
+    'password-resets' => [
+        'table' => 'password_resets',
+        'model' => \Arcanedev\LaravelAuth\Models\PasswordReset::class,
+    ],
+
     /* ------------------------------------------------------------------------------------------------
      |  Observers
      | ------------------------------------------------------------------------------------------------
