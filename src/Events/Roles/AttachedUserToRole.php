@@ -1,7 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Events\Roles;
 
 use Arcanesoft\Contracts\Auth\Models\Role;
-use Arcanesoft\Contracts\Auth\Models\User;
 
 /**
  * Class     AttachedUserToRole
@@ -18,7 +17,7 @@ class AttachedUserToRole
     /** @var  \Arcanesoft\Contracts\Auth\Models\Role */
     public $role;
 
-    /** @var  \Arcanesoft\Contracts\Auth\Models\User */
+    /** @var  \Arcanesoft\Contracts\Auth\Models\User|int */
     public $user;
 
     /* -----------------------------------------------------------------
@@ -28,10 +27,10 @@ class AttachedUserToRole
     /**
      * AttachedUserToRole constructor.
      *
-     * @param  \Arcanesoft\Contracts\Auth\Models\Role  $role
-     * @param  \Arcanesoft\Contracts\Auth\Models\User  $user
+     * @param  \Arcanesoft\Contracts\Auth\Models\Role      $role
+     * @param  \Arcanesoft\Contracts\Auth\Models\User|int  $user
      */
-    public function __construct(Role $role, User $user)
+    public function __construct(Role $role, $user)
     {
         $this->role = $role;
         $this->user = $user;

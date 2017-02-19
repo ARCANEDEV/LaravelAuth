@@ -1,6 +1,5 @@
 <?php namespace Arcanedev\LaravelAuth\Events\Users;
 
-use Arcanesoft\Contracts\Auth\Models\Role;
 use Arcanesoft\Contracts\Auth\Models\User;
 
 /**
@@ -15,14 +14,10 @@ class DetachingRole
      |  Properties
      | -----------------------------------------------------------------
      */
-    /**
-     * @var \Arcanesoft\Contracts\Auth\Models\User
-     */
+    /** @var  \Arcanesoft\Contracts\Auth\Models\User */
     public $user;
 
-    /**
-     * @var \Arcanesoft\Contracts\Auth\Models\Role
-     */
+    /** @var  \Arcanesoft\Contracts\Auth\Models\Role|int */
     public $role;
 
     /* -----------------------------------------------------------------
@@ -32,10 +27,10 @@ class DetachingRole
     /**
      * DetachingRole constructor.
      *
-     * @param  \Arcanesoft\Contracts\Auth\Models\User  $user
-     * @param  \Arcanesoft\Contracts\Auth\Models\Role  $role
+     * @param  \Arcanesoft\Contracts\Auth\Models\User      $user
+     * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
      */
-    public function __construct(User $user, Role $role)
+    public function __construct(User $user, $role)
     {
         $this->user = $user;
         $this->role = $role;

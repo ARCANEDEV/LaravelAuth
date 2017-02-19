@@ -55,15 +55,6 @@ trait Activatable
         return $save ? $this->save() : false;
     }
 
-    /**
-     * Fill the model with an array of attributes. Force mass assignment.
-     *
-     * @param  array  $attributes
-     *
-     * @return self
-     */
-    abstract public function forceFill(array $attributes);
-
     /* -----------------------------------------------------------------
      |  Check Methods
      | -----------------------------------------------------------------

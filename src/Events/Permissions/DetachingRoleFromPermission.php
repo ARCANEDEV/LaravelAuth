@@ -1,7 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Events\Permissions;
 
 use Arcanesoft\Contracts\Auth\Models\Permission;
-use Arcanesoft\Contracts\Auth\Models\Role;
 
 /**
  * Class     DetachingRoleFromPermission
@@ -18,7 +17,7 @@ class DetachingRoleFromPermission
     /** @var  \Arcanesoft\Contracts\Auth\Models\Permission */
     public $permission;
 
-    /** @var  \Arcanesoft\Contracts\Auth\Models\Role */
+    /** @var  \Arcanesoft\Contracts\Auth\Models\Role|int */
     public $role;
 
     /* -----------------------------------------------------------------
@@ -29,9 +28,9 @@ class DetachingRoleFromPermission
      * DetachedRoleFromPermission constructor.
      *
      * @param  \Arcanesoft\Contracts\Auth\Models\Permission  $permission
-     * @param  \Arcanesoft\Contracts\Auth\Models\Role        $role
+     * @param  \Arcanesoft\Contracts\Auth\Models\Role|int    $role
      */
-    public function __construct(Permission $permission, Role $role)
+    public function __construct(Permission $permission, $role)
     {
         $this->permission = $permission;
         $this->role       = $role;

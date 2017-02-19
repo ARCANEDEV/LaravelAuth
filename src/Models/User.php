@@ -175,7 +175,7 @@ class User
         return $this->roles->pluck('permissions')
             ->flatten()
             ->unique(function (PermissionContract $permission) {
-                return $permission->id;
+                return $permission->getKey();
             });
     }
 

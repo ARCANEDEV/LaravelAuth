@@ -17,6 +17,9 @@ class DetachedAllRolesFromPermission
     /** @var  \Arcanesoft\Contracts\Auth\Models\Permission */
     public $permission;
 
+    /** @var  int */
+    private $results;
+
     /* -----------------------------------------------------------------
      |  Constructor
      | -----------------------------------------------------------------
@@ -25,9 +28,11 @@ class DetachedAllRolesFromPermission
      * DetachedAllRolesFromPermission constructor.
      *
      * @param  \Arcanesoft\Contracts\Auth\Models\Permission  $permission
+     * @param  int                                           $results
      */
-    public function __construct(Permission $permission)
+    public function __construct(Permission $permission, $results)
     {
         $this->permission = $permission;
+        $this->results    = $results;
     }
 }

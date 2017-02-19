@@ -30,5 +30,4 @@ class DetachingAllRolesFromPermission
     {
         $this->permission = $permission;
     }
-
 }
