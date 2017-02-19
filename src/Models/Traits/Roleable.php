@@ -3,7 +3,7 @@
 use Arcanesoft\Contracts\Auth\Models\Role;
 
 /**
- * Trait     AuthRoleTrait
+ * Trait     Roleable
  *
  * @package  Arcanedev\LaravelAuth\Traits
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
@@ -11,9 +11,9 @@ use Arcanesoft\Contracts\Auth\Models\Role;
  * @property  \Illuminate\Database\Eloquent\Collection  roles
  *
  * @method    \Illuminate\Database\Eloquent\Relations\BelongsToMany  roles()
- * @method    \Arcanedev\LaravelAuth\Models\Traits\AuthRoleTrait     load(mixed $relations)
+ * @method    \Arcanedev\LaravelAuth\Models\Traits\Roleable          load(mixed $relations)
  */
-trait AuthRoleTrait
+trait Roleable
 {
     /* -----------------------------------------------------------------
      |  Check Methods

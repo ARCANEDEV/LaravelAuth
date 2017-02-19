@@ -29,9 +29,8 @@ return [
     ],
 
     'role-user'          => [
-        'table'          => 'role_user',
-        'model'          => \Arcanedev\LaravelAuth\Models\Pivots\RoleUser::class,
-        'observer'       => \Arcanedev\LaravelAuth\Models\Observers\RoleUserObserver::class,
+        'table' => 'role_user',
+        'model' => \Arcanedev\LaravelAuth\Models\Pivots\RoleUser::class,
     ],
 
     'permissions-groups' => [
@@ -49,9 +48,8 @@ return [
     ],
 
     'permission-role'    => [
-        'table'          => 'permission_role',
-        'model'          => \Arcanedev\LaravelAuth\Models\Pivots\PermissionRole::class,
-        'observer'       => \Arcanedev\LaravelAuth\Models\Observers\PermissionRoleObserver::class,
+        'table' => 'permission_role',
+        'model' => \Arcanedev\LaravelAuth\Models\Pivots\PermissionRole::class,
     ],
 
     /* ------------------------------------------------------------------------------------------------

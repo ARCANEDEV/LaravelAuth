@@ -26,18 +26,4 @@ class PermissionRole extends AbstractPivot
         'permission_id' => 'integer',
         'role_id'       => 'integer',
     ];
-
-    /* -----------------------------------------------------------------
-     |  Getters & Setters
-     | -----------------------------------------------------------------
-     */
-    /**
-     * Get the observer class for the pivot table.
-     *
-     * @return string|null
-     */
-    protected function getObserverClass()
-    {
-        return config('laravel-auth.permission-role.observer');
-    }
 }

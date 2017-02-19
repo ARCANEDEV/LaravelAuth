@@ -88,11 +88,9 @@ class UserObserver extends AbstractObserver
      */
     public function deleting(User $user)
     {
-        if ($user->isAdmin())
-            return false;
+        if ($user->isAdmin()) return false;
 
-        if ($user->isForceDeleting())
-            $user->roles()->detach();
+        if ($user->isForceDeleting()) $user->roles()->detach();
 
         $this->event->dispatch(new UserEvents\DeletingUser($user));
 

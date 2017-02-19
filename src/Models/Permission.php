@@ -8,7 +8,7 @@ use Arcanedev\LaravelAuth\Events\Permissions\DetachingAllRolesFromPermission;
 use Arcanedev\LaravelAuth\Events\Permissions\DetachingRoleFromPermission;
 use Arcanedev\LaravelAuth\Events\Permissions\SyncedRolesWithPermission;
 use Arcanedev\LaravelAuth\Events\Permissions\SyncingRolesWithPermission;
-use Arcanedev\LaravelAuth\Models\Traits\AuthRoleTrait;
+use Arcanedev\LaravelAuth\Models\Traits\Roleable;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 use Illuminate\Support\Str;
@@ -37,7 +37,7 @@ class Permission extends AbstractModel implements PermissionContract
      |  Traits
      | -----------------------------------------------------------------
      */
-    use AuthRoleTrait;
+    use Roleable;
 
     /* -----------------------------------------------------------------
      |  Properties

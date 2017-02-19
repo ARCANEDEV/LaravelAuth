@@ -3,7 +3,7 @@
 use Arcanedev\LaravelAuth\Events\Users as UserEvents;
 use Arcanedev\LaravelAuth\Exceptions\UserConfirmationException;
 use Arcanedev\LaravelAuth\Models\Traits\Activatable;
-use Arcanedev\LaravelAuth\Models\Traits\AuthRoleTrait;
+use Arcanedev\LaravelAuth\Models\Traits\Roleable;
 use Arcanedev\LaravelAuth\Services\SocialAuthenticator;
 use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
@@ -59,7 +59,7 @@ class User
      |  Traits
      | ------------------------------------------------------------------------------------------------
      */
-    use AuthRoleTrait,
+    use Roleable,
         Authenticatable,
         Authorizable,
         CanResetPassword,
@@ -425,7 +425,9 @@ class User
     {
         $this->mayOne($permissions, $failed);
 
-        return $failed->isEmpty();
+        return $failed instanceof \Illuminate\Support\Collection
+            ? $failed->isEmpty()
+            : false;
     }
 
     /* -----------------------------------------------------------------
