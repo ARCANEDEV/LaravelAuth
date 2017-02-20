@@ -1,4 +1,5 @@
 <?php namespace Arcanedev\LaravelAuth\Tests\Models;
+
 use Arcanedev\LaravelAuth\Models\PasswordReset;
 
 /**
