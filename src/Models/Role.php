@@ -66,9 +66,9 @@ class Role extends AbstractModel implements RoleContract
      */
     public function __construct(array $attributes = [])
     {
-        $this->setTable(config('laravel-auth.roles.table', 'roles'));
-
         parent::__construct($attributes);
+
+        $this->setTable(config('laravel-auth.roles.table', 'roles'));
     }
 
     /* ------------------------------------------------------------------------------------------------

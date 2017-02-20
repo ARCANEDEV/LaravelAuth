@@ -61,9 +61,9 @@ class Permission extends AbstractModel implements PermissionContract
      */
     public function __construct(array $attributes = [])
     {
-        $this->setTable(config('laravel-auth.permissions.table', 'permissions'));
-
         parent::__construct($attributes);
+
+        $this->setTable(config('laravel-auth.permissions.table', 'permissions'));
     }
 
     /* -----------------------------------------------------------------

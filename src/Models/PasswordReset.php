@@ -50,10 +50,10 @@ class PasswordReset extends AbstractModel
      */
     public function __construct(array $attributes = [])
     {
+        parent::__construct($attributes);
+
         $this->setConnection(null)->setPrefix(null);
         $this->setTable(config('auth.passwords.users.table', 'password_resets'));
-
-        parent::__construct($attributes);
     }
 
     /* -----------------------------------------------------------------
