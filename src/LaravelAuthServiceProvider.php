@@ -11,9 +11,9 @@ use Arcanesoft\Contracts\Auth\Models as AuthContracts;
  */
 class LaravelAuthServiceProvider extends ServiceProvider
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Properties
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Package name.
@@ -22,23 +22,9 @@ class LaravelAuthServiceProvider extends ServiceProvider
      */
     protected $package = 'laravel-auth';
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Getters & Setters
-     | ------------------------------------------------------------------------------------------------
-     */
-    /**
-     * Get the base path of the package.
-     *
-     * @return string
-     */
-    public function getBasePath()
-    {
-        return dirname(__DIR__);
-    }
-
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Register the service provider.
@@ -61,9 +47,8 @@ class LaravelAuthServiceProvider extends ServiceProvider
 
         $this->publishConfig();
         $this->publishFactories();
-        Auth::$runsMigrations
-            ? $this->loadMigrations()
-            : $this->publishMigrations();
+
+        Auth::$runsMigrations ? $this->loadMigrations() : $this->publishMigrations();
     }
 
     /**
@@ -78,9 +63,9 @@ class LaravelAuthServiceProvider extends ServiceProvider
         ];
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Other Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Other Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Binding the models with the contracts.

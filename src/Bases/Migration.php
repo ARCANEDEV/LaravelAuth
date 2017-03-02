@@ -10,12 +10,12 @@ use Arcanedev\Support\Bases\Migration as BaseMigration;
  */
 abstract class Migration extends BaseMigration
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Constructor
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
-     * Make a migration instance.
+     * Migration constructor.
      */
     public function __construct()
     {

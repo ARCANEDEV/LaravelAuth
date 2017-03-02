@@ -2,6 +2,7 @@
 
 use Arcanedev\LaravelAuth\Models\User;
 use Arcanedev\Support\Bases\Seeder;
+use Carbon\Carbon;
 
 /**
  * Class     UsersTableSeeder
@@ -35,7 +36,7 @@ class UsersTableSeeder extends Seeder
     private function prepareUsers(array $data)
     {
         $users = [];
-        $now   = \Carbon\Carbon::now();
+        $now   = Carbon::now();
 
         foreach ($data as $user) {
             $users[] = [

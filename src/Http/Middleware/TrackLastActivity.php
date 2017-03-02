@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class     TrackLastActivity
@@ -10,34 +11,40 @@ use Closure;
  */
 class TrackLastActivity
 {
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure                  $next
+     * @param  string|null               $guard
      *
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $guard = null)
     {
-        /** @var \Arcanedev\LaravelAuth\Models\User $user */
-        if ( ! is_null($user = auth()->user()) && $this->isEnabled()) {
+        /** @var  \Arcanedev\LaravelAuth\Models\User  $user */
+        $user = Auth::guard($guard)->user();
+
+        if ( ! is_null($user) && $this->isEnabled())
             $user->updateLastActivity();
-        }
 
         return $next($request);
     }
 
+    /* -----------------------------------------------------------------
+     |  Other Methods
+     | -----------------------------------------------------------------
+     */
     /**
      * Check if the tracking is enabled.
      *
-     * @return mixed
+     * @return bool
      */
-    private function isEnabled()
+    protected function isEnabled()
     {
         return config('laravel-auth.track-activity.enabled', false);
     }

@@ -22,9 +22,9 @@ use Illuminate\Support\Str;
  */
 class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Properties
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * The attributes that are mass assignable.
@@ -33,9 +33,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      */
     protected $fillable = ['name', 'slug', 'description'];
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Constructor
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Create a new Eloquent model instance.
@@ -68,9 +68,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
         );
     }
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Getters & Setters
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Set the name attribute.
@@ -90,12 +90,12 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      */
     public function setSlugAttribute($slug)
     {
-        $this->attributes['slug'] = $this->slugify($slug);
+        $this->attributes['slug'] = Str::slug($slug, config('laravel-auth.permissions-groups.slug-separator', '-'));
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  CRUD Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Create and attach a permission.
@@ -238,9 +238,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
         return $detached;
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Check Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Check Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Check if role has the given permission (Permission Model or Id).
@@ -256,9 +256,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
         return $this->getPermissionFromGroup($id) !== null;
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Other Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Other Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Get a permission from the group.
@@ -302,17 +302,5 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
     protected function loadPermissions($load = true)
     {
         return $load ? $this->load('permissions') : $this;
-    }
-
-    /**
-     * Slugify the value.
-     *
-     * @param  string  $value
-     *
-     * @return string
-     */
-    protected function slugify($value)
-    {
-        return Str::slug($value, config('laravel-auth.permissions-groups.slug-separator', '-'));
     }
 }

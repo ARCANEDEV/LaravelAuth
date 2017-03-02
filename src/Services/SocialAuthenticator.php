@@ -1,4 +1,5 @@
 <?php namespace Arcanedev\LaravelAuth\Services;
+
 use Illuminate\Support\Collection;
 
 /**
@@ -9,6 +10,10 @@ use Illuminate\Support\Collection;
  */
 class SocialAuthenticator
 {
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
+     */
     /**
      * Check if social authentication is enabled.
      *

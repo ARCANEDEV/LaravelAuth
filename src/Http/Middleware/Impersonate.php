@@ -1,8 +1,8 @@
 <?php namespace Arcanedev\LaravelAuth\Http\Middleware;
 
 use Arcanedev\LaravelAuth\Services\UserImpersonator;
-use Auth;
 use Closure;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class     Impersonate
@@ -12,22 +12,23 @@ use Closure;
  */
 class Impersonate
 {
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
     /**
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure                  $next
+     * @param  string|null               $guard
      *
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $guard = null)
     {
         if (UserImpersonator::isEnabled() && UserImpersonator::isImpersonating()) {
-            auth()->onceUsingId(UserImpersonator::getUserId());
+            Auth::guard($guard)->onceUsingId(UserImpersonator::getUserId());
         }
 
         return $next($request);
