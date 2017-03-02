@@ -636,6 +636,73 @@ class UserTest extends ModelsTest
         $this->assertSame($authUser->id, $users->first()->id);
     }
 
+    /** @test */
+    public function it_must_sanitize_user_name_with_mutator()
+    {
+        // First name
+        $firstNames = ['john', 'JOHN', 'JoHn', 'jOhN'];
+        $expected   = 'John';
+
+        foreach ($firstNames as $firstName) {
+            $user = $this->userModel->fill(['first_name' => $firstName]);
+
+            $this->assertSame($expected, $user->first_name);
+        }
+
+        $firstNames = ['john oliver', 'JOHN OLIVER', 'JoHn OlIvEr', 'jOhN oLiVeR'];
+        $expected   = 'John Oliver';
+
+        foreach ($firstNames as $firstName) {
+            $user = $this->userModel->fill(['first_name' => $firstName]);
+
+            $this->assertSame($expected, $user->first_name);
+        }
+
+        // Last name
+        $lastNames = ['doe', 'Doe', 'DOE', 'DoE'];
+        $expected  = 'DOE';
+
+        foreach ($lastNames as $lastName) {
+            $user = $this->userModel->fill(['last_name' => $lastName]);
+
+            $this->assertSame($expected, $user->last_name);
+        }
+
+        // Full name
+        $names = [
+            ['john', 'doe'],
+            ['JOHN', 'Doe'],
+            ['JoHn', 'DOE'],
+            ['jOhN', 'DoE'],
+        ];
+        $expected  = 'John DOE';
+
+        foreach ($names as $name) {
+            $user = $this->userModel->fill([
+                'first_name' => $name[0],
+                'last_name'  => $name[1],
+            ]);
+
+            $this->assertSame($expected, $user->full_name);
+        }
+    }
+
+    /** @test */
+    public function it_must_sanitize_user_email_with_mutator()
+    {
+        $emails   = [
+            'user@example.com', 'USER@example.com', 'user@EXAMPLE.com', 'user@example.COM',
+            'UsEr@ExAmPlE.CoM', 'uSeR@eXaMpLe.cOm', 'USER@EXAMPLE.COM',
+        ];
+        $expected = 'user@example.com';
+
+        foreach ($emails as $email) {
+            $user = $this->userModel->fill(['email' => $email]);
+
+            $this->assertSame($expected, $user->email);
+        }
+    }
+
     /* -----------------------------------------------------------------
      |  Helpers
      | -----------------------------------------------------------------

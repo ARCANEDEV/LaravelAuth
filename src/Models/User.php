@@ -55,9 +55,9 @@ class User
     extends AbstractModel
     implements UserContract, AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Traits
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     use Roleable,
         Authenticatable,
@@ -66,9 +66,9 @@ class User
         Activatable,
         SoftDeletes;
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Properties
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * The attributes that are mass assignable.
@@ -116,9 +116,9 @@ class User
         'deleted_at',
     ];
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Constructor
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Create a new Eloquent model instance.
@@ -145,9 +145,9 @@ class User
         }
     }
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Relationships
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * User belongs to many roles.
@@ -179,9 +179,9 @@ class User
             });
     }
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Scopes
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
     /**
      * Scope unconfirmed users by code.
@@ -208,17 +208,27 @@ class User
      */
     public function scopeLastActive($query, $minutes = null)
     {
-        $minutes = $minutes ?: config('laravel_auth.track-activity.minutes', 5);
-
-        $date = Carbon::now()->subMinutes($minutes);
+        $date = Carbon::now()->subMinutes(
+            $minutes ?: config('laravel_auth.track-activity.minutes', 5)
+        );
 
         return $query->where('last_activity', '>=', $date->toDateTimeString());
     }
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Getters & Setters
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
+    /**
+     * Set the `email` attribute.
+     *
+     * @param  string  $email
+     */
+    public function setEmailAttribute($email)
+    {
+        $this->attributes['email'] = Str::lower($email);
+    }
+
     /**
      * Set the `username` attribute.
      *
@@ -226,7 +236,27 @@ class User
      */
     public function setUsernameAttribute($username)
     {
-        $this->attributes['username'] = $this->slugify($username);
+        $this->attributes['username'] = Str::slug($username, config('laravel-auth.users.slug-separator', '.'));
+    }
+
+    /**
+     * Set the `first_name` attribute.
+     *
+     * @param  string  $firstName
+     */
+    public function setFirstNameAttribute($firstName)
+    {
+        $this->attributes['first_name'] = Str::title(Str::lower($firstName));
+    }
+
+    /**
+     * Set the `last_name` attribute.
+     *
+     * @param  string  $lastName
+     */
+    public function setLastNameAttribute($lastName)
+    {
+        $this->attributes['last_name'] = Str::upper($lastName);
     }
 
     /**
@@ -483,21 +513,5 @@ class User
     public function canBeImpersonated()
     {
         return $this->isMember();
-    }
-
-    /* ------------------------------------------------------------------------------------------------
-     |  Other Functions
-     | ------------------------------------------------------------------------------------------------
-     */
-    /**
-     * Slugify the value.
-     *
-     * @param  string  $value
-     *
-     * @return string
-     */
-    protected function slugify($value)
-    {
-        return Str::slug($value, config('laravel-auth.users.slug-separator', '.'));
     }
 }
