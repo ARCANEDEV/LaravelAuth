@@ -67,7 +67,7 @@ class PasswordReset extends AbstractModel
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'email', 'email');
+        return $this->belongsTo(config('laravel-auth.users.model', User::class), 'email', 'email');
     }
 
     /* -----------------------------------------------------------------
