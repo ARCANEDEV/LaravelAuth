@@ -19,6 +19,7 @@ class UserTest extends ModelsTest
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Arcanedev\LaravelAuth\Models\User */
     protected $userModel;
 
@@ -53,6 +54,7 @@ class UserTest extends ModelsTest
      |  Setup Methods
      | -----------------------------------------------------------------
      */
+
     public function setUp()
     {
         parent::setUp();
@@ -213,6 +215,41 @@ class UserTest extends ModelsTest
         $this->assertCount(0, $user->roles);
         $this->assertFalse($user->hasRole($adminRole));
         $this->assertFalse($user->hasRole($moderatorRole));
+    }
+
+    /** @test */
+    public function it_must_deny_access_if_role_is_not_active()
+    {
+        $this->checkFiredEvents([
+            'created', 'creating', 'saved', 'saving',
+            'attaching-role', 'attached-role',
+        ]);
+
+        $user          = $this->createUser();
+        $moderatorRole = Role::create([
+            'name'        => 'Moderator',
+            'description' => 'Moderator role descriptions.',
+        ]);
+
+        $this->assertCount(0, $user->roles);
+
+        $user->attachRole($moderatorRole);
+
+        $this->assertCount(1, $user->roles);
+
+        $this->assertTrue($user->hasRole($moderatorRole));
+        $this->assertCount(1, $user->active_roles);
+        $this->assertTrue($user->isOne([$moderatorRole->slug]));
+
+        $moderatorRole->deactivate();
+
+        $user = $user->fresh(['roles']);
+
+        $this->assertCount(1, $user->roles);
+
+        $this->assertFalse($user->hasRole($moderatorRole));
+        $this->assertCount(0, $user->active_roles);
+        $this->assertFalse($user->isOne([$moderatorRole->slug]));
     }
 
     /** @test */

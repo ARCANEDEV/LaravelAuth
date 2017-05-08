@@ -15,6 +15,7 @@ class RoleObserver extends AbstractObserver
      |  Events
      | -----------------------------------------------------------------
      */
+
     /**
      * Eloquent 'creating' event method.
      *

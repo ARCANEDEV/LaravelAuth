@@ -16,6 +16,7 @@ class UserObserver extends AbstractObserver
      |  Events
      | -----------------------------------------------------------------
      */
+
     /**
      * Eloquent 'creating' event method.
      *

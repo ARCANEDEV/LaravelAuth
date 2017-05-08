@@ -32,12 +32,14 @@ class Role extends AbstractModel implements RoleContract
      |  Traits
      | -----------------------------------------------------------------
      */
+
     use Activatable;
 
     /* -----------------------------------------------------------------
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /**
      * The attributes that are mass assignable.
      *
@@ -59,6 +61,7 @@ class Role extends AbstractModel implements RoleContract
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Create a new Eloquent model instance.
      *
@@ -75,6 +78,7 @@ class Role extends AbstractModel implements RoleContract
      |  Relationships
      | -----------------------------------------------------------------
      */
+
     /**
      * Role belongs to many users.
      *
@@ -111,6 +115,7 @@ class Role extends AbstractModel implements RoleContract
      |  Getters & Setters
      | -----------------------------------------------------------------
      */
+
     /**
      * Set the name attribute.
      *
@@ -136,6 +141,7 @@ class Role extends AbstractModel implements RoleContract
      |  CRUD Functions
      | ------------------------------------------------------------------------------------------------
      */
+
     /**
      * Attach a permission to a role.
      *
@@ -260,6 +266,7 @@ class Role extends AbstractModel implements RoleContract
      |  Check Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Check if role has the given user (User Model or Id).
      *
@@ -297,6 +304,8 @@ class Role extends AbstractModel implements RoleContract
      */
     public function can($slug)
     {
+        if ( ! $this->isActive()) return false;
+
         return $this->permissions->filter->hasSlug($slug)->first() !== null;
     }
 
@@ -360,6 +369,7 @@ class Role extends AbstractModel implements RoleContract
      |  Other Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Load the users.
      *

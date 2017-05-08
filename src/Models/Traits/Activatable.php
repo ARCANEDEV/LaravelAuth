@@ -16,6 +16,7 @@ trait Activatable
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Activate the model.
      *
@@ -68,6 +69,7 @@ trait Activatable
      |  Check Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Check if the model is active.
      *

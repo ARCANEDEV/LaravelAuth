@@ -17,6 +17,7 @@ class RoleUser extends AbstractPivot
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /**
      * The attributes that should be cast to native types.
      *

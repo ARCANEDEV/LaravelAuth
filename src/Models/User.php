@@ -17,6 +17,7 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\Access\Authorizable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
@@ -59,6 +60,7 @@ class User
      |  Traits
      | -----------------------------------------------------------------
      */
+
     use Roleable,
         Authenticatable,
         Authorizable,
@@ -69,6 +71,7 @@ class User
     /* -----------------------------------------------------------------
      |  Properties
      | -----------------------------------------------------------------
+
      */
     /**
      * The attributes that are mass assignable.
@@ -120,6 +123,7 @@ class User
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Create a new Eloquent model instance.
      *
@@ -149,6 +153,7 @@ class User
      |  Relationships
      | -----------------------------------------------------------------
      */
+
     /**
      * User belongs to many roles.
      *
@@ -156,8 +161,7 @@ class User
      */
     public function roles()
     {
-        return $this
-            ->belongsToMany(
+        return $this->belongsToMany(
                 config('laravel-auth.roles.model', Role::class),
                 $this->getPrefix().config('laravel-auth.role-user.table', 'role_user')
             )
@@ -172,7 +176,8 @@ class User
      */
     public function getPermissionsAttribute()
     {
-        return $this->roles->pluck('permissions')
+        return $this->active_roles
+            ->pluck('permissions')
             ->flatten()
             ->unique(function (PermissionContract $permission) {
                 return $permission->getKey();
@@ -183,6 +188,7 @@ class User
      |  Scopes
      | -----------------------------------------------------------------
      */
+
     /**
      * Scope unconfirmed users by code.
      *
@@ -219,6 +225,7 @@ class User
      |  Getters & Setters
      | -----------------------------------------------------------------
      */
+
     /**
      * Set the `email` attribute.
      *
@@ -283,6 +290,7 @@ class User
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Attach a role to a user.
      *
@@ -421,7 +429,9 @@ class User
      */
     public function may($slug)
     {
-        return ! $this->permissions->filter->hasSlug($slug)->isEmpty();
+        return ! $this->permissions->filter(function (PermissionContract $permission) use ($slug) {
+            return $permission->hasSlug($slug);
+        })->isEmpty();
     }
 
     /**
@@ -455,15 +465,14 @@ class User
     {
         $this->mayOne($permissions, $failed);
 
-        return $failed instanceof \Illuminate\Support\Collection
-            ? $failed->isEmpty()
-            : false;
+        return $failed instanceof Collection ? $failed->isEmpty() : false;
     }
 
     /* -----------------------------------------------------------------
      |  Check Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Check if user is an administrator.
      *

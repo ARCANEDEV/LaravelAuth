@@ -37,12 +37,14 @@ class Permission extends AbstractModel implements PermissionContract
      |  Traits
      | -----------------------------------------------------------------
      */
+
     use Roleable;
 
     /* -----------------------------------------------------------------
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /**
      * The attributes that are mass assignable.
      *
@@ -70,6 +72,7 @@ class Permission extends AbstractModel implements PermissionContract
      |  Relationships
      | -----------------------------------------------------------------
      */
+
     /**
      * Permission belongs to one group.
      *
@@ -102,6 +105,7 @@ class Permission extends AbstractModel implements PermissionContract
      |  Setters & Getters
      | -----------------------------------------------------------------
      */
+
     /**
      * Set the slug attribute.
      *
@@ -116,6 +120,7 @@ class Permission extends AbstractModel implements PermissionContract
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Attach a role to a user.
      *
@@ -196,6 +201,7 @@ class Permission extends AbstractModel implements PermissionContract
      |  Check Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Check if the permission has the same slug.
      *
@@ -212,6 +218,7 @@ class Permission extends AbstractModel implements PermissionContract
      |  Other Functions
      | -----------------------------------------------------------------
      */
+
     /**
      * Slugify the value.
      *

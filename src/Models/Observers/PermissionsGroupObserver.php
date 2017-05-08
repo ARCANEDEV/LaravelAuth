@@ -15,6 +15,7 @@ class PermissionsGroupObserver extends AbstractObserver
      |  Events
      | -----------------------------------------------------------------
      */
+
     /**
      * Eloquent 'creating' event method.
      *

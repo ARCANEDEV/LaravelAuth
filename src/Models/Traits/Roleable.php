@@ -9,6 +9,7 @@ use Arcanesoft\Contracts\Auth\Models\Role;
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  *
  * @property  \Illuminate\Database\Eloquent\Collection  roles
+ * @property  \Illuminate\Database\Eloquent\Collection  active_roles
  *
  * @method    \Illuminate\Database\Eloquent\Relations\BelongsToMany  roles()
  * @method    \Arcanedev\LaravelAuth\Models\Traits\Roleable          load(mixed $relations)
@@ -16,9 +17,27 @@ use Arcanesoft\Contracts\Auth\Models\Role;
 trait Roleable
 {
     /* -----------------------------------------------------------------
+     |  Getters & Setters
+     | -----------------------------------------------------------------
+     */
+
+    /**
+     * Get the active roles collection.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getActiveRolesAttribute()
+    {
+        return $this->roles->filter(function (Role $role) {
+            return $role->isActive();
+        });
+    }
+
+    /* -----------------------------------------------------------------
      |  Check Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Check if user has the given role (Role Model or Id).
      *
@@ -30,7 +49,7 @@ trait Roleable
     {
         if ($id instanceof Role) $id = $id->getKey();
 
-        return $this->roles->contains('id', $id);
+        return $this->active_roles->contains('id', $id);
     }
 
     /**
@@ -76,7 +95,11 @@ trait Roleable
      */
     public function hasRoleSlug($slug)
     {
-        return ! $this->roles->filter->hasSlug($slug)->isEmpty();
+        $roles = $this->active_roles->filter(function (Role $role) use ($slug) {
+            return $role->hasSlug($slug);
+        });
+
+        return ! $roles->isEmpty();
     }
 
     /* -----------------------------------------------------------------

@@ -18,6 +18,7 @@ class PasswordReset extends AbstractModel
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -43,6 +44,7 @@ class PasswordReset extends AbstractModel
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Create a new Eloquent model instance.
      *
@@ -60,6 +62,7 @@ class PasswordReset extends AbstractModel
      |  Relationships
      | -----------------------------------------------------------------
      */
+
     /**
      * The user relationship.
      *
@@ -74,6 +77,7 @@ class PasswordReset extends AbstractModel
      |  Getters & Setters
      | -----------------------------------------------------------------
      */
+
     /**
      * Get the token repository.
      *
@@ -88,6 +92,7 @@ class PasswordReset extends AbstractModel
      |  Check Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Check if the password reset was expired.
      *
