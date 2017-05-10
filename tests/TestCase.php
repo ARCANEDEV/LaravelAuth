@@ -94,34 +94,14 @@ abstract class TestCase extends BaseTestCase
      */
     private function setAuthRoutes($router)
     {
-        if (method_exists($router, 'aliasMiddleware')) {
-            $router->aliasMiddleware('impersonate', Middleware\Impersonate::class);
+        if (method_exists($router, 'aliasMiddleware'))
             $router->aliasMiddleware('track-activity', Middleware\TrackLastActivity::class);
-        }
-        else {
-            $router->middleware('impersonate', Middleware\Impersonate::class);
+        else
             $router->middleware('track-activity', Middleware\TrackLastActivity::class);
-        }
 
-        $router->group(['middleware' => ['web', 'impersonate', 'track-activity']], function (Router $router) {
+        $router->group(['middleware' => ['web', 'track-activity']], function (Router $router) {
             $router->get('/', function () {
                 return \Auth::user()->toJson();
-            });
-
-            $router->get('impersonate/start/{id}', function ($id) {
-                $status = \Arcanedev\LaravelAuth\Services\UserImpersonator::start(
-                    \Arcanedev\LaravelAuth\Models\User::find($id)
-                );
-
-                return response()->json([
-                    'status' => $status ? 'success' : 'error'
-                ]);
-            });
-
-            $router->get('impersonate/stop', function () {
-                \Arcanedev\LaravelAuth\Services\UserImpersonator::stop();
-
-                return redirect()->to('/');
             });
         });
     }

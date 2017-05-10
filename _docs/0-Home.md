@@ -8,6 +8,7 @@ Laravel Authorization package for Laravel.
   * CRUD for Roles.
   * CRUD fot Permissions.
   * User confirmation system.
+  * Socialite support.
   * Easy setup &amp; configuration.
   * Well documented &amp; IDE Friendly.
   * Well tested with maximum code quality.
