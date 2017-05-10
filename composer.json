@@ -43,6 +43,9 @@
             "dev-master": "1.0-dev"
         }
     },
+    "suggest": {
+        "arcanedev/laravel-impersonator": "A Laravel package that allows you to impersonate your users"
+    },
     "minimum-stability": "dev",
     "prefer-stable" : true
 }
