@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Tests\Models;
 
 use Arcanedev\LaravelAuth\Tests\TestCase;
+use Illuminate\Support\Facades\Event;
 
 /**
  * Class     ModelsTest
@@ -33,29 +34,19 @@ abstract class ModelsTest extends TestCase
     }
 
     /* -----------------------------------------------------------------
-     |  Helpers
+     |  Custom assertions
      | -----------------------------------------------------------------
      */
+
     /**
      * Check the fired & unfired events.
      *
      * @param  array  $keys
      */
-    protected function checkFiredEvents(array $keys)
+    protected function assertFiredEvents(array $keys)
     {
-        $events = collect($this->modelEvents);
-
-        $missing = collect($keys)->diff($events->keys()->toArray());
-
-        if ( ! $missing->isEmpty())
-            throw new \InvalidArgumentException('Missing model events ["'.$missing->implode('", "').'"]');
-
-        $this->expectsEvents(
-            $events->only($keys)->values()->toArray()
-        );
-
-        $this->doesntExpectEvents(
-            $events->except($keys)->values()->toArray()
-        );
+        foreach (collect($this->modelEvents)->only($keys)->values()->toArray() as $event) {
+            Event::assertDispatched($event);
+        }
     }
 }

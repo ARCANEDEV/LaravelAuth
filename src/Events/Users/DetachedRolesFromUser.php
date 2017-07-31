@@ -8,7 +8,7 @@ use Arcanesoft\Contracts\Auth\Models\User;
  * @package  Arcanedev\LaravelAuth\Events\Users
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class DetachedRoles extends AbstractUserEvent
+class DetachedRolesFromUser extends AbstractUserEvent
 {
     /* -----------------------------------------------------------------
      |  Properties

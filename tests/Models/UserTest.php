@@ -6,12 +6,15 @@ use Arcanedev\LaravelAuth\Models\Pivots\RoleUser;
 use Arcanedev\LaravelAuth\Models\Role;
 use Arcanedev\LaravelAuth\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Event;
 
 /**
  * Class     UserTest
  *
  * @package  Arcanedev\LaravelAuth\Tests\Models
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @todo: Cleaning/Refactoring the event/listeners assertions.
  */
 class UserTest extends ModelsTest
 {
@@ -38,20 +41,22 @@ class UserTest extends ModelsTest
         'restored'        => UserEvents\RestoredUser::class,
 
         // Custom events
+        'activating'      => UserEvents\ActivatingUser::class,
+        'activated'       => UserEvents\ActivatedUser::class,
         'confirming'      => UserEvents\ConfirmingUser::class,
         'confirmed'       => UserEvents\ConfirmedUser::class,
         'syncing-roles'   => UserEvents\SyncingUserWithRoles::class,
         'synced-roles'    => UserEvents\SyncedUserWithRoles::class,
         'attaching-role'  => UserEvents\AttachingRoleToUser::class,
         'attached-role'   => UserEvents\AttachedRoleToUser::class,
-        'detaching-role'  => UserEvents\DetachingRole::class,
-        'detached-role'   => UserEvents\DetachedRole::class,
-        'detaching-roles' => UserEvents\DetachingRoles::class,
-        'detached-roles'  => UserEvents\DetachedRoles::class,
+        'detaching-role'  => UserEvents\DetachingRoleFromUser::class,
+        'detached-role'   => UserEvents\DetachedRoleFromUser::class,
+        'detaching-roles' => UserEvents\DetachingRolesFromUser::class,
+        'detached-roles'  => UserEvents\DetachedRolesFromUser::class,
     ];
 
     /* -----------------------------------------------------------------
-     |  Setup Methods
+     |  Main Methods
      | -----------------------------------------------------------------
      */
 
@@ -64,9 +69,9 @@ class UserTest extends ModelsTest
 
     public function tearDown()
     {
-        parent::tearDown();
-
         unset($this->userModel);
+
+        parent::tearDown();
     }
 
     /* -----------------------------------------------------------------
@@ -110,12 +115,12 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_create()
     {
-        $this->checkFiredEvents([
-            'created', 'creating', 'saved', 'saving',
-        ]);
+        Event::fake();
 
         $attributes = $this->getUserAttributes();
         $user       = $this->createUser();
+
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
         $this->assertSame($attributes['username'],    $user->username);
         $this->assertSame($attributes['first_name'],  $user->first_name);
@@ -141,9 +146,7 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_activate_and_deactivate()
     {
-        $this->checkFiredEvents([
-            'created', 'creating', 'saved', 'saving', 'updated', 'updating',
-        ]);
+        Event::fake();
 
         $attributes = [
             'username'   => 'john.doe',
@@ -155,16 +158,25 @@ class UserTest extends ModelsTest
 
         /** @var User $user */
         $user = $this->userModel->create($attributes);
+
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+
         $user = $this->userModel->where('id', $user->id)->first();
 
         $this->assertFalse($user->is_active);
         $this->assertFalse($user->isActive());
 
         $this->assertTrue($user->activate());
+
+        $this->assertFiredEvents(['activating', 'activated', 'updating', 'updated', 'saving', 'saved']);
+
         $this->assertTrue($user->is_active);
         $this->assertTrue($user->isActive());
 
         $this->assertTrue($user->deactivate());
+
+        $this->assertFiredEvents(['deactivating', 'deactivated', 'updating', 'updated', 'saving', 'saved']);
+
         $this->assertFalse($user->is_active);
         $this->assertFalse($user->isActive());
     }
@@ -172,13 +184,12 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_attach_and_detach_a_role()
     {
-        $this->checkFiredEvents([
-            'created', 'creating', 'saved', 'saving',
-            'attaching-role', 'attached-role', 'detaching-role', 'detached-role',
-        ]);
+        Event::fake();
 
-        $user      = $this->createUser();
-        $adminRole = Role::create([
+        $user = $this->createUser();
+        $this->assertFiredEvents(['creating', 'crated', 'saving', 'saved']);
+
+        $adminRole     = Role::create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ]);
@@ -190,10 +201,14 @@ class UserTest extends ModelsTest
         $this->assertCount(0, $user->roles);
 
         $user->attachRole($adminRole);
+        $this->assertFiredEvents(['attaching-role', 'attached-role']);
+
         $this->assertCount(1, $user->roles);
         $this->assertTrue($user->hasRole($adminRole));
 
         $user->attachRole($moderatorRole);
+        $this->assertFiredEvents(['attaching-role', 'attached-role']);
+
         $this->assertCount(2, $user->roles);
         $this->assertTrue($user->hasRole($adminRole));
         $this->assertTrue($user->hasRole($moderatorRole));
@@ -207,6 +222,8 @@ class UserTest extends ModelsTest
         }
 
         $user->detachRole($adminRole);
+        $this->assertFiredEvents(['detaching-role', 'detached-role']);
+
         $this->assertCount(1, $user->roles);
         $this->assertFalse($user->hasRole($adminRole));
         $this->assertTrue($user->hasRole($moderatorRole));
@@ -220,12 +237,11 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_must_deny_access_if_role_is_not_active()
     {
-        $this->checkFiredEvents([
-            'created', 'creating', 'saved', 'saving',
-            'attaching-role', 'attached-role',
-        ]);
+        Event::fake();
 
-        $user          = $this->createUser();
+        $user = $this->createUser();
+        $this->assertFiredEvents(['creating', 'crated', 'saving', 'saved']);
+
         $moderatorRole = Role::create([
             'name'        => 'Moderator',
             'description' => 'Moderator role descriptions.',
@@ -234,6 +250,7 @@ class UserTest extends ModelsTest
         $this->assertCount(0, $user->roles);
 
         $user->attachRole($moderatorRole);
+        $this->assertFiredEvents(['attaching-role', 'attached-role']);
 
         $this->assertCount(1, $user->roles);
 
@@ -255,11 +272,12 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_prevent_attaching_a_duplicated_role()
     {
-        $this->checkFiredEvents([
-            'created', 'creating', 'saved', 'saving', 'attaching-role', 'attached-role',
-        ]);
+        Event::fake();
 
         $user      = $this->createUser();
+
+        $this->assertFiredEvents(['creating', 'crated', 'saving', 'saved']);
+
         $adminRole = Role::create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
@@ -269,6 +287,7 @@ class UserTest extends ModelsTest
 
         for ($i = 0; $i < 5; $i++) {
             $user->attachRole($adminRole);
+            $this->assertFiredEvents(['attaching-role', 'attached-role']);
             $this->assertCount(1, $user->roles);
             $this->assertTrue($user->hasRole($adminRole));
         }
@@ -277,10 +296,7 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_sync_roles_by_its_slugs()
     {
-        $this->checkFiredEvents([
-            'created', 'creating', 'saved', 'saving',
-            'syncing-roles', 'synced-roles',
-        ]);
+        Event::fake();
 
         $user  = $this->createUser();
         $roles = collect([
@@ -304,15 +320,19 @@ class UserTest extends ModelsTest
         $this->assertSame($roles->pluck('id')->toArray(), $synced['attached']);
         $this->assertEmpty($synced['detached']);
         $this->assertEmpty($synced['updated']);
+
+        Event::assertDispatched(UserEvents\CreatingUser::class);
+        Event::assertDispatched(UserEvents\CreatedUser::class);
+        Event::assertDispatched(UserEvents\SavingUser::class);
+        Event::assertDispatched(UserEvents\SavedUser::class);
+        Event::assertDispatched(UserEvents\SyncingUserWithRoles::class);
+        Event::assertDispatched(UserEvents\SyncedUserWithRoles::class);
     }
 
     /** @test */
     public function it_can_detach_all_roles()
     {
-        $this->checkFiredEvents([
-            'created', 'creating', 'saved', 'saving',
-            'attaching-role', 'attached-role', 'detaching-roles', 'detached-roles',
-        ]);
+        Event::fake();
 
         $user      = $this->createUser();
         $adminRole = Role::create([
@@ -334,6 +354,15 @@ class UserTest extends ModelsTest
         $user->detachAllRoles();
 
         $this->assertCount(0, $user->roles);
+
+        Event::assertDispatched(UserEvents\CreatingUser::class);
+        Event::assertDispatched(UserEvents\CreatedUser::class);
+        Event::assertDispatched(UserEvents\SavingUser::class);
+        Event::assertDispatched(UserEvents\SavedUser::class);
+        Event::assertDispatched(UserEvents\AttachingRoleToUser::class);
+        Event::assertDispatched(UserEvents\AttachedRoleToUser::class);
+        Event::assertDispatched(UserEvents\DetachingRolesFromUser::class);
+        Event::assertDispatched(UserEvents\DetachedRolesFromUser::class);
     }
 
     /** @test */
@@ -368,17 +397,19 @@ class UserTest extends ModelsTest
     /** @test */
     public function it_can_confirm()
     {
-        $this->checkFiredEvents([
-            'created', 'creating', 'saved', 'saving', 'updated', 'updating',
-            'confirming', 'confirmed'
-        ]);
+        Event::fake();
 
         $user = $this->createUser();
 
+        $this->assertConfirmationCodeGenerationListener($user);
+
         $this->assertFalse($user->is_confirmed);
         $this->assertFalse($user->isConfirmed());
-        $this->assertNotNull($user->confirmation_code);
         $this->assertNull($user->confirmed_at);
+
+        Event::assertDispatched(UserEvents\CreatedUser::class);
+        Event::assertDispatched(UserEvents\SavingUser::class);
+        Event::assertDispatched(UserEvents\SavedUser::class);
 
         $user = $this->userModel->confirm($user);
 
@@ -386,22 +417,31 @@ class UserTest extends ModelsTest
         $this->assertTrue($user->isConfirmed());
         $this->assertNull($user->confirmation_code);
         $this->assertInstanceOf(\Carbon\Carbon::class, $user->confirmed_at);
+
+        Event::assertDispatched(UserEvents\ConfirmingUser::class);
+        Event::assertDispatched(UserEvents\ConfirmedUser::class);
+        Event::assertDispatched(UserEvents\UpdatingUser::class);
+        Event::assertDispatched(UserEvents\UpdatedUser::class);
+        Event::assertDispatched(UserEvents\SavingUser::class);
+        Event::assertDispatched(UserEvents\SavedUser::class);
     }
 
     /** @test */
     public function it_can_confirm_by_code()
     {
-        $this->checkFiredEvents([
-            'created', 'creating', 'saved', 'saving', 'updated', 'updating',
-            'confirming', 'confirmed'
-        ]);
+        Event::fake();
 
         $user = $this->createUser();
 
+        $this->assertConfirmationCodeGenerationListener($user);
+
         $this->assertFalse($user->is_confirmed);
         $this->assertFalse($user->isConfirmed());
-        $this->assertNotNull($user->confirmation_code);
         $this->assertNull($user->confirmed_at);
+
+        Event::assertDispatched(UserEvents\CreatedUser::class);
+        Event::assertDispatched(UserEvents\SavingUser::class);
+        Event::assertDispatched(UserEvents\SavedUser::class);
 
         $user = $this->userModel->confirm($user->confirmation_code);
 
@@ -409,24 +449,35 @@ class UserTest extends ModelsTest
         $this->assertTrue($user->isConfirmed());
         $this->assertNull($user->confirmation_code);
         $this->assertInstanceOf(\Carbon\Carbon::class, $user->confirmed_at);
+
+        Event::assertDispatched(UserEvents\ConfirmingUser::class);
+        Event::assertDispatched(UserEvents\ConfirmedUser::class);
+        Event::assertDispatched(UserEvents\UpdatingUser::class);
+        Event::assertDispatched(UserEvents\UpdatedUser::class);
+        Event::assertDispatched(UserEvents\SavingUser::class);
+        Event::assertDispatched(UserEvents\SavedUser::class);
     }
 
     /** @test */
     public function it_can_delete()
     {
-        $this->checkFiredEvents([
-            'created', 'creating', 'saved', 'saving', 'deleting', 'deleted',
-        ]);
+        Event::fake();
 
         $user   = $this->createUser();
         $userId = $user->id;
 
+        Event::assertDispatched(UserEvents\CreatingUser::class);
+        Event::assertDispatched(UserEvents\CreatedUser::class);
+        Event::assertDispatched(UserEvents\SavingUser::class);
+        Event::assertDispatched(UserEvents\SavedUser::class);
+
         $this->assertFalse($user->trashed());
         $this->assertTrue($user->delete());
 
-        $user = $this->userModel->find($userId);
+        Event::assertDispatched(UserEvents\DeletingUser::class);
+        Event::assertDispatched(UserEvents\DeletedUser::class);
 
-        $this->assertNull($user);
+        $this->assertNull($this->userModel->find($userId));
 
         /** @var User $user */
         $user = $this->userModel->onlyTrashed()->find($userId);
@@ -435,47 +486,90 @@ class UserTest extends ModelsTest
 
         $user->forceDelete();
 
+        Event::assertDispatched(UserEvents\DeletingUser::class);
+        Event::assertDispatched(UserEvents\DeletedUser::class);
+
         $user = $this->userModel->find($userId);
 
         $this->assertNull($user);
     }
 
     /** @test */
-    public function it_can_not_delete_admin()
+    public function it_must_detach_all_relations_on_user_force_delete()
     {
-        $this->checkFiredEvents([
-            'created', 'creating', 'saved', 'saving', 'updating', 'updated',
+        Event::fake();
+
+        $user = $this->createUser();
+        $role = Role::query()->create([
+            'name'        => 'Member',
+            'slug'        => 'member',
+            'description' => 'Member role descriptions.',
         ]);
 
+        $user->attachRole($role);
+
+        $this->assertSame(1, $role->users()->count());
+
+        $user->forceDelete();
+
+        Event::assertDispatched(UserEvents\DeletingUser::class);
+        Event::assertDispatched(UserEvents\DeletedUser::class);
+        $this->assertSame(0, $role->users()->count());
+    }
+
+    /** @test */
+    public function it_can_not_delete_admin()
+    {
+        Event::fake();
+
         $user           = $this->createUser();
+
+        Event::assertDispatched(UserEvents\CreatingUser::class);
+        Event::assertDispatched(UserEvents\CreatedUser::class);
+        Event::assertDispatched(UserEvents\SavingUser::class);
+        Event::assertDispatched(UserEvents\SavedUser::class);
+
         $adminId        = $user->id;
         $user->is_admin = true;
         $user->save();
+
+        Event::assertDispatched(UserEvents\SavingUser::class);
+        Event::assertDispatched(UserEvents\SavedUser::class);
+        Event::assertDispatched(UserEvents\UpdatingUser::class);
+        Event::assertDispatched(UserEvents\UpdatedUser::class);
 
         $this->assertTrue($user->isAdmin());
         $this->assertFalse($user->isModerator());
         $this->assertFalse($user->isMember());
         $this->assertFalse($user->trashed());
-        $this->assertFalse($user->delete());
 
-        $user = $this->userModel->find($adminId);
+        $user->delete();
 
-        $this->assertNotNull($user);
+        Event::assertDispatched(UserEvents\DeletingUser::class, function ($e) {
+            return (new \Arcanedev\LaravelAuth\Listeners\Users\DetachingRoles)->handle($e) === false;
+        });
+        Event::assertDispatched(UserEvents\DeletedUser::class);
     }
 
     /** @test */
     public function it_can_restore()
     {
-        $this->checkFiredEvents([
-            'created', 'creating', 'saved', 'saving', 'updating', 'updated',
-            'deleting', 'deleted', 'restoring', 'restored',
-        ]);
+        Event::fake();
 
         $user   = $this->createUser();
+
+        Event::assertDispatched(UserEvents\CreatingUser::class);
+        Event::assertDispatched(UserEvents\CreatedUser::class);
+        Event::assertDispatched(UserEvents\SavingUser::class);
+        Event::assertDispatched(UserEvents\SavedUser::class);
+
         $userId = $user->id;
 
         $this->assertFalse($user->trashed());
         $this->assertTrue($user->delete());
+
+        Event::assertDispatched(UserEvents\DeletingUser::class);
+        Event::assertDispatched(UserEvents\DeletedUser::class);
 
         $user = $this->userModel->find($userId);
 
@@ -487,6 +581,9 @@ class UserTest extends ModelsTest
         $this->assertTrue($user->trashed());
 
         $user->restore();
+
+        Event::assertDispatched(UserEvents\RestoringUser::class);
+        Event::assertDispatched(UserEvents\RestoredUser::class);
 
         $user = $this->userModel->find($userId);
 
@@ -740,6 +837,18 @@ class UserTest extends ModelsTest
         }
     }
 
+    /** @test */
+    public function it_can_be_impersonated()
+    {
+        $user = $this->createUser();
+
+        $this->assertTrue($user->canBeImpersonated());
+
+        $user->forceFill(['is_admin' => true])->save();
+
+        $this->assertFalse($user->canBeImpersonated());
+    }
+
     /* -----------------------------------------------------------------
      |  Helpers
      | -----------------------------------------------------------------
@@ -832,20 +941,17 @@ class UserTest extends ModelsTest
     }
 
     /**
-     * Check the fired & unfired events.
-     *
-     * @param  array  $keys
+     * @param  User  $user
      */
-    protected function checkFiredEvents(array $keys)
+    private function assertConfirmationCodeGenerationListener($user)
     {
-        $events = collect($this->modelEvents);
+        Event::assertDispatched(UserEvents\CreatingUser::class, function (UserEvents\CreatingUser $e) use ($user) {
+            $this->assertSame($e->user->id, $user->id);
+            $this->assertNull($e->user->confirmation_code);
 
-        $this->expectsEvents(
-            $events->only($keys)->values()->toArray()
-        );
+            (new \Arcanedev\LaravelAuth\Listeners\Users\GenerateConfirmationCode)->handle($e);
 
-        $this->doesntExpectEvents(
-            $events->except($keys)->values()->toArray()
-        );
+            return ! is_null($e->user->confirmation_code);
+        });
     }
 }

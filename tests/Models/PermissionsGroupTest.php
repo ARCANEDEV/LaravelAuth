@@ -1,10 +1,29 @@
 <?php namespace Arcanedev\LaravelAuth\Tests\Models;
 
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachedPermissionsToGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachedPermissionToGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachingPermissionsToGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachingPermissionToGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\CreatedPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\CreatingPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DeletedPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DeletingPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachedAllPermissions;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachedPermissionFromGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachedPermissionsFromGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachingAllPermissions;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachingPermissionFromGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachingPermissionsFromGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\SavedPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\SavingPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\UpdatedPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\UpdatingPermissionsGroup;
+use Arcanedev\LaravelAuth\Listeners\PermissionGroups\DetachingPermissions;
 use Arcanedev\LaravelAuth\Models\Permission;
 use Arcanedev\LaravelAuth\Models\PermissionsGroup;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups as PermissionsGroupEvents;
 
 /**
  * Class     PermissionsGroupTest
@@ -24,28 +43,28 @@ class PermissionsGroupTest extends ModelsTest
     /** @var  array */
     protected $modelEvents = [
         // Laravel Events
-        'creating' => PermissionsGroupEvents\CreatingPermissionsGroup::class,
-        'created'  => PermissionsGroupEvents\CreatedPermissionsGroup::class,
-        'saving'   => PermissionsGroupEvents\SavingPermissionsGroup::class,
-        'saved'    => PermissionsGroupEvents\SavedPermissionsGroup::class,
-        'updating' => PermissionsGroupEvents\UpdatingPermissionsGroup::class,
-        'updated'  => PermissionsGroupEvents\UpdatedPermissionsGroup::class,
-        'deleting' => PermissionsGroupEvents\DeletingPermissionsGroup::class,
-        'deleted'  => PermissionsGroupEvents\DeletedPermissionsGroup::class,
+        'creating' => CreatingPermissionsGroup::class,
+        'created'  => CreatedPermissionsGroup::class,
+        'saving'   => SavingPermissionsGroup::class,
+        'saved'    => SavedPermissionsGroup::class,
+        'updating' => UpdatingPermissionsGroup::class,
+        'updated'  => UpdatedPermissionsGroup::class,
+        'deleting' => DeletingPermissionsGroup::class,
+        'deleted'  => DeletedPermissionsGroup::class,
 
         // Custom events
-        'creating-permission'       => PermissionsGroupEvents\CreatingPermission::class,
-        'created-permission'        => PermissionsGroupEvents\CreatedPermission::class,
-        'attaching-permission'      => PermissionsGroupEvents\AttachingPermissionToGroup::class,
-        'attached-permission'       => PermissionsGroupEvents\AttachedPermissionToGroup::class,
-        'attaching-permissions'     => PermissionsGroupEvents\AttachingPermissionsToGroup::class,
-        'attached-permissions'      => PermissionsGroupEvents\AttachedPermissionsToGroup::class,
-        'detaching-permission'      => PermissionsGroupEvents\DetachingPermissionFromGroup::class,
-        'detached-permission'       => PermissionsGroupEvents\DetachedPermissionFromGroup::class,
-        'detaching-permissions'     => PermissionsGroupEvents\DetachingPermissionsFromGroup::class,
-        'detached-permissions'      => PermissionsGroupEvents\DetachedPermissionsFromGroup::class,
-        'detaching-all-permissions' => PermissionsGroupEvents\DetachingAllPermissionsFromGroup::class,
-        'detached-all-permissions'  => PermissionsGroupEvents\DetachedAllPermissionsFromGroup::class,
+        'creating-permission'       => CreatingPermissionsGroup::class,
+        'created-permission'        => CreatedPermissionsGroup::class,
+        'attaching-permission'      => AttachingPermissionToGroup::class,
+        'attached-permission'       => AttachedPermissionToGroup::class,
+        'attaching-permissions'     => AttachingPermissionsToGroup::class,
+        'attached-permissions'      => AttachedPermissionsToGroup::class,
+        'detaching-permission'      => DetachingPermissionFromGroup::class,
+        'detached-permission'       => DetachedPermissionFromGroup::class,
+        'detaching-permissions'     => DetachingPermissionsFromGroup::class,
+        'detached-permissions'      => DetachedPermissionsFromGroup::class,
+        'detaching-all-permissions' => DetachingAllPermissions::class,
+        'detached-all-permissions'  => DetachedAllPermissions::class,
     ];
 
     /* -----------------------------------------------------------------
@@ -101,12 +120,13 @@ class PermissionsGroupTest extends ModelsTest
     /** @test */
     public function it_can_create()
     {
-        $this->checkFiredEvents(['creating', 'created', 'saving', 'saved']);
+        Event::fake();
 
         $group = $this->createGroup(
             $attributes = $this->getAuthGroupAttributes()
         );
 
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
         $this->seeInPrefixedDatabase('permissions_groups', $attributes);
         $this->assertCount(0, $group->permissions);
     }
@@ -114,42 +134,37 @@ class PermissionsGroupTest extends ModelsTest
     /** @test */
     public function it_can_update()
     {
-        $this->checkFiredEvents([
-            'creating', 'created', 'saving', 'saved', 'updating', 'updated',
-        ]);
+        Event::fake();
 
-        $attributes = [
+        $group = $this->createGroup($attributes = [
             'name'        => 'Custom group',
             'description' => 'Custom group description',
-        ];
+        ]);
 
-        $group = $this->createGroup($attributes);
-
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
         $this->seeInPrefixedDatabase('permissions_groups', $attributes);
 
-        $attributes = [
+        $group->update($updatedAttributes = [
             'name'        => 'Super Custom Group',
             'slug'        => 'super-custom-group',
             'description' => 'Super Custom Group description',
-        ];
+        ]);
 
-        $group->update($attributes);
-
-        $this->seeInPrefixedDatabase('permissions_groups', $attributes);
+        $this->assertFiredEvents(['saving', 'saved', 'updating', 'updated',]);
+        $this->seeInPrefixedDatabase('permissions_groups', $updatedAttributes);
+        $this->dontSeeInPrefixedDatabase('permissions_groups', $attributes);
     }
 
     /** @test */
     public function it_can_create_permission()
     {
-        $this->checkFiredEvents([
-            'creating', 'created', 'saving', 'saved',
-            'creating-permission', 'created-permission',
-        ]);
+        Event::fake();
 
         $group = $this->createGroup(
             $this->getAuthGroupAttributes()
         );
 
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
         $this->assertCount(0, $group->permissions);
 
         $group->createPermission([
@@ -158,6 +173,7 @@ class PermissionsGroupTest extends ModelsTest
             'description' => 'Allow to create users',
         ]);
 
+        $this->assertFiredEvents(['creating-permission', 'created-permission']);
         $this->assertCount(1, $group->permissions);
 
         $group->createPermission([
@@ -166,6 +182,7 @@ class PermissionsGroupTest extends ModelsTest
             'description' => 'Allow to update users',
         ]);
 
+        $this->assertFiredEvents(['creating-permission', 'created-permission']);
         $this->assertCount(2, $group->permissions);
     }
 
@@ -176,10 +193,7 @@ class PermissionsGroupTest extends ModelsTest
      */
     public function it_must_throw_an_exception_on_duplicated_permissions()
     {
-        $this->checkFiredEvents([
-            'creating', 'created', 'saving', 'saved',
-            'creating-permission', 'created-permission',
-        ]);
+        Event::fake();
 
         $group = $this->createGroup(
             $this->getAuthGroupAttributes()
@@ -197,10 +211,7 @@ class PermissionsGroupTest extends ModelsTest
     /** @test */
     public function it_can_attach_permission()
     {
-        $this->checkFiredEvents([
-            'creating', 'created', 'saving', 'saved',
-            'attaching-permission', 'attached-permission',
-        ]);
+        Event::fake();
 
         $permission = Permission::create([
             'name'        => 'Create users',
@@ -212,10 +223,14 @@ class PermissionsGroupTest extends ModelsTest
             $this->getAuthGroupAttributes()
         );
 
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+
         $this->assertFalse($group->hasPermission($permission));
         $this->assertCount(0, $group->permissions);
 
         $group->attachPermission($permission);
+
+        $this->assertFiredEvents(['attaching-permission', 'attached-permission',]);
 
         $this->assertTrue($group->hasPermission($permission));
         $this->assertCount(1, $group->permissions);
@@ -232,10 +247,7 @@ class PermissionsGroupTest extends ModelsTest
     /** @test */
     public function it_can_attach_permission_by_id()
     {
-        $this->checkFiredEvents([
-            'creating', 'created', 'saving', 'saved',
-            'attaching-permission', 'attached-permission',
-        ]);
+        Event::fake();
 
         $permission = Permission::create([
             'name'        => 'Create users',
@@ -243,15 +255,17 @@ class PermissionsGroupTest extends ModelsTest
             'description' => 'Allow to create users',
         ]);
 
-        $group      = $this->createGroup(
+        $group = $this->createGroup(
             $this->getAuthGroupAttributes()
         );
 
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
         $this->assertFalse($group->hasPermission($permission));
         $this->assertCount(0, $group->permissions);
 
         $permission = $group->attachPermissionById($permission->id);
 
+        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
         $this->assertTrue($group->hasPermission($permission));
         $this->assertCount(1, $group->permissions);
         $this->assertEquals($group->id, $permission->group_id);
@@ -260,14 +274,13 @@ class PermissionsGroupTest extends ModelsTest
     /** @test */
     public function it_can_attach_many_permissions()
     {
-        $this->checkFiredEvents([
-            'creating', 'created', 'saving', 'saved',
-            'attaching-permissions', 'attached-permissions',
-        ]);
+        Event::fake();
 
         $group = $this->createGroup(
             $this->getAuthGroupAttributes()
         );
+
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
         $permissions = [
             Permission::create([
@@ -286,6 +299,7 @@ class PermissionsGroupTest extends ModelsTest
 
         $group->attachPermissions($permissions);
 
+        $this->assertFiredEvents(['attaching-permissions', 'attached-permissions']);
         $this->assertCount(2, $group->permissions);
         foreach ($permissions as $permission) {
             $this->assertTrue($group->hasPermission($permission));
@@ -295,10 +309,7 @@ class PermissionsGroupTest extends ModelsTest
     /** @test */
     public function it_can_detach_permission()
     {
-        $this->checkFiredEvents([
-            'creating', 'created', 'saving', 'saved',
-            'attaching-permission', 'attached-permission', 'detaching-permission', 'detached-permission',
-        ]);
+        Event::fake();
 
         $permission = Permission::create([
             'name'        => 'Create users',
@@ -306,21 +317,24 @@ class PermissionsGroupTest extends ModelsTest
             'description' => 'Allow to create users',
         ]);
 
-        $group      = $this->createGroup(
+        $group = $this->createGroup(
             $this->getAuthGroupAttributes()
         );
 
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
         $this->assertFalse($group->hasPermission($permission));
         $this->assertCount(0, $group->permissions);
 
         $group->attachPermission($permission);
 
+        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
         $this->assertTrue($group->hasPermission($permission));
         $this->assertCount(1, $group->permissions);
         $this->assertEquals($group->id, $permission->group_id);
 
         $group->detachPermission($permission);
 
+        $this->assertFiredEvents(['detaching-permission', 'detached-permission']);
         $this->assertFalse($group->hasPermission($permission));
         $this->assertCount(0, $group->permissions);
         $this->assertEquals(0, $permission->group_id);
@@ -336,10 +350,7 @@ class PermissionsGroupTest extends ModelsTest
     /** @test */
     public function it_can_detach_permission_by_id()
     {
-        $this->checkFiredEvents([
-            'creating', 'created', 'saving', 'saved',
-            'attaching-permission', 'attached-permission', 'detaching-permission', 'detached-permission',
-        ]);
+        Event::fake();
 
         $permission = Permission::create([
             'name'        => 'Create users',
@@ -347,21 +358,24 @@ class PermissionsGroupTest extends ModelsTest
             'description' => 'Allow to create users',
         ]);
 
-        $group      = $this->createGroup(
+        $group = $this->createGroup(
             $this->getAuthGroupAttributes()
         );
 
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
         $this->assertFalse($group->hasPermission($permission));
         $this->assertCount(0, $group->permissions);
 
         $group->attachPermission($permission);
 
+        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
         $this->assertTrue($group->hasPermission($permission));
         $this->assertCount(1, $group->permissions);
         $this->assertEquals($group->id, $permission->group_id);
 
         $permission = $group->detachPermissionById($permission->id);
 
+        $this->assertFiredEvents(['detaching-permission', 'detached-permission']);
         $this->assertFalse($group->hasPermission($permission));
         $this->assertCount(0, $group->permissions);
         $this->assertEquals(0, $permission->group_id);
@@ -377,14 +391,13 @@ class PermissionsGroupTest extends ModelsTest
     /** @test */
     public function it_can_detach_permissions_by_ids()
     {
-        $this->checkFiredEvents([
-            'creating', 'created', 'saving', 'saved',
-            'attaching-permissions', 'attached-permissions', 'detaching-permissions', 'detached-permissions',
-        ]);
+        Event::fake();
 
-        $group      = $this->createGroup(
+        $group = $this->createGroup(
             $this->getAuthGroupAttributes()
         );
+
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
         $create = Permission::create([
             'name'        => 'Create users',
@@ -406,10 +419,12 @@ class PermissionsGroupTest extends ModelsTest
 
         $group->attachPermissions(compact('create', 'update', 'delete'));
 
+        $this->assertFiredEvents(['attaching-permissions', 'attached-permissions']);
         $this->assertCount(3, $group->permissions);
 
         $group->detachPermissions([$create->id, $delete->id]);
 
+        $this->assertFiredEvents(['detaching-permissions', 'detached-permissions']);
         $this->assertCount(1, $group->permissions);
 
         $expected = $group->permissions->first();
@@ -419,15 +434,13 @@ class PermissionsGroupTest extends ModelsTest
     /** @test */
     public function it_can_detach_all_permissions()
     {
-        $this->checkFiredEvents([
-            'creating', 'created', 'saving', 'saved',
-            'attaching-permissions', 'attached-permissions',
-            'detaching-all-permissions', 'detached-all-permissions',
-        ]);
+        Event::fake();
 
         $group = $this->createGroup(
             $this->getAuthGroupAttributes()
         );
+
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
         $permissions = [
             Permission::create([
@@ -446,6 +459,7 @@ class PermissionsGroupTest extends ModelsTest
 
         $group->attachPermissions($permissions);
 
+        $this->assertFiredEvents(['attaching-permissions', 'attached-permissions']);
         $this->assertCount(2, $group->permissions);
         foreach ($permissions as $permission) {
             $this->assertTrue($group->hasPermission($permission));
@@ -453,16 +467,14 @@ class PermissionsGroupTest extends ModelsTest
 
         $group->detachAllPermissions();
 
+        $this->assertFiredEvents(['detaching-all-permissions', 'detached-all-permissions']);
         $this->assertCount(0, $group->permissions);
     }
 
     /** @test */
     public function it_can_attach_and_detach_permission_from_group_to_group()
     {
-        $this->checkFiredEvents([
-            'creating', 'created', 'saving', 'saved',
-            'attaching-permission', 'attached-permission', 'detaching-permission', 'detached-permission',
-        ]);
+        Event::fake();
 
         $permission = Permission::create([
             'name'        => 'Random permission',
@@ -477,6 +489,7 @@ class PermissionsGroupTest extends ModelsTest
             $this->getBlogGroupAttributes()
         );
 
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
         $this->assertFalse($authGroup->hasPermission($permission));
         $this->assertCount(0, $authGroup->permissions);
         $this->assertFalse($blogGroup->hasPermission($permission));
@@ -484,6 +497,7 @@ class PermissionsGroupTest extends ModelsTest
 
         $authGroup->attachPermission($permission);
 
+        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
         $this->assertTrue($authGroup->hasPermission($permission));
         $this->assertCount(1, $authGroup->permissions);
         $this->assertFalse($blogGroup->hasPermission($permission));
@@ -492,6 +506,7 @@ class PermissionsGroupTest extends ModelsTest
 
         $blogGroup->attachPermission($permission);
 
+        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
         $this->assertFalse($authGroup->hasPermission($permission));
         $this->assertCount(0, $authGroup->permissions);
         $this->assertTrue($blogGroup->hasPermission($permission));
@@ -500,6 +515,7 @@ class PermissionsGroupTest extends ModelsTest
 
         $blogGroup->detachPermission($permission);
 
+        $this->assertFiredEvents(['detaching-permission', 'detached-permission']);
         $this->assertFalse($authGroup->hasPermission($permission));
         $this->assertCount(0, $authGroup->permissions);
         $this->assertFalse($blogGroup->hasPermission($permission));
@@ -510,29 +526,36 @@ class PermissionsGroupTest extends ModelsTest
     /** @test */
     public function it_can_delete_a_group()
     {
-        $this->checkFiredEvents([
-            'creating', 'created', 'saving', 'saved', 'deleting', 'deleted',
-            'attaching-permission', 'attached-permission',
-            'detaching-all-permissions', 'detached-all-permissions',
-        ]);
+        Event::fake();
+
+        $group = $this->createGroup(
+            $this->getAuthGroupAttributes()
+        );
+
+        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
         $permission = Permission::create([
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
             'description' => 'Allow to create users',
         ]);
-
-        $group = $this->createGroup(
-            $this->getAuthGroupAttributes()
-        );
-
         $group->attachPermission($permission);
 
+        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
         $this->assertTrue($group->hasPermission($permission));
         $this->assertCount(1, $group->permissions);
         $this->assertEquals($group->id, $permission->group_id);
 
         $group->delete();
+
+        Event::assertDispatched(DeletingPermissionsGroup::class, function ($e) {
+            (new DetachingPermissions)->handle($e);
+
+            Event::assertDispatched(DetachingAllPermissions::class);
+            Event::assertDispatched(DetachedAllPermissions::class);
+
+            return true;
+        });
 
         /** @var  Permission  $permission */
         $permission = Permission::where('id', $permission->id)->first();

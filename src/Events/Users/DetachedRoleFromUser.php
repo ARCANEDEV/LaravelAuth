@@ -3,12 +3,12 @@
 use Arcanesoft\Contracts\Auth\Models\User;
 
 /**
- * Class     DetachingRole
+ * Class     DetachedRole
  *
  * @package  Arcanedev\LaravelAuth\Events\Users
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class DetachingRole extends AbstractUserEvent
+class DetachedRoleFromUser extends AbstractUserEvent
 {
     /* -----------------------------------------------------------------
      |  Properties
@@ -17,20 +17,25 @@ class DetachingRole extends AbstractUserEvent
     /** @var  \Arcanesoft\Contracts\Auth\Models\Role|int */
     public $role;
 
+    /** @var int */
+    public $results;
+
     /* -----------------------------------------------------------------
      |  Constructor
      | -----------------------------------------------------------------
      */
     /**
-     * DetachingRole constructor.
+     * DetachedRole constructor.
      *
      * @param  \Arcanesoft\Contracts\Auth\Models\User      $user
      * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
+     * @param  int                                         $results
      */
-    public function __construct(User $user, $role)
+    public function __construct(User $user, $role, $results)
     {
         parent::__construct($user);
 
-        $this->role = $role;
+        $this->role    = $role;
+        $this->results = $results;
     }
 }

@@ -6,4 +6,4 @@
  * @package  Arcanedev\LaravelAuth\Events\PermissionsGroups
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class DetachingAllPermissionsFromGroup extends AbstractPermissionsGroupEvent {}
+class DetachingAllPermissions extends AbstractPermissionsGroupEvent {}

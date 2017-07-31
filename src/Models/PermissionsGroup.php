@@ -1,6 +1,23 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Events\PermissionsGroups as PermissionsGroupEvents;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachedPermissionsToGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachedPermissionToGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachingPermissionsToGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachingPermissionToGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\CreatedPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\CreatingPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DeletedPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DeletingPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachedAllPermissions;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachedPermissionFromGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachedPermissionsFromGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachingAllPermissions;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachingPermissionFromGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachingPermissionsFromGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\SavedPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\SavingPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\UpdatedPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\UpdatingPermissionsGroup;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\PermissionsGroup as PermissionsGroupContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -32,6 +49,24 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      * @var array
      */
     protected $fillable = ['name', 'slug', 'description'];
+
+    /**
+     * The event map for the model.
+     *
+     * Allows for object-based events for native Eloquent events.
+     *
+     * @var array
+     */
+    protected $events = [
+        'creating' => CreatingPermissionsGroup::class,
+        'created'  => CreatedPermissionsGroup::class,
+        'updating' => UpdatingPermissionsGroup::class,
+        'updated'  => UpdatedPermissionsGroup::class,
+        'saving'   => SavingPermissionsGroup::class,
+        'saved'    => SavedPermissionsGroup::class,
+        'deleting' => DeletingPermissionsGroup::class,
+        'deleted'  => DeletedPermissionsGroup::class,
+    ];
 
     /* -----------------------------------------------------------------
      |  Constructor
@@ -105,9 +140,7 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      */
     public function createPermission(array $attributes, $reload = true)
     {
-        event(new PermissionsGroupEvents\CreatingPermission($this, $attributes));
-        $permission = $this->permissions()->create($attributes);
-        event(new PermissionsGroupEvents\CreatedPermission($this, $permission));
+        $this->permissions()->create($attributes);
 
         $this->loadPermissions($reload);
     }
@@ -122,9 +155,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
     {
         if ($this->hasPermission($permission)) return;
 
-        event(new PermissionsGroupEvents\AttachingPermissionToGroup($this, $permission));
+        event(new AttachingPermissionToGroup($this, $permission));
         $permission = $this->permissions()->save($permission);
-        event(new PermissionsGroupEvents\AttachedPermissionToGroup($this, $permission));
+        event(new AttachedPermissionToGroup($this, $permission));
 
         $this->loadPermissions($reload);
     }
@@ -141,7 +174,8 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
     {
         $permission = $this->getPermissionById($id);
 
-        if ($permission !== null) $this->attachPermission($permission, $reload);
+        if ($permission !== null)
+            $this->attachPermission($permission, $reload);
 
         return $permission;
     }
@@ -156,9 +190,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      */
     public function attachPermissions($permissions, $reload = true)
     {
-        event(new PermissionsGroupEvents\AttachingPermissionsToGroup($this, $permissions));
+        event(new AttachingPermissionsToGroup($this, $permissions));
         $permissions = $this->permissions()->saveMany($permissions);
-        event(new PermissionsGroupEvents\AttachedPermissionsToGroup($this, $permissions));
+        event(new AttachedPermissionsToGroup($this, $permissions));
 
         $this->loadPermissions($reload);
 
@@ -173,14 +207,15 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      */
     public function detachPermission(&$permission, $reload = true)
     {
-        if ( ! $this->hasPermission($permission)) return;
+        if ( ! $this->hasPermission($permission))
+            return;
 
         /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $permission */
         $permission = $this->getPermissionFromGroup($permission);
 
-        event(new PermissionsGroupEvents\DetachingPermissionFromGroup($this, $permission));
+        event(new DetachingPermissionFromGroup($this, $permission));
         $permission->update(['group_id' => 0]);
-        event(new PermissionsGroupEvents\DetachedPermissionFromGroup($this, $permission));
+        event(new DetachedPermissionFromGroup($this, $permission));
 
         $this->loadPermissions($reload);
     }
@@ -211,9 +246,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      */
     public function detachPermissions(array $ids, $reload = true)
     {
-        event(new PermissionsGroupEvents\DetachingPermissionsFromGroup($this, $ids));
+        event(new DetachingPermissionsFromGroup($this, $ids));
         $detached = $this->permissions()->whereIn('id', $ids)->update(['group_id' => 0]);
-        event(new PermissionsGroupEvents\DetachedPermissionsFromGroup($this, $ids, $detached));
+        event(new DetachedPermissionsFromGroup($this, $ids, $detached));
 
         $this->loadPermissions($reload);
 
@@ -229,9 +264,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      */
     public function detachAllPermissions($reload = true)
     {
-        event(new PermissionsGroupEvents\DetachingAllPermissionsFromGroup($this));
+        event(new DetachingAllPermissions($this));
         $detached = $this->permissions()->update(['group_id' => 0]);
-        event(new PermissionsGroupEvents\DetachedAllPermissionsFromGroup($this, $detached));
+        event(new DetachedAllPermissions($this, $detached));
 
         $this->loadPermissions($reload);
 
