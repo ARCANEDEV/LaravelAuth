@@ -202,4 +202,30 @@ abstract class TestCase extends BaseTestCase
     {
         return config('laravel-auth.database.prefix');
     }
+
+    /* -----------------------------------------------------------------
+     |  Temp Fixes
+     | -----------------------------------------------------------------
+     */
+
+    /**
+     * Mock the event dispatcher so all events are silenced and collected.
+     *
+     * @return $this
+     */
+//    protected function withoutEvents()
+//    {
+//        $mock = \Mockery::mock(\Illuminate\Contracts\Events\Dispatcher::class);
+//
+//        foreach (['fire', 'until'] as $method) {
+//            $mock->shouldReceive($method, 'dispatch', 'getCommandHandler')->andReturnUsing(function ($called, $payload = []) {
+//                $this->firedEvents[] = $called;
+//            });
+//        }
+//
+//        $this->app->instance('events', $mock);
+//        \Illuminate\Database\Eloquent\Model::setEventDispatcher($mock);
+//
+//        return $this;
+//    }
 }

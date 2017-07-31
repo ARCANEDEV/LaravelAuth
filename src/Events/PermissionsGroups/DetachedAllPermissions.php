@@ -8,7 +8,7 @@ use Arcanesoft\Contracts\Auth\Models\PermissionsGroup;
  * @package  Arcanedev\LaravelAuth\Events\PermissionsGroups
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class DetachedAllPermissionsFromGroup extends AbstractPermissionsGroupEvent
+class DetachedAllPermissions extends AbstractPermissionsGroupEvent
 {
     /* -----------------------------------------------------------------
      |  Properties

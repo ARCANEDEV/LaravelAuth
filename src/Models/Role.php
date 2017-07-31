@@ -1,6 +1,25 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Events\Roles as RoleEvents;
+use Arcanedev\LaravelAuth\Events\Roles\AttachedPermissionToRole;
+use Arcanedev\LaravelAuth\Events\Roles\AttachedUserToRole;
+use Arcanedev\LaravelAuth\Events\Roles\AttachingPermissionToRole;
+use Arcanedev\LaravelAuth\Events\Roles\AttachingUserToRole;
+use Arcanedev\LaravelAuth\Events\Roles\CreatedRole;
+use Arcanedev\LaravelAuth\Events\Roles\CreatingRole;
+use Arcanedev\LaravelAuth\Events\Roles\DeletedRole;
+use Arcanedev\LaravelAuth\Events\Roles\DeletingRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachedAllPermissionsFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachedAllUsersFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachedPermissionFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachedUserFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachingAllPermissionsFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachingAllUsersFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachingPermissionFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\DetachingUserFromRole;
+use Arcanedev\LaravelAuth\Events\Roles\SavedRole;
+use Arcanedev\LaravelAuth\Events\Roles\SavingRole;
+use Arcanedev\LaravelAuth\Events\Roles\UpdatedRole;
+use Arcanedev\LaravelAuth\Events\Roles\UpdatingRole;
 use Arcanedev\LaravelAuth\Models\Traits\Activatable;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -55,6 +74,24 @@ class Role extends AbstractModel implements RoleContract
     protected $casts = [
         'is_active' => 'boolean',
         'is_locked' => 'boolean',
+    ];
+
+    /**
+     * The event map for the model.
+     *
+     * Allows for object-based events for native Eloquent events.
+     *
+     * @var array
+     */
+    protected $events = [
+        'creating' => CreatingRole::class,
+        'created'  => CreatedRole::class,
+        'updating' => UpdatingRole::class,
+        'updated'  => UpdatedRole::class,
+        'saving'   => SavingRole::class,
+        'saved'    => SavedRole::class,
+        'deleting' => DeletingRole::class,
+        'deleted'  => DeletedRole::class,
     ];
 
     /* -----------------------------------------------------------------
@@ -143,6 +180,30 @@ class Role extends AbstractModel implements RoleContract
      */
 
     /**
+     * Activate the model.
+     *
+     * @param  bool  $save
+     *
+     * @return bool
+     */
+    public function activate($save = true)
+    {
+        return $this->switchActive(true, $save);
+    }
+
+    /**
+     * Deactivate the model.
+     *
+     * @param  bool  $save
+     *
+     * @return bool
+     */
+    public function deactivate($save = true)
+    {
+        return $this->switchActive(false, $save);
+    }
+
+    /**
      * Attach a permission to a role.
      *
      * @param  \Arcanesoft\Contracts\Auth\Models\User|int  $user
@@ -152,9 +213,9 @@ class Role extends AbstractModel implements RoleContract
     {
         if ($this->hasUser($user)) return;
 
-        event(new RoleEvents\AttachingUserToRole($this, $user));
+        event(new AttachingUserToRole($this, $user));
         $this->users()->attach($user);
-        event(new RoleEvents\AttachedUserToRole($this, $user));
+        event(new AttachedUserToRole($this, $user));
 
         $this->loadUsers($reload);
     }
@@ -171,9 +232,9 @@ class Role extends AbstractModel implements RoleContract
      */
     public function detachUser($user, $reload = true)
     {
-        event(new RoleEvents\DetachingUserFromRole($this, $user));
+        event(new DetachingUserFromRole($this, $user));
         $results = $this->users()->detach($user);
-        event(new RoleEvents\DetachedUserFromRole($this, $user, $results));
+        event(new DetachedUserFromRole($this, $user, $results));
 
         $this->loadUsers($reload);
 
@@ -191,9 +252,9 @@ class Role extends AbstractModel implements RoleContract
      */
     public function detachAllUsers($reload = true)
     {
-        event(new RoleEvents\DetachingAllUsersFromRole($this));
+        event(new DetachingAllUsersFromRole($this));
         $results = $this->users()->detach();
-        event(new RoleEvents\DetachedAllUsersFromRole($this, $results));
+        event(new DetachedAllUsersFromRole($this, $results));
 
         $this->loadUsers($reload);
 
@@ -210,9 +271,9 @@ class Role extends AbstractModel implements RoleContract
     {
         if ($this->hasPermission($permission)) return;
 
-        event(new RoleEvents\AttachingPermissionToRole($this, $permission));
+        event(new AttachingPermissionToRole($this, $permission));
         $this->permissions()->attach($permission);
-        event(new RoleEvents\AttachedPermissionToRole($this, $permission));
+        event(new AttachedPermissionToRole($this, $permission));
 
         $this->loadPermissions($reload);
     }
@@ -231,9 +292,9 @@ class Role extends AbstractModel implements RoleContract
     {
         if ( ! $this->hasPermission($permission)) return 0;
 
-        event(new RoleEvents\DetachingPermissionFromRole($this, $permission));
+        event(new DetachingPermissionFromRole($this, $permission));
         $results = $this->permissions()->detach($permission);
-        event(new RoleEvents\DetachedPermissionFromRole($this, $permission, $results));
+        event(new DetachedPermissionFromRole($this, $permission, $results));
 
         $this->loadPermissions($reload);
 
@@ -253,9 +314,9 @@ class Role extends AbstractModel implements RoleContract
     {
         if ($this->permissions->isEmpty()) return 0;
 
-        event(new RoleEvents\DetachingAllPermissionsFromRole($this));
+        event(new DetachingAllPermissionsFromRole($this));
         $results = $this->permissions()->detach();
-        event(new RoleEvents\DetachedAllPermissionsFromRole($this, $results));
+        event(new DetachedAllPermissionsFromRole($this, $results));
 
         $this->loadPermissions($reload);
 

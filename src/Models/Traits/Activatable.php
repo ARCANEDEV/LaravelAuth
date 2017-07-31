@@ -18,30 +18,6 @@ trait Activatable
      */
 
     /**
-     * Activate the model.
-     *
-     * @param  bool  $save
-     *
-     * @return bool
-     */
-    public function activate($save = true)
-    {
-        return $this->switchActive(true, $save);
-    }
-
-    /**
-     * Deactivate the model.
-     *
-     * @param  bool  $save
-     *
-     * @return bool
-     */
-    public function deactivate($save = true)
-    {
-        return $this->switchActive(false, $save);
-    }
-
-    /**
      * Activate/deactivate the model.
      *
      * @param  bool  $active

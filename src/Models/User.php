@@ -1,6 +1,27 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Events\Users as UserEvents;
+use Arcanedev\LaravelAuth\Events\Users\ActivatedUser;
+use Arcanedev\LaravelAuth\Events\Users\ActivatingUser;
+use Arcanedev\LaravelAuth\Events\Users\AttachedRoleToUser;
+use Arcanedev\LaravelAuth\Events\Users\AttachingRoleToUser;
+use Arcanedev\LaravelAuth\Events\Users\CreatedUser;
+use Arcanedev\LaravelAuth\Events\Users\CreatingUser;
+use Arcanedev\LaravelAuth\Events\Users\DeactivatedUser;
+use Arcanedev\LaravelAuth\Events\Users\DeactivatingUser;
+use Arcanedev\LaravelAuth\Events\Users\DeletedUser;
+use Arcanedev\LaravelAuth\Events\Users\DeletingUser;
+use Arcanedev\LaravelAuth\Events\Users\DetachedRoleFromUser;
+use Arcanedev\LaravelAuth\Events\Users\DetachedRolesFromUser;
+use Arcanedev\LaravelAuth\Events\Users\DetachingRoleFromUser;
+use Arcanedev\LaravelAuth\Events\Users\DetachingRolesFromUser;
+use Arcanedev\LaravelAuth\Events\Users\RestoredUser;
+use Arcanedev\LaravelAuth\Events\Users\RestoringUser;
+use Arcanedev\LaravelAuth\Events\Users\SavedUser;
+use Arcanedev\LaravelAuth\Events\Users\SavingUser;
+use Arcanedev\LaravelAuth\Events\Users\SyncedUserWithRoles;
+use Arcanedev\LaravelAuth\Events\Users\SyncingUserWithRoles;
+use Arcanedev\LaravelAuth\Events\Users\UpdatedUser;
+use Arcanedev\LaravelAuth\Events\Users\UpdatingUser;
 use Arcanedev\LaravelAuth\Exceptions\UserConfirmationException;
 use Arcanedev\LaravelAuth\Models\Traits\Activatable;
 use Arcanedev\LaravelAuth\Models\Traits\Roleable;
@@ -48,7 +69,6 @@ use Illuminate\Support\Str;
  * @property  \Illuminate\Support\Collection                 permissions
  * @property  \Arcanedev\LaravelAuth\Models\Pivots\RoleUser  pivot
  *
- * @method  static  bool                                   insert(array $values)
  * @method          \Illuminate\Database\Eloquent\Builder  unconfirmed(string $code)
  * @method          \Illuminate\Database\Eloquent\Builder  lastActive(int $minutes = null)
  */
@@ -84,6 +104,7 @@ class User
         'last_name',
         'email',
         'password',
+        'confirmation_code',
     ];
 
     /**
@@ -117,6 +138,26 @@ class User
         'confirmed_at',
         'last_activity',
         'deleted_at',
+    ];
+
+    /**
+     * The event map for the model.
+     *
+     * Allows for object-based events for native Eloquent events.
+     *
+     * @var array
+     */
+    protected $events = [
+        'creating'  => CreatingUser::class,
+        'created'   => CreatedUser::class,
+        'updating'  => UpdatingUser::class,
+        'updated'   => UpdatedUser::class,
+        'saving'    => SavingUser::class,
+        'saved'     => SavedUser::class,
+        'deleting'  => DeletingUser::class,
+        'deleted'   => DeletedUser::class,
+        'restoring' => RestoringUser::class,
+        'restored'  => RestoredUser::class,
     ];
 
     /* -----------------------------------------------------------------
@@ -292,6 +333,38 @@ class User
      */
 
     /**
+     * Activate the model.
+     *
+     * @param  bool  $save
+     *
+     * @return bool
+     */
+    public function activate($save = true)
+    {
+        event(new ActivatingUser($this));
+        $result = $this->switchActive(true, $save);
+        event(new ActivatedUser($this));
+
+        return $result;
+    }
+
+    /**
+     * Deactivate the model.
+     *
+     * @param  bool  $save
+     *
+     * @return bool
+     */
+    public function deactivate($save = true)
+    {
+        event(new DeactivatingUser($this));
+        $result = $this->switchActive(false, $save);
+        event(new DeactivatedUser($this));
+
+        return $result;
+    }
+
+    /**
      * Attach a role to a user.
      *
      * @param  \Arcanesoft\Contracts\Auth\Models\Role|int  $role
@@ -301,9 +374,9 @@ class User
     {
         if ($this->hasRole($role)) return;
 
-        event(new UserEvents\AttachingRoleToUser($this, $role));
+        event(new AttachingRoleToUser($this, $role));
         $this->roles()->attach($role);
-        event(new UserEvents\AttachedRoleToUser($this, $role));
+        event(new AttachedRoleToUser($this, $role));
 
         $this->loadRoles($reload);
     }
@@ -321,9 +394,9 @@ class User
         /** @var  \Illuminate\Database\Eloquent\Collection  $roles */
         $roles = app(RoleContract::class)->whereIn('slug', $slugs)->get();
 
-        event(new UserEvents\SyncingUserWithRoles($this, $roles));
+        event(new SyncingUserWithRoles($this, $roles));
         $synced = $this->roles()->sync($roles->pluck('id'));
-        event(new UserEvents\SyncedUserWithRoles($this, $roles, $synced));
+        event(new SyncedUserWithRoles($this, $roles, $synced));
 
         $this->loadRoles($reload);
 
@@ -340,9 +413,9 @@ class User
      */
     public function detachRole($role, $reload = true)
     {
-        event(new UserEvents\DetachingRole($this, $role));
+        event(new DetachingRoleFromUser($this, $role));
         $results = $this->roles()->detach($role);
-        event(new UserEvents\DetachedRole($this, $role, $results));
+        event(new DetachedRoleFromUser($this, $role, $results));
 
         $this->loadRoles($reload);
 
@@ -358,9 +431,9 @@ class User
      */
     public function detachAllRoles($reload = true)
     {
-        event(new UserEvents\DetachingRoles($this));
+        event(new DetachingRolesFromUser($this));
         $results = $this->roles()->detach();
-        event(new UserEvents\DetachedRoles($this, $results));
+        event(new DetachedRolesFromUser($this, $results));
 
         $this->loadRoles($reload);
 
