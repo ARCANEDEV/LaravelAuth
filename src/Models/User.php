@@ -69,8 +69,8 @@ use Illuminate\Support\Str;
  * @property  \Illuminate\Support\Collection                 permissions
  * @property  \Arcanedev\LaravelAuth\Models\Pivots\RoleUser  pivot
  *
- * @method          \Illuminate\Database\Eloquent\Builder  unconfirmed(string $code)
- * @method          \Illuminate\Database\Eloquent\Builder  lastActive(int $minutes = null)
+ * @method    \Illuminate\Database\Eloquent\Builder  unconfirmed(string $code)
+ * @method    \Illuminate\Database\Eloquent\Builder  lastActive(int $minutes = null)
  */
 class User
     extends AbstractModel
