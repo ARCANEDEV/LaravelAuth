@@ -19,8 +19,8 @@ The LaravelAuth package has a few system requirements:
 | LaravelAuth                           | Laravel                                                                                |
 |:--------------------------------------|:---------------------------------------------------------------------------------------|
 | ![LaravelAuth v0.x][laravel_auth_0_x] | ![Laravel v5.1][laravel_5_1] ![Laravel v5.2][laravel_5_2] ![Laravel v5.3][laravel_5_3] |
-| ![LaravelAuth v1.x][laravel_auth_1_x] | ![Laravel v5.4][laravel_5_4]                                                           |
-| ![LaravelAuth v2.x][laravel_auth_2_x] | ![Laravel v5.5][laravel_5_5]                                                           |
+| ![LaravelAuth v3.x][laravel_auth_3_x] | ![Laravel v5.4][laravel_5_4]                                                           |
+| ![LaravelAuth v4.x][laravel_auth_4_x] | ![Laravel v5.5][laravel_5_5]                                                           |
 
 [laravel_5_1]:    https://img.shields.io/badge/v5.1-supported-brightgreen.svg?style=flat-square "Laravel v5.1"
 [laravel_5_2]:    https://img.shields.io/badge/v5.2-supported-brightgreen.svg?style=flat-square "Laravel v5.2"
@@ -29,8 +29,8 @@ The LaravelAuth package has a few system requirements:
 [laravel_5_5]:    https://img.shields.io/badge/v5.5-supported-brightgreen.svg?style=flat-square "Laravel v5.5"
 
 [laravel_auth_0_x]: https://img.shields.io/badge/version-0.*-blue.svg?style=flat-square "LaravelAuth v0.*"
-[laravel_auth_1_x]: https://img.shields.io/badge/version-1.*-blue.svg?style=flat-square "LaravelAuth v1.*"
-[laravel_auth_2_x]: https://img.shields.io/badge/version-2.*-blue.svg?style=flat-square "LaravelAuth v2.*"
+[laravel_auth_3_x]: https://img.shields.io/badge/version-3.*-blue.svg?style=flat-square "LaravelAuth v3.*"
+[laravel_auth_4_x]: https://img.shields.io/badge/version-4.*-blue.svg?style=flat-square "LaravelAuth v4.*"
 
 ## Composer
 
