@@ -512,8 +512,11 @@ class UserTest extends ModelsTest
 
         $user->forceDelete();
 
-        Event::assertDispatched(UserEvents\DeletingUser::class);
+        Event::assertDispatched(UserEvents\DeletingUser::class, function ($e) {
+            return (new \Arcanedev\LaravelAuth\Listeners\Users\DetachingRoles)->handle($e) === true;
+        });
         Event::assertDispatched(UserEvents\DeletedUser::class);
+
         $this->assertSame(0, $role->users()->count());
     }
 
