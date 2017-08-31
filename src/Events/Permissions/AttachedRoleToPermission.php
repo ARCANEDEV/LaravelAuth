@@ -14,6 +14,7 @@ class AttachedRoleToPermission extends AbstractPermissionEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Arcanesoft\Contracts\Auth\Models\Role|int */
     public $role;
 
@@ -21,6 +22,7 @@ class AttachedRoleToPermission extends AbstractPermissionEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * AttachingRoleToPermission constructor.
      *

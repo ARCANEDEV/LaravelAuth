@@ -4,7 +4,7 @@ Laravel Authorization package for Laravel.
 
 ### Features
 
-  * Laravel `5.1 | 5.2 | 5.3 | 5.4` are supported.
+  * Laravel `5.1 | 5.2 | 5.3 | 5.4 | 5.5` are supported.
   * CRUD for Roles.
   * CRUD fot Permissions.
   * User confirmation system.

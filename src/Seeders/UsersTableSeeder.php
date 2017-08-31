@@ -3,6 +3,7 @@
 use Arcanedev\LaravelAuth\Models\User;
 use Arcanedev\Support\Bases\Seeder;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 
 /**
  * Class     UsersTableSeeder
@@ -12,6 +13,11 @@ use Carbon\Carbon;
  */
 class UsersTableSeeder extends Seeder
 {
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
+     */
+
     /**
      * Run the database seeds.
      */
@@ -19,13 +25,14 @@ class UsersTableSeeder extends Seeder
     {
         $users = $this->prepareUsers(config('laravel-auth.seeds.users', []));
 
-        User::insert($users);
+        User::query()->insert($users);
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Other Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Other Methods
+     | -----------------------------------------------------------------
      */
+
     /**
      * Prepare users.
      *
@@ -41,8 +48,8 @@ class UsersTableSeeder extends Seeder
         foreach ($data as $user) {
             $users[] = [
                 'username'   => $user['username'],
-                'first_name' => array_get($user, 'first_name', null),
-                'last_name'  => array_get($user, 'last_name', null),
+                'first_name' => Arr::get($user, 'first_name', null),
+                'last_name'  => Arr::get($user, 'last_name', null),
                 'email'      => $user['email'],
                 'password'   => bcrypt($user['password']),
                 'is_admin'   => true,

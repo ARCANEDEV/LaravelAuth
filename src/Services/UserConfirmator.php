@@ -18,6 +18,7 @@ class UserConfirmator
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Generate the confirmation code.
      *
@@ -53,6 +54,7 @@ class UserConfirmator
      |  Other Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Check if the confirmator is enabled.
      *

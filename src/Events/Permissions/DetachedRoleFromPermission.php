@@ -14,6 +14,7 @@ class DetachedRoleFromPermission extends AbstractPermissionEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Arcanesoft\Contracts\Auth\Models\Role|int */
     public $role;
 
@@ -24,6 +25,7 @@ class DetachedRoleFromPermission extends AbstractPermissionEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * DetachedRoleFromPermission constructor.
      *

@@ -1,4 +1,5 @@
 <?php namespace Arcanedev\LaravelAuth\Listeners\Permissions;
+
 use Arcanedev\LaravelAuth\Events\Permissions\DeletingPermission;
 
 /**

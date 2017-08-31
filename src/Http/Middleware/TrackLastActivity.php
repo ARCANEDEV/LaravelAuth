@@ -15,6 +15,7 @@ class TrackLastActivity
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Handle an incoming request.
      *
@@ -39,6 +40,7 @@ class TrackLastActivity
      |  Other Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Check if the tracking is enabled.
      *

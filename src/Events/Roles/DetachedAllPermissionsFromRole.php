@@ -14,6 +14,7 @@ class DetachedAllPermissionsFromRole extends AbstractRoleEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  int */
     public $results;
 
@@ -21,6 +22,7 @@ class DetachedAllPermissionsFromRole extends AbstractRoleEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * DetachedAllPermissionsFromRole constructor.
      *

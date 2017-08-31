@@ -14,6 +14,7 @@ class UserConfirmationException extends ModelNotFoundException
      |  Setters & Getters
      | -----------------------------------------------------------------
      */
+
     /**
      * Set the affected Eloquent model.
      *

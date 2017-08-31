@@ -14,6 +14,7 @@ class AttachingPermissionsToGroup extends AbstractPermissionsGroupEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Illuminate\Support\Collection|array */
     public $permissions;
 
@@ -21,6 +22,7 @@ class AttachingPermissionsToGroup extends AbstractPermissionsGroupEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+    
     /**
      * AttachingPermissionsToGroup constructor.
      *

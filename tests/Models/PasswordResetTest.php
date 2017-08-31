@@ -50,7 +50,7 @@ class PasswordResetTest extends ModelsTest
         ];
 
         foreach ($expectations as $expected) {
-            $this->instance($expected, $this->passwordReset);
+            $this->assertInstanceOf($expected, $this->passwordReset);
         }
     }
 

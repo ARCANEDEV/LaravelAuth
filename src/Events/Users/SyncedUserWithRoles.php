@@ -15,6 +15,7 @@ class SyncedUserWithRoles extends AbstractUserEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Illuminate\Database\Eloquent\Collection */
     public $roles;
 
@@ -25,6 +26,7 @@ class SyncedUserWithRoles extends AbstractUserEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * SyncingUserWithRoles constructor.
      *

@@ -14,6 +14,7 @@ abstract class AbstractRoleEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Arcanesoft\Contracts\Auth\Models\Role */
     public $role;
 
@@ -21,6 +22,7 @@ abstract class AbstractRoleEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * AbstractRoleEvent constructor.
      *

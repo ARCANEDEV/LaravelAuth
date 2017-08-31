@@ -14,6 +14,7 @@ class DetachedRolesFromUser extends AbstractUserEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var int */
     public $results;
 
@@ -21,6 +22,7 @@ class DetachedRolesFromUser extends AbstractUserEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * DetachedRole constructor.
      *

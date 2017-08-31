@@ -14,6 +14,7 @@ abstract class AbstractUserEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Arcanesoft\Contracts\Auth\Models\User */
     public $user;
 
@@ -21,6 +22,7 @@ abstract class AbstractUserEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * AbstractUserEvent constructor.
      *

@@ -15,6 +15,7 @@ class LaravelAuthServiceProvider extends ServiceProvider
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /**
      * Package name.
      *
@@ -26,11 +27,14 @@ class LaravelAuthServiceProvider extends ServiceProvider
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Register the service provider.
      */
     public function register()
     {
+        parent::register();
+
         $this->registerConfig();
         $this->bindModels();
 
@@ -67,6 +71,7 @@ class LaravelAuthServiceProvider extends ServiceProvider
      |  Other Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Binding the models with the contracts.
      */

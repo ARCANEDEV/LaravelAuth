@@ -15,6 +15,7 @@ class AttachedPermissionToGroup extends AbstractPermissionsGroupEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Arcanesoft\Contracts\Auth\Models\Permission */
     public $permission;
 
@@ -22,6 +23,7 @@ class AttachedPermissionToGroup extends AbstractPermissionsGroupEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+    
     /**
      * AttachedPermissionToGroup constructor.
      *

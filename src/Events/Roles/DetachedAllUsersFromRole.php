@@ -14,6 +14,7 @@ class DetachedAllUsersFromRole extends AbstractRoleEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Arcanesoft\Contracts\Auth\Models\Role */
     public $role;
 
@@ -24,6 +25,7 @@ class DetachedAllUsersFromRole extends AbstractRoleEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * DetachedAllUsersFromRole constructor.
      *

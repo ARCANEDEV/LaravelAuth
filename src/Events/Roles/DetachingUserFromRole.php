@@ -14,6 +14,7 @@ class DetachingUserFromRole extends AbstractRoleEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Arcanesoft\Contracts\Auth\Models\User|int */
     public $user;
 
@@ -21,6 +22,7 @@ class DetachingUserFromRole extends AbstractRoleEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * DetachingUserFromRole constructor.
      *

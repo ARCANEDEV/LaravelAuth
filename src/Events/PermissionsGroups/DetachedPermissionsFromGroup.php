@@ -14,6 +14,7 @@ class DetachedPermissionsFromGroup extends AbstractPermissionsGroupEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  array */
     public $permissions;
 
@@ -24,6 +25,7 @@ class DetachedPermissionsFromGroup extends AbstractPermissionsGroupEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * DetachingPermissionsFromGroup constructor.
      *

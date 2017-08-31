@@ -12,6 +12,7 @@ class Auth
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /**
      * Indicates if migrations will be run.
      *
@@ -23,6 +24,7 @@ class Auth
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Publish the migrations.
      */

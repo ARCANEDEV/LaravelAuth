@@ -2,6 +2,12 @@
 
 use Arcanedev\LaravelAuth\Events\Roles\DeletingRole;
 
+/**
+ * Class     DetachingUsers
+ *
+ * @package  Arcanedev\LaravelAuth\Listeners\Roles
+ * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ */
 class DetachingUsers
 {
     /* -----------------------------------------------------------------

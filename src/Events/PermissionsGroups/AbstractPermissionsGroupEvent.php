@@ -1,4 +1,5 @@
 <?php namespace Arcanedev\LaravelAuth\Events\PermissionsGroups;
+
 use Arcanesoft\Contracts\Auth\Models\PermissionsGroup;
 
 /**
@@ -13,6 +14,7 @@ abstract class AbstractPermissionsGroupEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Arcanesoft\Contracts\Auth\Models\PermissionsGroup */
     public $group;
 
@@ -20,6 +22,7 @@ abstract class AbstractPermissionsGroupEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * AbstractPermissionsGroupEvent constructor.
      *

@@ -16,13 +16,13 @@
     "type":    "library",
     "license": "MIT",
     "require": {
-        "php":                  ">=5.6",
+        "php":                  ">=7.0",
         "arcanedev/support":    "~4.0",
         "arcanesoft/contracts": "~2.0.0"
     },
     "require-dev": {
-        "phpunit/phpcov":  "~3.0",
-        "phpunit/phpunit": "~5.0",
+        "phpunit/phpunit": "~6.0",
+        "phpunit/phpcov":  "~4.0",
         "mockery/mockery": "~0.9.0"
     },
     "autoload": {
@@ -39,13 +39,13 @@
         "testbench": "composer require --dev \"orchestra/testbench-browser-kit=~3.0\" \"orchestra/database=~3.0\""
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "1.0-dev"
+        "laravel": {
+            "providers": [
+                "Arcanedev\\LaravelAuth\\LaravelAuthServiceProvider"
+            ]
         }
     },
     "suggest": {
         "arcanedev/laravel-impersonator": "A Laravel package that allows you to impersonate your users"
-    },
-    "minimum-stability": "dev",
-    "prefer-stable" : true
+    }
 }

@@ -53,11 +53,9 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
     /**
      * The event map for the model.
      *
-     * Allows for object-based events for native Eloquent events.
-     *
      * @var array
      */
-    protected $events = [
+    protected $dispatchesEvents = [
         'creating' => CreatingPermissionsGroup::class,
         'created'  => CreatedPermissionsGroup::class,
         'updating' => UpdatingPermissionsGroup::class,

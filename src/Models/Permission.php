@@ -67,7 +67,7 @@ class Permission extends AbstractModel implements PermissionContract
      *
      * @var array
      */
-    protected $events = [
+    protected $dispatchesEvents = [
         'creating' => CreatingPermission::class,
         'created'  => CreatedPermission::class,
         'updating' => UpdatingPermission::class,

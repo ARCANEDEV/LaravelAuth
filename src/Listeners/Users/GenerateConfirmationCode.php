@@ -20,6 +20,8 @@ class GenerateConfirmationCode
      * Handle the event.
      *
      * @param  \Arcanedev\LaravelAuth\Events\Users\CreatingUser  $event
+     *
+     * @return \Arcanedev\LaravelAuth\Events\Users\CreatingUser
      */
     public function handle(CreatingUser $event)
     {

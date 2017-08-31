@@ -14,6 +14,7 @@ class DetachedPermissionFromGroup extends AbstractPermissionsGroupEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Arcanesoft\Contracts\Auth\Models\Permission */
     public $permission;
 
@@ -21,6 +22,7 @@ class DetachedPermissionFromGroup extends AbstractPermissionsGroupEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * DetachingPermissionFromGroup constructor.
      *

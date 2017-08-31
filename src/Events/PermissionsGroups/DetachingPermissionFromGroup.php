@@ -1,4 +1,5 @@
 <?php namespace Arcanedev\LaravelAuth\Events\PermissionsGroups;
+
 use Arcanesoft\Contracts\Auth\Models\PermissionsGroup;
 
 /**
@@ -13,6 +14,7 @@ class DetachingPermissionFromGroup extends AbstractPermissionsGroupEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Arcanesoft\Contracts\Auth\Models\Permission */
     public $permission;
 
@@ -20,6 +22,7 @@ class DetachingPermissionFromGroup extends AbstractPermissionsGroupEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * DetachingPermissionFromGroup constructor.
      *

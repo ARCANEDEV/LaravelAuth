@@ -15,6 +15,7 @@ class SyncingRolesWithPermission extends AbstractPermissionEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Illuminate\Database\Eloquent\Collection */
     public $roles;
 
@@ -22,6 +23,7 @@ class SyncingRolesWithPermission extends AbstractPermissionEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * SyncingRolesWithPermission constructor.
      *

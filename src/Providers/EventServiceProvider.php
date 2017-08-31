@@ -10,6 +10,11 @@ use Arcanedev\Support\Providers\EventServiceProvider as ServiceProvider;
  */
 class EventServiceProvider extends ServiceProvider
 {
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
+     */
+    
     /**
      * Register the application's event listeners.
      */

@@ -143,11 +143,9 @@ class User
     /**
      * The event map for the model.
      *
-     * Allows for object-based events for native Eloquent events.
-     *
      * @var array
      */
-    protected $events = [
+    protected $dispatchesEvents = [
         'creating'  => CreatingUser::class,
         'created'   => CreatedUser::class,
         'updating'  => UpdatingUser::class,

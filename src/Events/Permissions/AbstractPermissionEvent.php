@@ -14,6 +14,7 @@ abstract class AbstractPermissionEvent
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /**
      * @var \Arcanesoft\Contracts\Auth\Models\Permission|\Arcanedev\LaravelAuth\Models\Permission
      */
@@ -23,6 +24,7 @@ abstract class AbstractPermissionEvent
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * UserEvent constructor.
      *

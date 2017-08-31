@@ -79,11 +79,9 @@ class Role extends AbstractModel implements RoleContract
     /**
      * The event map for the model.
      *
-     * Allows for object-based events for native Eloquent events.
-     *
      * @var array
      */
-    protected $events = [
+    protected $dispatchesEvents = [
         'creating' => CreatingRole::class,
         'created'  => CreatedRole::class,
         'updating' => UpdatingRole::class,
