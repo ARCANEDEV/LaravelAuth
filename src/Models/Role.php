@@ -21,8 +21,8 @@ use Arcanedev\LaravelAuth\Events\Roles\SavingRole;
 use Arcanedev\LaravelAuth\Events\Roles\UpdatedRole;
 use Arcanedev\LaravelAuth\Events\Roles\UpdatingRole;
 use Arcanedev\LaravelAuth\Models\Traits\Activatable;
-use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
+use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Str;
 
