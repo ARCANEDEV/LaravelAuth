@@ -124,6 +124,7 @@ class User
      * @var array
      */
     protected $casts = [
+        'id'           => 'integer',
         'is_admin'     => 'boolean',
         'is_active'    => 'boolean',
         'is_confirmed' => 'boolean',

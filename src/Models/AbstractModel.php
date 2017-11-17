@@ -15,12 +15,14 @@ abstract class AbstractModel extends Model
      |  Traits
      | -----------------------------------------------------------------
      */
+
     use PrefixedModel;
 
     /* -----------------------------------------------------------------
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Create a new Eloquent model instance.
      *

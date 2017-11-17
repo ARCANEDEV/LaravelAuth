@@ -43,6 +43,7 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /**
      * The attributes that are mass assignable.
      *
@@ -66,10 +67,20 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
         'deleted'  => DeletedPermissionsGroup::class,
     ];
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'id' => 'integer',
+    ];
+
     /* -----------------------------------------------------------------
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Create a new Eloquent model instance.
      *
@@ -84,10 +95,11 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
         );
     }
 
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Relationships
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
+
     /**
      * Permissions Groups has many permissions.
      *
@@ -105,6 +117,7 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      |  Getters & Setters
      | -----------------------------------------------------------------
      */
+
     /**
      * Set the name attribute.
      *
@@ -130,6 +143,7 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Create and attach a permission.
      *
@@ -275,6 +289,7 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      |  Check Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Check if role has the given permission (Permission Model or Id).
      *
@@ -293,6 +308,7 @@ class PermissionsGroup extends AbstractModel implements PermissionsGroupContract
      |  Other Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Get a permission from the group.
      *

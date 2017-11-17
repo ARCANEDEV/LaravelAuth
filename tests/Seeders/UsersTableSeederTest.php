@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Tests\Seeders;
 
 use Arcanedev\LaravelAuth\Models\User;
+use Arcanedev\LaravelAuth\Seeders\UsersTableSeeder;
 use Arcanedev\LaravelAuth\Tests\TestCase;
 
 /**
@@ -11,10 +12,11 @@ use Arcanedev\LaravelAuth\Tests\TestCase;
  */
 class UsersTableSeederTest extends TestCase
 {
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
+
     public function setUp()
     {
         parent::setUp();
@@ -27,15 +29,16 @@ class UsersTableSeederTest extends TestCase
         parent::tearDown();
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Test Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Tests
+     | -----------------------------------------------------------------
      */
+
     /** @test */
     public function it_can_seed_default_user()
     {
         $this->artisan('db:seed', [
-            '--class' => \Arcanedev\LaravelAuth\Seeders\UsersTableSeeder::class
+            '--class' => UsersTableSeeder::class
         ]);
 
         $users = User::all();

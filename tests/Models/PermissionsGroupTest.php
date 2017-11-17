@@ -37,6 +37,7 @@ class PermissionsGroupTest extends ModelsTest
      |  Properties
      | -----------------------------------------------------------------
      */
+
     /** @var  \Arcanedev\LaravelAuth\Models\PermissionsGroup */
     protected $groupModel;
 
@@ -68,9 +69,10 @@ class PermissionsGroupTest extends ModelsTest
     ];
 
     /* -----------------------------------------------------------------
-     |  Setup Methods
+     |  Main Methods
      | -----------------------------------------------------------------
      */
+
     public function setUp()
     {
         parent::setUp();

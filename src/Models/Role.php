@@ -22,6 +22,7 @@ use Arcanedev\LaravelAuth\Events\Roles\UpdatedRole;
 use Arcanedev\LaravelAuth\Events\Roles\UpdatingRole;
 use Arcanedev\LaravelAuth\Models\Traits\Activatable;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
+use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Str;
 
@@ -67,16 +68,6 @@ class Role extends AbstractModel implements RoleContract
     protected $fillable = ['name', 'slug', 'description'];
 
     /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'is_active' => 'boolean',
-        'is_locked' => 'boolean',
-    ];
-
-    /**
      * The event map for the model.
      *
      * @var array
@@ -90,6 +81,17 @@ class Role extends AbstractModel implements RoleContract
         'saved'    => SavedRole::class,
         'deleting' => DeletingRole::class,
         'deleted'  => DeletedRole::class,
+    ];
+
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'id'        => 'integer',
+        'is_active' => 'boolean',
+        'is_locked' => 'boolean',
     ];
 
     /* -----------------------------------------------------------------
@@ -349,7 +351,8 @@ class Role extends AbstractModel implements RoleContract
      */
     public function hasPermission($id)
     {
-        if ($id instanceof Eloquent) $id = $id->getKey();
+        if ($id instanceof Eloquent)
+            $id = $id->getKey();
 
         return $this->permissions->contains('id', $id);
     }
@@ -363,9 +366,12 @@ class Role extends AbstractModel implements RoleContract
      */
     public function can($slug)
     {
-        if ( ! $this->isActive()) return false;
+        if ( ! $this->isActive())
+            return false;
 
-        return $this->permissions->filter->hasSlug($slug)->first() !== null;
+        return $this->permissions->filter(function (PermissionContract $permission) use ($slug) {
+            return $permission->hasSlug($slug);
+        })->first() !== null;
     }
 
     /**
