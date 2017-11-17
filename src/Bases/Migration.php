@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Bases;
 
-use Arcanedev\Support\Bases\Migration as BaseMigration;
+use Arcanedev\Support\Database\Migration as BaseMigration;
 
 /**
  * Class     Migration

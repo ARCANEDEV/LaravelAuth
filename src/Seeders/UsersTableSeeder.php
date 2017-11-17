@@ -1,7 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Seeders;
 
 use Arcanedev\LaravelAuth\Models\User;
-use Arcanedev\Support\Bases\Seeder;
+use Arcanedev\Support\Database\Seeder;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 

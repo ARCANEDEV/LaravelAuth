@@ -78,10 +78,21 @@ class Permission extends AbstractModel implements PermissionContract
         'deleted'  => DeletedPermission::class,
     ];
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'id'       => 'integer',
+        'group_id' => 'integer',
+    ];
+
     /* -----------------------------------------------------------------
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Create a new Eloquent model instance.
      *

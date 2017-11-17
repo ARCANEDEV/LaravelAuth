@@ -1,7 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Tests;
 
 use Illuminate\Routing\Router;
-use Orchestra\Testbench\BrowserKit\TestCase as BaseTestCase;
+use Orchestra\Testbench\TestCase as BaseTestCase;
 use Arcanedev\LaravelAuth\Http\Middleware;
 
 /**
@@ -12,10 +12,11 @@ use Arcanedev\LaravelAuth\Http\Middleware;
  */
 abstract class TestCase extends BaseTestCase
 {
-    /* ------------------------------------------------------------------------------------------------
-     |  Laravel Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
+
     /**
      * Get package providers.
      *
@@ -61,6 +62,11 @@ abstract class TestCase extends BaseTestCase
         $this->setAuthRoutes($app['router']);
     }
 
+    /* -----------------------------------------------------------------
+     |  Other Methods
+     | -----------------------------------------------------------------
+     */
+
     /**
      * Set the Auth configs.
      *
@@ -94,10 +100,7 @@ abstract class TestCase extends BaseTestCase
      */
     private function setAuthRoutes($router)
     {
-        if (method_exists($router, 'aliasMiddleware'))
-            $router->aliasMiddleware('track-activity', Middleware\TrackLastActivity::class);
-        else
-            $router->middleware('track-activity', Middleware\TrackLastActivity::class);
+        $router->aliasMiddleware('track-activity', Middleware\TrackLastActivity::class);
 
         $router->group(['middleware' => ['web', 'track-activity']], function (Router $router) {
             $router->get('/', function () {
@@ -178,7 +181,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function seeInPrefixedDatabase($table, array $attributes, $connection = null)
     {
-        $this->seeInDatabase($this->getTablePrefix().$table, $attributes, $connection);
+        $this->assertDatabaseHas($this->getTablePrefix().$table, $attributes, $connection);
     }
 
     /**
@@ -190,7 +193,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function dontSeeInPrefixedDatabase($table, array $data, $connection = null)
     {
-        $this->dontSeeInDatabase($this->getTablePrefix().$table, $data, $connection);
+        $this->assertDatabaseMissing($this->getTablePrefix().$table, $data, $connection);
     }
 
     /**
