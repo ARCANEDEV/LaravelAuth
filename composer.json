@@ -16,16 +16,15 @@
     "type":    "library",
     "license": "MIT",
     "require": {
-        "php":                  ">=7.0",
-        "arcanedev/support":    "~4.2.0",
+        "php":                  ">=7.1.3",
+        "arcanedev/support":    "~4.3.0",
         "arcanesoft/contracts": "~2.0.0"
     },
     "require-dev": {
-        "phpunit/phpunit":     "~6.0",
-        "phpunit/phpcov":      "~4.0",
+        "phpunit/phpunit":     "~7.0",
+        "phpunit/phpcov":      "~5.0",
         "mockery/mockery":     "~0.9.0",
-        "orchestra/testbench": "~3.5.0",
-        "orchestra/database":  "~3.5.0"
+        "orchestra/testbench": "~3.6.0"
     },
     "autoload": {
         "psr-4": {
