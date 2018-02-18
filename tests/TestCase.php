@@ -28,7 +28,6 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app)
     {
         return [
-            \Orchestra\Database\ConsoleServiceProvider::class,
             \Arcanedev\LaravelAuth\LaravelAuthServiceProvider::class,
         ];
     }
@@ -158,9 +157,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function publishMigrations()
     {
-        $this->artisan('vendor:publish', [
-            '--tag' => ['migrations'],
-        ]);
+        $this->artisan('vendor:publish', ['--tag' => ['migrations']]);
     }
 
     /**
