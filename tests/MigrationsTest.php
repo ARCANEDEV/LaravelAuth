@@ -23,11 +23,11 @@ class MigrationsTest extends TestCase
         $src        = $this->getMigrationsSrcPath();
         $dest       = $this->getMigrationsDestPath();
 
-        $this->assertCount(0, $filesystem->allFiles($dest));
+        static::assertCount(0, $filesystem->allFiles($dest));
 
         $this->publishMigrations();
 
-        $this->assertEquals(
+        static::assertEquals(
             count($filesystem->allFiles($src)),
             count($filesystem->allFiles($dest))
         );
@@ -43,7 +43,7 @@ class MigrationsTest extends TestCase
         $prefix = config('laravel-auth.database.prefix');
 
         foreach ($this->getTablesNames() as $table) {
-            $this->assertTrue(
+            static::assertTrue(
                 Schema::hasTable($prefix.$table),
                 "The table [{$prefix}{$table}] not found in the database."
             );
@@ -52,7 +52,7 @@ class MigrationsTest extends TestCase
         /**  password_resets table */
         $table = config('auth.passwords.users.table');
 
-        $this->assertTrue(
+        static::assertTrue(
             Schema::hasTable($table),
             "The table [{$table}] not found in the database."
         );
