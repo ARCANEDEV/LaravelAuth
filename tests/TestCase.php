@@ -1,6 +1,7 @@
 <?php namespace Arcanedev\LaravelAuth\Tests;
 
 use Illuminate\Routing\Router;
+use Orchestra\Database\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Arcanedev\LaravelAuth\Http\Middleware;
 
@@ -74,13 +75,6 @@ abstract class TestCase extends BaseTestCase
      */
     private function setAuthConfigs($config)
     {
-        $config->set('database.default', 'testing');
-        $config->set('database.connections.testing', [
-            'driver'   => 'sqlite',
-            'database' => ':memory:',
-            'prefix'   => '',
-        ]);
-
         $config->set(
             'auth.providers.users.model',
             \Arcanedev\LaravelAuth\Models\User::class
@@ -138,7 +132,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function getMigrationsSrcPath()
     {
-        return realpath(dirname(__DIR__) . '/database/migrations');
+        return realpath(__DIR__.'/../database/migrations');
     }
 
     /**
@@ -156,10 +150,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function migrate()
     {
-        $this->artisan('migrate', [
-            '--database' => 'testing',
-            '--realpath' => $this->getMigrationsSrcPath(),
-        ]);
+        $this->loadMigrationsFrom($this->getMigrationsSrcPath());
     }
 
     /**
@@ -205,30 +196,4 @@ abstract class TestCase extends BaseTestCase
     {
         return config('laravel-auth.database.prefix');
     }
-
-    /* -----------------------------------------------------------------
-     |  Temp Fixes
-     | -----------------------------------------------------------------
-     */
-
-    /**
-     * Mock the event dispatcher so all events are silenced and collected.
-     *
-     * @return $this
-     */
-//    protected function withoutEvents()
-//    {
-//        $mock = \Mockery::mock(\Illuminate\Contracts\Events\Dispatcher::class);
-//
-//        foreach (['fire', 'until'] as $method) {
-//            $mock->shouldReceive($method, 'dispatch', 'getCommandHandler')->andReturnUsing(function ($called, $payload = []) {
-//                $this->firedEvents[] = $called;
-//            });
-//        }
-//
-//        $this->app->instance('events', $mock);
-//        \Illuminate\Database\Eloquent\Model::setEventDispatcher($mock);
-//
-//        return $this;
-//    }
 }

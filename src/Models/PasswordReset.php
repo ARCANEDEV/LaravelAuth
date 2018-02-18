@@ -11,6 +11,8 @@ use Carbon\Carbon;
  * @property  string          email
  * @property  string          token
  * @property  \Carbon\Carbon  created_at
+ *
+ * @property  \Arcanedev\LaravelAuth\Models\User  $user
  */
 class PasswordReset extends AbstractModel
 {

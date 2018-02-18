@@ -19,7 +19,7 @@ class SocialAuthenticatorTest extends TestCase
     /** @test */
     public function it_must_be_enabled()
     {
-        $this->assertTrue(SocialAuthenticator::isEnabled());
+        static::assertTrue(SocialAuthenticator::isEnabled());
     }
 
     /** @test */
@@ -28,7 +28,7 @@ class SocialAuthenticatorTest extends TestCase
         $expected = ['bitbucket', 'facebook', 'github', 'google', 'linkedin', 'twitter'];
         $drivers  = SocialAuthenticator::drivers();
 
-        $this->assertSame($expected, $drivers->keys()->toArray());
+        static::assertSame($expected, $drivers->keys()->toArray());
     }
 
     /** @test */
@@ -37,18 +37,18 @@ class SocialAuthenticatorTest extends TestCase
         $expected = ['facebook', 'google', 'twitter'];
         $drivers  = SocialAuthenticator::enabledDrivers();
 
-        $this->assertSame($expected, $drivers->keys()->toArray());
+        static::assertSame($expected, $drivers->keys()->toArray());
     }
 
     /** @test */
     public function it_can_check_supported_drivers()
     {
         foreach (['facebook', 'google', 'twitter'] as $driver) {
-            $this->assertTrue(SocialAuthenticator::isSupported($driver));
+            static::assertTrue(SocialAuthenticator::isSupported($driver));
         }
 
         foreach (['bitbucket', 'github', 'linkedin'] as $driver) {
-            $this->assertFalse(SocialAuthenticator::isSupported($driver));
+            static::assertFalse(SocialAuthenticator::isSupported($driver));
         }
     }
 }

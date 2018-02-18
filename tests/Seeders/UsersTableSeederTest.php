@@ -43,16 +43,16 @@ class UsersTableSeederTest extends TestCase
 
         $users = User::all();
 
-        $this->assertCount(1, $users);
+        static::assertCount(1, $users);
 
         /** @var \Arcanedev\LaravelAuth\Models\User $user */
         $user = $users->first();
 
-        $this->assertEquals('admin', $user->username);
-        $this->assertEquals('admin@email.com', $user->email);
-        $this->assertTrue($user->is_active);
-        $this->assertTrue($user->isActive());
-        $this->assertTrue($user->is_admin);
-        $this->assertTrue($user->isAdmin());
+        static::assertEquals('admin', $user->username);
+        static::assertEquals('admin@email.com', $user->email);
+        static::assertTrue($user->is_active);
+        static::assertTrue($user->isActive());
+        static::assertTrue($user->is_admin);
+        static::assertTrue($user->isAdmin());
     }
 }

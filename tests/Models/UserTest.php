@@ -6,6 +6,7 @@ use Arcanedev\LaravelAuth\Models\Pivots\RoleUser;
 use Arcanedev\LaravelAuth\Models\Role;
 use Arcanedev\LaravelAuth\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 
 /**
@@ -95,7 +96,7 @@ class UserTest extends ModelsTest
         ];
 
         foreach ($expectations as $expected) {
-            $this->assertInstanceOf($expected, $this->userModel);
+            static::assertInstanceOf($expected, $this->userModel);
         }
     }
 
@@ -104,12 +105,12 @@ class UserTest extends ModelsTest
     {
         $rolesRelationship = $this->userModel->roles();
 
-        $this->assertInstanceOf(BelongsToMany::class, $rolesRelationship);
+        static::assertInstanceOf(BelongsToMany::class, $rolesRelationship);
 
         /** @var  Role  $roleModel */
         $roleModel = $rolesRelationship->getRelated();
 
-        $this->assertInstanceOf(Role::class, $roleModel);
+        static::assertInstanceOf(Role::class, $roleModel);
     }
 
     /** @test */
@@ -120,27 +121,27 @@ class UserTest extends ModelsTest
         $attributes = $this->getUserAttributes();
         $user       = $this->createUser();
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
-        $this->assertSame($attributes['username'],    $user->username);
-        $this->assertSame($attributes['first_name'],  $user->first_name);
-        $this->assertSame($attributes['last_name'],   $user->last_name);
-        $this->assertSame(
+        static::assertSame($attributes['username'],    $user->username);
+        static::assertSame($attributes['first_name'],  $user->first_name);
+        static::assertSame($attributes['last_name'],   $user->last_name);
+        static::assertSame(
             $attributes['first_name'].' '.$attributes['last_name'], $user->full_name
         );
-        $this->assertSame($attributes['email'],       $user->email);
-        $this->assertNotSame($attributes['password'], $user->password);
+        static::assertSame($attributes['email'],       $user->email);
+        static::assertNotSame($attributes['password'], $user->password);
 
-        $this->assertFalse($user->is_admin);
-        $this->assertFalse($user->isAdmin());
-        $this->assertFalse($user->isModerator());
-        $this->assertTrue($user->isMember());
-        $this->assertFalse($user->is_active);
-        $this->assertFalse($user->isActive());
-        $this->assertFalse($user->is_confirmed);
-        $this->assertFalse($user->isConfirmed());
+        static::assertFalse($user->is_admin);
+        static::assertFalse($user->isAdmin());
+        static::assertFalse($user->isModerator());
+        static::assertTrue($user->isMember());
+        static::assertFalse($user->is_active);
+        static::assertFalse($user->isActive());
+        static::assertFalse($user->is_confirmed);
+        static::assertFalse($user->isConfirmed());
 
-        $this->assertCount(0, $user->roles);
+        static::assertCount(0, $user->roles);
     }
 
     /** @test */
@@ -157,28 +158,28 @@ class UserTest extends ModelsTest
         ];
 
         /** @var User $user */
-        $user = $this->userModel->create($attributes);
+        $user = $this->userModel->newQuery()->create($attributes);
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
-        $user = $this->userModel->where('id', $user->id)->first();
+        $user = $this->userModel->newQuery()->where('id', $user->id)->first();
 
-        $this->assertFalse($user->is_active);
-        $this->assertFalse($user->isActive());
+        static::assertFalse($user->is_active);
+        static::assertFalse($user->isActive());
 
-        $this->assertTrue($user->activate());
+        static::assertTrue($user->activate());
 
-        $this->assertFiredEvents(['activating', 'activated', 'updating', 'updated', 'saving', 'saved']);
+        static::assertFiredEvents(['activating', 'activated', 'updating', 'updated', 'saving', 'saved']);
 
-        $this->assertTrue($user->is_active);
-        $this->assertTrue($user->isActive());
+        static::assertTrue($user->is_active);
+        static::assertTrue($user->isActive());
 
-        $this->assertTrue($user->deactivate());
+        static::assertTrue($user->deactivate());
 
-        $this->assertFiredEvents(['deactivating', 'deactivated', 'updating', 'updated', 'saving', 'saved']);
+        static::assertFiredEvents(['deactivating', 'deactivated', 'updating', 'updated', 'saving', 'saved']);
 
-        $this->assertFalse($user->is_active);
-        $this->assertFalse($user->isActive());
+        static::assertFalse($user->is_active);
+        static::assertFalse($user->isActive());
     }
 
     /** @test */
@@ -187,51 +188,55 @@ class UserTest extends ModelsTest
         Event::fake();
 
         $user = $this->createUser();
-        $this->assertFiredEvents(['creating', 'crated', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'crated', 'saving', 'saved']);
 
-        $adminRole     = Role::create([
+        /**
+         * @var  \Arcanedev\LaravelAuth\Models\Role  $adminRole
+         * @var  \Arcanedev\LaravelAuth\Models\Role  $moderatorRole
+         */
+        $adminRole     = Role::query()->create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ]);
-        $moderatorRole = Role::create([
+        $moderatorRole = Role::query()->create([
             'name'        => 'Moderator',
             'description' => 'Moderator role descriptions.',
         ]);
 
-        $this->assertCount(0, $user->roles);
+        static::assertCount(0, $user->roles);
 
         $user->attachRole($adminRole);
-        $this->assertFiredEvents(['attaching-role', 'attached-role']);
+        static::assertFiredEvents(['attaching-role', 'attached-role']);
 
-        $this->assertCount(1, $user->roles);
-        $this->assertTrue($user->hasRole($adminRole));
+        static::assertCount(1, $user->roles);
+        static::assertTrue($user->hasRole($adminRole));
 
         $user->attachRole($moderatorRole);
-        $this->assertFiredEvents(['attaching-role', 'attached-role']);
+        static::assertFiredEvents(['attaching-role', 'attached-role']);
 
-        $this->assertCount(2, $user->roles);
-        $this->assertTrue($user->hasRole($adminRole));
-        $this->assertTrue($user->hasRole($moderatorRole));
+        static::assertCount(2, $user->roles);
+        static::assertTrue($user->hasRole($adminRole));
+        static::assertTrue($user->hasRole($moderatorRole));
 
         // Assert the pivot table
         foreach ($user->roles as $role) {
             /** @var  \Arcanedev\LaravelAuth\Models\Role  $role */
-            $this->assertInstanceOf(RoleUser::class, $role->pivot);
-            $this->assertSame($user->id, $role->pivot->user_id);
-            $this->assertSame($role->id, $role->pivot->role_id);
+            static::assertInstanceOf(RoleUser::class, $role->pivot);
+            static::assertSame($user->id, $role->pivot->user_id);
+            static::assertSame($role->id, $role->pivot->role_id);
         }
 
         $user->detachRole($adminRole);
-        $this->assertFiredEvents(['detaching-role', 'detached-role']);
+        static::assertFiredEvents(['detaching-role', 'detached-role']);
 
-        $this->assertCount(1, $user->roles);
-        $this->assertFalse($user->hasRole($adminRole));
-        $this->assertTrue($user->hasRole($moderatorRole));
+        static::assertCount(1, $user->roles);
+        static::assertFalse($user->hasRole($adminRole));
+        static::assertTrue($user->hasRole($moderatorRole));
 
         $user->detachRole($moderatorRole);
-        $this->assertCount(0, $user->roles);
-        $this->assertFalse($user->hasRole($adminRole));
-        $this->assertFalse($user->hasRole($moderatorRole));
+        static::assertCount(0, $user->roles);
+        static::assertFalse($user->hasRole($adminRole));
+        static::assertFalse($user->hasRole($moderatorRole));
     }
 
     /** @test */
@@ -240,33 +245,34 @@ class UserTest extends ModelsTest
         Event::fake();
 
         $user = $this->createUser();
-        $this->assertFiredEvents(['creating', 'crated', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'crated', 'saving', 'saved']);
 
-        $moderatorRole = Role::create([
+        /** @var  \Arcanedev\LaravelAuth\Models\Role  $moderatorRole */
+        $moderatorRole = Role::query()->create([
             'name'        => 'Moderator',
             'description' => 'Moderator role descriptions.',
         ]);
 
-        $this->assertCount(0, $user->roles);
+        static::assertCount(0, $user->roles);
 
         $user->attachRole($moderatorRole);
-        $this->assertFiredEvents(['attaching-role', 'attached-role']);
+        static::assertFiredEvents(['attaching-role', 'attached-role']);
 
-        $this->assertCount(1, $user->roles);
+        static::assertCount(1, $user->roles);
 
-        $this->assertTrue($user->hasRole($moderatorRole));
-        $this->assertCount(1, $user->active_roles);
-        $this->assertTrue($user->isOne([$moderatorRole->slug]));
+        static::assertTrue($user->hasRole($moderatorRole));
+        static::assertCount(1, $user->active_roles);
+        static::assertTrue($user->isOne([$moderatorRole->slug]));
 
         $moderatorRole->deactivate();
 
         $user = $user->fresh(['roles']);
 
-        $this->assertCount(1, $user->roles);
+        static::assertCount(1, $user->roles);
 
-        $this->assertFalse($user->hasRole($moderatorRole));
-        $this->assertCount(0, $user->active_roles);
-        $this->assertFalse($user->isOne([$moderatorRole->slug]));
+        static::assertFalse($user->hasRole($moderatorRole));
+        static::assertCount(0, $user->active_roles);
+        static::assertFalse($user->isOne([$moderatorRole->slug]));
     }
 
     /** @test */
@@ -274,22 +280,23 @@ class UserTest extends ModelsTest
     {
         Event::fake();
 
-        $user      = $this->createUser();
+        $user = $this->createUser();
 
-        $this->assertFiredEvents(['creating', 'crated', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'crated', 'saving', 'saved']);
 
-        $adminRole = Role::create([
+        /** @var  \Arcanedev\LaravelAuth\Models\Role  $adminRole */
+        $adminRole = Role::query()->create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ]);
 
-        $this->assertCount(0, $user->roles);
+        static::assertCount(0, $user->roles);
 
         for ($i = 0; $i < 5; $i++) {
             $user->attachRole($adminRole);
-            $this->assertFiredEvents(['attaching-role', 'attached-role']);
-            $this->assertCount(1, $user->roles);
-            $this->assertTrue($user->hasRole($adminRole));
+            static::assertFiredEvents(['attaching-role', 'attached-role']);
+            static::assertCount(1, $user->roles);
+            static::assertTrue($user->hasRole($adminRole));
         }
     }
 
@@ -299,27 +306,27 @@ class UserTest extends ModelsTest
         Event::fake();
 
         $user  = $this->createUser();
-        $roles = collect([
-            Role::create([
+        $roles = new Collection([
+            Role::query()->create([
                 'name'        => 'Admin',
                 'description' => 'Admin role descriptions.',
             ]),
-            Role::create([
+            Role::query()->create([
                 'name'        => 'Moderator',
                 'description' => 'Moderator role descriptions.',
             ])
         ]);
 
-        $this->assertCount(0, $user->roles);
+        static::assertCount(0, $user->roles);
 
         $synced = $user->syncRoles(
             $roles->pluck('slug')->toArray()
         );
 
-        $this->assertCount($roles->count(),               $synced['attached']);
-        $this->assertSame($roles->pluck('id')->toArray(), $synced['attached']);
-        $this->assertEmpty($synced['detached']);
-        $this->assertEmpty($synced['updated']);
+        static::assertCount($roles->count(), $synced['attached']);
+        static::assertSame($roles->pluck('id')->toArray(), $synced['attached']);
+        static::assertEmpty($synced['detached']);
+        static::assertEmpty($synced['updated']);
 
         Event::assertDispatched(UserEvents\CreatingUser::class);
         Event::assertDispatched(UserEvents\CreatedUser::class);
@@ -334,26 +341,30 @@ class UserTest extends ModelsTest
     {
         Event::fake();
 
+        /**
+         * @var \Arcanedev\LaravelAuth\Models\Role $adminRole
+         * @var \Arcanedev\LaravelAuth\Models\Role $moderatorRole
+         */
         $user      = $this->createUser();
-        $adminRole = Role::create([
+        $adminRole = Role::query()->create([
             'name'        => 'Admin',
             'description' => 'Admin role descriptions.',
         ]);
-        $moderatorRole = Role::create([
+        $moderatorRole = Role::query()->create([
             'name'        => 'Moderator',
             'description' => 'Moderator role descriptions.',
         ]);
 
-        $this->assertCount(0, $user->roles);
+        static::assertCount(0, $user->roles);
 
         $user->attachRole($adminRole);
         $user->attachRole($moderatorRole);
 
-        $this->assertCount(2, $user->roles);
+        static::assertCount(2, $user->roles);
 
         $user->detachAllRoles();
 
-        $this->assertCount(0, $user->roles);
+        static::assertCount(0, $user->roles);
 
         Event::assertDispatched(UserEvents\CreatingUser::class);
         Event::assertDispatched(UserEvents\CreatedUser::class);
@@ -371,7 +382,7 @@ class UserTest extends ModelsTest
         $user        = $this->createUser();
         $unconfirmed = $this->userModel->findUnconfirmed($user->confirmation_code);
 
-        $this->assertEquals($user, $unconfirmed);
+        static::assertEquals($user, $unconfirmed);
     }
 
     /** @test */
@@ -387,10 +398,10 @@ class UserTest extends ModelsTest
         }
         catch(\Exception $e) {
             foreach ($expectations as $expected) {
-                $this->assertInstanceOf($expected, $e);
+                static::assertInstanceOf($expected, $e);
             }
 
-            $this->assertSame('Unconfirmed user was not found.', $e->getMessage());
+            static::assertSame('Unconfirmed user was not found.', $e->getMessage());
         }
     }
 
@@ -401,11 +412,11 @@ class UserTest extends ModelsTest
 
         $user = $this->createUser();
 
-        $this->assertConfirmationCodeGenerationListener($user);
+        static::assertConfirmationCodeGenerationListener($user);
 
-        $this->assertFalse($user->is_confirmed);
-        $this->assertFalse($user->isConfirmed());
-        $this->assertNull($user->confirmed_at);
+        static::assertFalse($user->is_confirmed);
+        static::assertFalse($user->isConfirmed());
+        static::assertNull($user->confirmed_at);
 
         Event::assertDispatched(UserEvents\CreatedUser::class);
         Event::assertDispatched(UserEvents\SavingUser::class);
@@ -413,10 +424,10 @@ class UserTest extends ModelsTest
 
         $user = $this->userModel->confirm($user);
 
-        $this->assertTrue($user->is_confirmed);
-        $this->assertTrue($user->isConfirmed());
-        $this->assertNull($user->confirmation_code);
-        $this->assertInstanceOf(\Carbon\Carbon::class, $user->confirmed_at);
+        static::assertTrue($user->is_confirmed);
+        static::assertTrue($user->isConfirmed());
+        static::assertNull($user->confirmation_code);
+        static::assertInstanceOf(\Carbon\Carbon::class, $user->confirmed_at);
 
         Event::assertDispatched(UserEvents\ConfirmingUser::class);
         Event::assertDispatched(UserEvents\ConfirmedUser::class);
@@ -433,11 +444,11 @@ class UserTest extends ModelsTest
 
         $user = $this->createUser();
 
-        $this->assertConfirmationCodeGenerationListener($user);
+        static::assertConfirmationCodeGenerationListener($user);
 
-        $this->assertFalse($user->is_confirmed);
-        $this->assertFalse($user->isConfirmed());
-        $this->assertNull($user->confirmed_at);
+        static::assertFalse($user->is_confirmed);
+        static::assertFalse($user->isConfirmed());
+        static::assertNull($user->confirmed_at);
 
         Event::assertDispatched(UserEvents\CreatedUser::class);
         Event::assertDispatched(UserEvents\SavingUser::class);
@@ -445,10 +456,10 @@ class UserTest extends ModelsTest
 
         $user = $this->userModel->confirm($user->confirmation_code);
 
-        $this->assertTrue($user->is_confirmed);
-        $this->assertTrue($user->isConfirmed());
-        $this->assertNull($user->confirmation_code);
-        $this->assertInstanceOf(\Carbon\Carbon::class, $user->confirmed_at);
+        static::assertTrue($user->is_confirmed);
+        static::assertTrue($user->isConfirmed());
+        static::assertNull($user->confirmation_code);
+        static::assertInstanceOf(\Carbon\Carbon::class, $user->confirmed_at);
 
         Event::assertDispatched(UserEvents\ConfirmingUser::class);
         Event::assertDispatched(UserEvents\ConfirmedUser::class);
@@ -471,27 +482,27 @@ class UserTest extends ModelsTest
         Event::assertDispatched(UserEvents\SavingUser::class);
         Event::assertDispatched(UserEvents\SavedUser::class);
 
-        $this->assertFalse($user->trashed());
-        $this->assertTrue($user->delete());
+        static::assertFalse($user->trashed());
+        static::assertTrue($user->delete());
 
         Event::assertDispatched(UserEvents\DeletingUser::class);
         Event::assertDispatched(UserEvents\DeletedUser::class);
 
-        $this->assertNull($this->userModel->find($userId));
+        static::assertNull($this->userModel->newQuery()->find($userId));
 
-        /** @var User $user */
-        $user = $this->userModel->onlyTrashed()->find($userId);
+        /** @var  \Arcanedev\LaravelAuth\Models\User  $user */
+        $user = $this->userModel->newQuery()->onlyTrashed()->find($userId);
 
-        $this->assertTrue($user->trashed());
+        static::assertTrue($user->trashed());
 
         $user->forceDelete();
 
         Event::assertDispatched(UserEvents\DeletingUser::class);
         Event::assertDispatched(UserEvents\DeletedUser::class);
 
-        $user = $this->userModel->find($userId);
+        $user = $this->userModel->newQuery()->find($userId);
 
-        $this->assertNull($user);
+        static::assertNull($user);
     }
 
     /** @test */
@@ -500,6 +511,7 @@ class UserTest extends ModelsTest
         Event::fake();
 
         $user = $this->createUser();
+        /** @var  \Arcanedev\LaravelAuth\Models\Role  $role */
         $role = Role::query()->create([
             'name'        => 'Member',
             'slug'        => 'member',
@@ -508,7 +520,7 @@ class UserTest extends ModelsTest
 
         $user->attachRole($role);
 
-        $this->assertSame(1, $role->users()->count());
+        static::assertSame(1, $role->users()->count());
 
         $user->forceDelete();
 
@@ -517,7 +529,7 @@ class UserTest extends ModelsTest
         });
         Event::assertDispatched(UserEvents\DeletedUser::class);
 
-        $this->assertSame(0, $role->users()->count());
+        static::assertSame(0, $role->users()->count());
     }
 
     /** @test */
@@ -525,14 +537,13 @@ class UserTest extends ModelsTest
     {
         Event::fake();
 
-        $user           = $this->createUser();
+        $user = $this->createUser();
 
         Event::assertDispatched(UserEvents\CreatingUser::class);
         Event::assertDispatched(UserEvents\CreatedUser::class);
         Event::assertDispatched(UserEvents\SavingUser::class);
         Event::assertDispatched(UserEvents\SavedUser::class);
 
-        $adminId        = $user->id;
         $user->is_admin = true;
         $user->save();
 
@@ -541,10 +552,10 @@ class UserTest extends ModelsTest
         Event::assertDispatched(UserEvents\UpdatingUser::class);
         Event::assertDispatched(UserEvents\UpdatedUser::class);
 
-        $this->assertTrue($user->isAdmin());
-        $this->assertFalse($user->isModerator());
-        $this->assertFalse($user->isMember());
-        $this->assertFalse($user->trashed());
+        static::assertTrue($user->isAdmin());
+        static::assertFalse($user->isModerator());
+        static::assertFalse($user->isMember());
+        static::assertFalse($user->trashed());
 
         $user->delete();
 
@@ -559,7 +570,7 @@ class UserTest extends ModelsTest
     {
         Event::fake();
 
-        $user   = $this->createUser();
+        $user = $this->createUser();
 
         Event::assertDispatched(UserEvents\CreatingUser::class);
         Event::assertDispatched(UserEvents\CreatedUser::class);
@@ -568,30 +579,30 @@ class UserTest extends ModelsTest
 
         $userId = $user->id;
 
-        $this->assertFalse($user->trashed());
-        $this->assertTrue($user->delete());
+        static::assertFalse($user->trashed());
+        static::assertTrue($user->delete());
 
         Event::assertDispatched(UserEvents\DeletingUser::class);
         Event::assertDispatched(UserEvents\DeletedUser::class);
 
-        $user = $this->userModel->find($userId);
+        $user = $this->userModel->newQuery()->find($userId);
 
-        $this->assertNull($user);
+        static::assertNull($user);
 
         /** @var User $user */
-        $user = $this->userModel->onlyTrashed()->find($userId);
+        $user = $this->userModel->newQuery()->onlyTrashed()->find($userId);
 
-        $this->assertTrue($user->trashed());
+        static::assertTrue($user->trashed());
 
         $user->restore();
 
         Event::assertDispatched(UserEvents\RestoringUser::class);
         Event::assertDispatched(UserEvents\RestoredUser::class);
 
-        $user = $this->userModel->find($userId);
+        $user = $this->userModel->newQuery()->find($userId);
 
-        $this->assertNotNull($user);
-        $this->assertFalse($user->trashed());
+        static::assertNotNull($user);
+        static::assertFalse($user->trashed());
     }
 
     /** @test */
@@ -599,9 +610,9 @@ class UserTest extends ModelsTest
     {
         $user      = $this->createUser();
 
-        $this->assertFalse($user->hasRoleSlug('admin'));
+        static::assertFalse($user->hasRoleSlug('admin'));
 
-        $adminRole = Role::create([
+        $adminRole = Role::query()->create([
             'name'        => 'Admin',
             'slug'        => 'admin',
             'description' => 'Admin role descriptions.',
@@ -609,8 +620,8 @@ class UserTest extends ModelsTest
 
         $user->attachRole($adminRole);
 
-        $this->assertTrue($user->hasRoleSlug('Admin'));
-        $this->assertTrue($user->hasRoleSlug('admin'));
+        static::assertTrue($user->hasRoleSlug('Admin'));
+        static::assertTrue($user->hasRoleSlug('admin'));
     }
 
     /** @test */
@@ -619,12 +630,12 @@ class UserTest extends ModelsTest
         $user = $this->createUser();
 
         /** @var  \Illuminate\Support\Collection  $failedRoles */
-        $this->assertFalse($user->isOne(['admin', 'member'], $failedRoles));
-        $this->assertCount(2, $failedRoles);
-        $this->assertSame(['admin', 'member'], $failedRoles->all());
+        static::assertFalse($user->isOne(['admin', 'member'], $failedRoles));
+        static::assertCount(2, $failedRoles);
+        static::assertSame(['admin', 'member'], $failedRoles->all());
 
         /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
-        $adminRole = Role::create([
+        $adminRole = Role::query()->create([
             'name'        => 'Admin',
             'slug'        => 'admin',
             'description' => 'Admin role descriptions.',
@@ -633,9 +644,9 @@ class UserTest extends ModelsTest
         $user->attachRole($adminRole);
 
         $failedRoles = [];
-        $this->assertTrue($user->isOne(['admin', 'member'], $failedRoles));
-        $this->assertCount(1, $failedRoles);
-        $this->assertSame(['member'], $failedRoles->all());
+        static::assertTrue($user->isOne(['admin', 'member'], $failedRoles));
+        static::assertCount(1, $failedRoles);
+        static::assertSame(['member'], $failedRoles->all());
     }
 
     /** @test */
@@ -644,12 +655,12 @@ class UserTest extends ModelsTest
         $user = $this->createUser();
 
         /** @var  \Illuminate\Support\Collection  $failedRoles */
-        $this->assertFalse($user->isAll(['admin', 'member'], $failedRoles));
-        $this->assertCount(2, $failedRoles);
-        $this->assertSame(['admin', 'member'], $failedRoles->all());
+        static::assertFalse($user->isAll(['admin', 'member'], $failedRoles));
+        static::assertCount(2, $failedRoles);
+        static::assertSame(['admin', 'member'], $failedRoles->all());
 
         /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $adminRole */
-        $adminRole = Role::create([
+        $adminRole = Role::query()->create([
             'name'        => 'Admin',
             'slug'        => 'admin',
             'description' => 'Admin role descriptions.',
@@ -657,12 +668,12 @@ class UserTest extends ModelsTest
 
         $user->attachRole($adminRole);
 
-        $this->assertFalse($user->isAll(['admin', 'member'], $failedRoles));
-        $this->assertCount(1, $failedRoles);
-        $this->assertSame(['member'], $failedRoles->all());
+        static::assertFalse($user->isAll(['admin', 'member'], $failedRoles));
+        static::assertCount(1, $failedRoles);
+        static::assertSame(['member'], $failedRoles->all());
 
         /** @var  \Arcanesoft\Contracts\Auth\Models\Role  $memberRole */
-        $memberRole = Role::create([
+        $memberRole = Role::query()->create([
             'name'        => 'Member',
             'slug'        => 'member',
             'description' => 'Member role descriptions.',
@@ -670,8 +681,8 @@ class UserTest extends ModelsTest
 
         $user->attachRole($memberRole);
 
-        $this->assertTrue($user->isAll(['admin', 'member'], $failedRoles));
-        $this->assertEmpty($failedRoles);
+        static::assertTrue($user->isAll(['admin', 'member'], $failedRoles));
+        static::assertEmpty($failedRoles);
     }
 
     /** @test */
@@ -684,12 +695,12 @@ class UserTest extends ModelsTest
         $user->attachRole($adminRole);
         $user->attachRole($moderatorRole);
 
-        $this->assertCount(4, $user->permissions);
+        static::assertCount(4, $user->permissions);
 
-        $this->assertTrue($user->may('auth.users.create'));
-        $this->assertTrue($user->may('auth.users.update'));
-        $this->assertTrue($user->may('blog.posts.create'));
-        $this->assertTrue($user->may('blog.posts.update'));
+        static::assertTrue($user->may('auth.users.create'));
+        static::assertTrue($user->may('auth.users.update'));
+        static::assertTrue($user->may('blog.posts.create'));
+        static::assertTrue($user->may('blog.posts.update'));
     }
 
     /** @test */
@@ -702,7 +713,7 @@ class UserTest extends ModelsTest
         $user->attachRole($adminRole);
         $user->attachRole($moderatorRole);
 
-        $this->assertCount(4, $user->permissions);
+        static::assertCount(4, $user->permissions);
 
         $permissionToCheck = [
             'auth.users.create',
@@ -712,14 +723,14 @@ class UserTest extends ModelsTest
         ];
 
         /** @var  \Illuminate\Support\Collection  $failed */
-        $this->assertTrue($user->mayOne($permissionToCheck, $failed));
-        $this->assertEmpty($failed);
+        static::assertTrue($user->mayOne($permissionToCheck, $failed));
+        static::assertEmpty($failed);
 
         $permissionToCheck = array_merge($permissionToCheck, ['auth.users.delete', 'blog.posts.delete']);
 
-        $this->assertTrue($user->mayOne($permissionToCheck, $failed));
-        $this->assertCount(2, $failed);
-        $this->assertSame(['auth.users.delete', 'blog.posts.delete'], $failed->all());
+        static::assertTrue($user->mayOne($permissionToCheck, $failed));
+        static::assertCount(2, $failed);
+        static::assertSame(['auth.users.delete', 'blog.posts.delete'], $failed->all());
     }
 
     /** @test */
@@ -732,7 +743,7 @@ class UserTest extends ModelsTest
         $user->attachRole($adminRole);
         $user->attachRole($moderatorRole);
 
-        $this->assertCount(4, $user->permissions);
+        static::assertCount(4, $user->permissions);
 
         $permissionToCheck = [
             'auth.users.create',
@@ -742,14 +753,14 @@ class UserTest extends ModelsTest
         ];
 
         /** @var  \Illuminate\Support\Collection  $failed */
-        $this->assertTrue($user->mayAll($permissionToCheck, $failed));
-        $this->assertEmpty($failed);
+        static::assertTrue($user->mayAll($permissionToCheck, $failed));
+        static::assertEmpty($failed);
 
         $permissionToCheck = array_merge($permissionToCheck, ['auth.users.delete', 'blog.posts.delete']);
 
-        $this->assertFalse($user->mayAll($permissionToCheck, $failed));
-        $this->assertCount(2, $failed);
-        $this->assertSame(['auth.users.delete', 'blog.posts.delete'], $failed->all());
+        static::assertFalse($user->mayAll($permissionToCheck, $failed));
+        static::assertCount(2, $failed);
+        static::assertSame(['auth.users.delete', 'blog.posts.delete'], $failed->all());
     }
 
     /** @test */
@@ -759,18 +770,18 @@ class UserTest extends ModelsTest
 
         $this->actingAs($user);
 
-        $this->assertNull(auth()->user()->last_activity);
+        static::assertNull(auth()->user()->last_activity);
 
         $this->call('GET', '/');
 
         $authUser = auth()->user();
-        $this->assertNotNull($authUser->last_activity);
-        $this->assertInstanceOf(\Carbon\Carbon::class, $authUser->last_activity);
+        static::assertNotNull($authUser->last_activity);
+        static::assertInstanceOf(\Carbon\Carbon::class, $authUser->last_activity);
 
         $users = User::lastActive()->get();
 
-        $this->assertCount(1, $users);
-        $this->assertSame($authUser->id, $users->first()->id);
+        static::assertCount(1, $users);
+        static::assertSame($authUser->id, $users->first()->id);
     }
 
     /** @test */
@@ -783,7 +794,7 @@ class UserTest extends ModelsTest
         foreach ($firstNames as $firstName) {
             $user = $this->userModel->fill(['first_name' => $firstName]);
 
-            $this->assertSame($expected, $user->first_name);
+            static::assertSame($expected, $user->first_name);
         }
 
         $firstNames = ['john oliver', 'JOHN OLIVER', 'JoHn OlIvEr', 'jOhN oLiVeR'];
@@ -792,7 +803,7 @@ class UserTest extends ModelsTest
         foreach ($firstNames as $firstName) {
             $user = $this->userModel->fill(['first_name' => $firstName]);
 
-            $this->assertSame($expected, $user->first_name);
+            static::assertSame($expected, $user->first_name);
         }
 
         // Last name
@@ -802,7 +813,7 @@ class UserTest extends ModelsTest
         foreach ($lastNames as $lastName) {
             $user = $this->userModel->fill(['last_name' => $lastName]);
 
-            $this->assertSame($expected, $user->last_name);
+            static::assertSame($expected, $user->last_name);
         }
 
         // Full name
@@ -820,7 +831,7 @@ class UserTest extends ModelsTest
                 'last_name'  => $name[1],
             ]);
 
-            $this->assertSame($expected, $user->full_name);
+            static::assertSame($expected, $user->full_name);
         }
     }
 
@@ -836,7 +847,7 @@ class UserTest extends ModelsTest
         foreach ($emails as $email) {
             $user = $this->userModel->fill(['email' => $email]);
 
-            $this->assertSame($expected, $user->email);
+            static::assertSame($expected, $user->email);
         }
     }
 
@@ -845,23 +856,24 @@ class UserTest extends ModelsTest
     {
         $user = $this->createUser();
 
-        $this->assertTrue($user->canBeImpersonated());
+        static::assertTrue($user->canBeImpersonated());
 
         $user->forceFill(['is_admin' => true])->save();
 
-        $this->assertFalse($user->canBeImpersonated());
+        static::assertFalse($user->canBeImpersonated());
     }
 
     /* -----------------------------------------------------------------
      |  Helpers
      | -----------------------------------------------------------------
      */
+
     /**
      * Create a user.
      *
      * @param  array  $attributes
      *
-     * @return User
+     * @return \Arcanedev\LaravelAuth\Models\User|mixed
      */
     private function createUser(array $attributes = [])
     {
@@ -898,20 +910,21 @@ class UserTest extends ModelsTest
      */
     private function createAdminRole()
     {
-        $adminRole = Role::create([
+        /** @var  \Arcanedev\LaravelAuth\Models\Role  $adminRole */
+        $adminRole = Role::query()->create([
             'name'        => 'Admin',
             'slug'        => 'admin',
             'description' => 'Admin role descriptions.',
         ]);
 
-        $adminRole->attachPermission(Permission::create([
-            'name'  => 'Create users permission',
-            'slug'  => 'auth.users.create',
+        $adminRole->attachPermission(static::createNewPermission([
+            'name' => 'Create users permission',
+            'slug' => 'auth.users.create',
         ]));
 
-        $adminRole->attachPermission(Permission::create([
-            'name'  => 'Update users permission',
-            'slug'  => 'auth.users.update',
+        $adminRole->attachPermission(static::createNewPermission([
+            'name' => 'Update users permission',
+            'slug' => 'auth.users.update',
         ]));
 
         return $adminRole;
@@ -924,21 +937,25 @@ class UserTest extends ModelsTest
      */
     private function createModeratorRole()
     {
-        $moderatorRole = Role::create([
+        $moderatorRole = $this->createNewRole([
             'name'        => 'Blog Moderator',
             'slug'        => 'blog.moderator',
             'description' => 'Blog Moderator role descriptions.',
         ]);
 
-        $moderatorRole->attachPermission(Permission::create([
-            'name'  => 'Create posts permission',
-            'slug'  => 'blog.posts.create',
-        ]));
+        $moderatorRole->attachPermission(
+            static::createNewPermission([
+                'name'  => 'Create posts permission',
+                'slug'  => 'blog.posts.create',
+            ])
+        );
 
-        $moderatorRole->attachPermission(Permission::create([
-            'name'  => 'Update posts permission',
-            'slug'  => 'blog.posts.update',
-        ]));
+        $moderatorRole->attachPermission(
+            static::createNewPermission([
+                'name'  => 'Update posts permission',
+                'slug'  => 'blog.posts.update',
+            ])
+        );
 
         return $moderatorRole;
     }
@@ -946,11 +963,11 @@ class UserTest extends ModelsTest
     /**
      * @param  User  $user
      */
-    private function assertConfirmationCodeGenerationListener($user)
+    protected static function assertConfirmationCodeGenerationListener($user)
     {
         Event::assertDispatched(UserEvents\CreatingUser::class, function (UserEvents\CreatingUser $e) use ($user) {
-            $this->assertSame($e->user->id, $user->id);
-            $this->assertNull($e->user->confirmation_code);
+            static::assertSame($e->user->id, $user->id);
+            static::assertNull($e->user->confirmation_code);
 
             (new \Arcanedev\LaravelAuth\Listeners\Users\GenerateConfirmationCode)->handle($e);
 

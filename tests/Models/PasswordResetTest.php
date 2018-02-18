@@ -1,7 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Tests\Models;
 
 use Arcanedev\LaravelAuth\Models\PasswordReset;
-use Arcanedev\LaravelAuth\Models\User;
 
 /**
  * Class     PasswordResetTest
@@ -52,7 +51,7 @@ class PasswordResetTest extends ModelsTest
         ];
 
         foreach ($expectations as $expected) {
-            $this->assertInstanceOf($expected, $this->passwordReset);
+            static::assertInstanceOf($expected, $this->passwordReset);
         }
     }
 
@@ -62,7 +61,7 @@ class PasswordResetTest extends ModelsTest
         PasswordReset::getTokenRepository()->create($user = $this->createUser());
 
         /** @var  \Arcanedev\LaravelAuth\Models\PasswordReset  $pr */
-        $pr = $this->passwordReset->where('email', $user->email)->first();
+        $pr = $this->passwordReset->newQuery()->where('email', $user->email)->first();
 
         $this->assertEquals($user->toArray(), $pr->user->toArray());
         $this->assertFalse($pr->isExpired());
@@ -84,16 +83,13 @@ class PasswordResetTest extends ModelsTest
      */
     protected function createUser()
     {
-        $user = User::query()->create([
-            'username'   => 'john.doe',
-            'first_name' => 'John',
-            'last_name'  => 'DOE',
-            'email'      => 'j.doe@gmail.com',
-            'password'   => 'PaSsWoRd',
-        ]);
-
-        $user->refresh();
-
-        return $user;
+        return static::createNewUser([
+                'username'   => 'john.doe',
+                'first_name' => 'John',
+                'last_name'  => 'DOE',
+                'email'      => 'j.doe@gmail.com',
+                'password'   => 'PaSsWoRd',
+            ])
+            ->refresh();
     }
 }

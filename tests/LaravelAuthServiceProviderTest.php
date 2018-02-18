@@ -53,7 +53,7 @@ class LaravelAuthServiceProviderTest extends TestCase
         ];
 
         foreach ($expectations as $expected) {
-            $this->assertInstanceOf($expected, $this->provider);
+            static::assertInstanceOf($expected, $this->provider);
         }
     }
 
@@ -64,6 +64,6 @@ class LaravelAuthServiceProviderTest extends TestCase
             //
         ];
 
-        $this->assertEquals($expected, $this->provider->provides());
+        static::assertEquals($expected, $this->provider->provides());
     }
 }

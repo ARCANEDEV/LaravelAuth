@@ -94,7 +94,7 @@ class RoleTest extends ModelsTest
         ];
 
         foreach ($expectations as $expected) {
-            $this->assertInstanceOf($expected, $this->role);
+            static::assertInstanceOf($expected, $this->role);
         }
     }
 
@@ -104,8 +104,8 @@ class RoleTest extends ModelsTest
         $usersRelationship       = $this->role->users();
         $permissionsRelationship = $this->role->permissions();
 
-        $this->assertInstanceOf(BelongsToMany::class, $usersRelationship);
-        $this->assertInstanceOf(BelongsToMany::class, $permissionsRelationship);
+        static::assertInstanceOf(BelongsToMany::class, $usersRelationship);
+        static::assertInstanceOf(BelongsToMany::class, $permissionsRelationship);
 
         /**
          * @var  \Arcanedev\LaravelAuth\Models\User        $user
@@ -114,8 +114,8 @@ class RoleTest extends ModelsTest
         $user       = $usersRelationship->getRelated();
         $permission = $permissionsRelationship->getRelated();
 
-        $this->assertInstanceOf(User::class,       $user);
-        $this->assertInstanceOf(Permission::class, $permission);
+        static::assertInstanceOf(User::class,       $user);
+        static::assertInstanceOf(Permission::class, $permission);
     }
 
     /** @test */
@@ -131,15 +131,15 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole($attributes);
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
-        $this->assertSame($attributes['name'],                 $role->name);
-        $this->assertSame(Str::slug($attributes['slug'], '-'), $role->slug);
-        $this->assertSame($attributes['description'],          $role->description);
-        $this->assertTrue($role->is_active);
-        $this->assertTrue($role->isActive());
-        $this->assertFalse($role->is_locked);
-        $this->assertFalse($role->isLocked());
+        static::assertSame($attributes['name'],                 $role->name);
+        static::assertSame(Str::slug($attributes['slug'], '-'), $role->slug);
+        static::assertSame($attributes['description'],          $role->description);
+        static::assertTrue($role->is_active);
+        static::assertTrue($role->isActive());
+        static::assertFalse($role->is_locked);
+        static::assertFalse($role->isLocked());
     }
 
     /** @test */
@@ -151,15 +151,15 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole($attributes);
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
         $this->seeInPrefixedDatabase('roles', $attributes);
         $this->seeInPrefixedDatabase('roles', Arr::except($role->toArray(), ['created_at', 'updated_at']));
 
-        $this->assertTrue($role->is_active);
-        $this->assertTrue($role->isActive());
-        $this->assertFalse($role->is_locked);
-        $this->assertFalse($role->isLocked());
+        static::assertTrue($role->is_active);
+        static::assertTrue($role->isActive());
+        static::assertFalse($role->is_locked);
+        static::assertFalse($role->isLocked());
 
         $updatedAttributes = [
             'name'        => 'Custom role',
@@ -168,16 +168,16 @@ class RoleTest extends ModelsTest
 
         $role->update($updatedAttributes);
 
-        $this->assertFiredEvents(['updating', 'updated', 'saving', 'saved']);
+        static::assertFiredEvents(['updating', 'updated', 'saving', 'saved']);
 
         $this->dontSeeInPrefixedDatabase('roles', $attributes);
         $this->seeInPrefixedDatabase('roles', $updatedAttributes);
         $this->seeInPrefixedDatabase('roles', Arr::except($role->toArray(), ['created_at', 'updated_at']));
 
-        $this->assertTrue($role->is_active);
-        $this->assertTrue($role->isActive());
-        $this->assertFalse($role->is_locked);
-        $this->assertFalse($role->isLocked());
+        static::assertTrue($role->is_active);
+        static::assertTrue($role->isActive());
+        static::assertFalse($role->is_locked);
+        static::assertFalse($role->isLocked());
     }
 
     /** @test */
@@ -189,37 +189,37 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole($attributes);
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
-        $this->assertTrue($role->isActive());
+        static::assertTrue($role->isActive());
 
         $saved = $role->deactivate();
 
-        $this->assertFiredEvents(['saving', 'saved', 'updating', 'updated']);
+        static::assertFiredEvents(['saving', 'saved', 'updating', 'updated']);
 
-        $this->assertTrue($saved);
-        $this->assertFalse($role->isActive());
+        static::assertTrue($saved);
+        static::assertFalse($role->isActive());
 
         $saved = $role->activate();
 
-        $this->assertFiredEvents(['saving', 'saved', 'updating', 'updated']);
+        static::assertFiredEvents(['saving', 'saved', 'updating', 'updated']);
 
-        $this->assertTrue($saved);
-        $this->assertTrue($role->isActive());
+        static::assertTrue($saved);
+        static::assertTrue($role->isActive());
 
         $saved = $role->deactivate(false);
 
-        $this->assertFiredEvents(['saving', 'saved', 'updating', 'updated']);
+        static::assertFiredEvents(['saving', 'saved', 'updating', 'updated']);
 
-        $this->assertFalse($saved);
-        $this->assertFalse($role->isActive());
+        static::assertFalse($saved);
+        static::assertFalse($role->isActive());
 
         $saved = $role->activate(false);
 
-        $this->assertFiredEvents(['saving', 'saved', 'updating', 'updated']);
+        static::assertFiredEvents(['saving', 'saved', 'updating', 'updated']);
 
-        $this->assertFalse($saved);
-        $this->assertTrue($role->isActive());
+        static::assertFalse($saved);
+        static::assertTrue($role->isActive());
     }
 
     /** @test */
@@ -229,7 +229,7 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole();
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
         $this->seeInPrefixedDatabase('roles', $role->toArray());
 
@@ -241,7 +241,7 @@ class RoleTest extends ModelsTest
 
             return $e->role->id === $role->id && $role->users->isEmpty() && $role->permissions->isEmpty();
         });
-        $this->assertFiredEvents(['deleted']);
+        static::assertFiredEvents(['deleted']);
 
         $this->dontSeeInPrefixedDatabase('roles', $role->toArray());
     }
@@ -256,18 +256,17 @@ class RoleTest extends ModelsTest
             'description'  => 'Custom role description.',
         ]);
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
-        /** @var  \Arcanesoft\Contracts\Auth\Models\User  $admin */
-        $admin  = User::create([
+        $admin = static::createNewUser([
             'username'   => 'super-admin',
             'first_name' => 'Super',
             'last_name'  => 'Admin',
             'email'      => 'sys.admin@gmail.com',
             'password'   => 'SuPeR-PaSsWoRd',
         ]);
-        /** @var  \Arcanesoft\Contracts\Auth\Models\User  $member */
-        $member = User::create([
+
+        $member = static::createNewUser([
             'username'   => 'john-doe',
             'first_name' => 'John',
             'last_name'  => 'DOE',
@@ -275,45 +274,45 @@ class RoleTest extends ModelsTest
             'password'   => 'PaSsWoRd',
         ]);
 
-        $this->assertCount(0, $role->users);
+        static::assertCount(0, $role->users);
 
         $role->attachUser($admin);
 
-        $this->assertFiredEvents(['attaching-user', 'attached-user']);
+        static::assertFiredEvents(['attaching-user', 'attached-user']);
 
-        $this->assertCount(1, $role->users);
-        $this->assertTrue($role->hasUser($admin));
+        static::assertCount(1, $role->users);
+        static::assertTrue($role->hasUser($admin));
 
         $role->attachUser($member);
 
-        $this->assertFiredEvents(['attaching-user', 'attached-user']);
+        static::assertFiredEvents(['attaching-user', 'attached-user']);
 
-        $this->assertCount(2, $role->users);
-        $this->assertTrue($role->hasUser($admin));
-        $this->assertTrue($role->hasUser($member));
+        static::assertCount(2, $role->users);
+        static::assertTrue($role->hasUser($admin));
+        static::assertTrue($role->hasUser($member));
 
         // Assert the pivot table
         foreach ($role->users as $user) {
-            $this->assertInstanceOf(RoleUser::class, $user->pivot);
-            $this->assertSame($user->pivot->role_id, $role->id);
-            $this->assertSame($user->pivot->user_id, $user->id);
+            static::assertInstanceOf(RoleUser::class, $user->pivot);
+            static::assertSame($user->pivot->role_id, $role->id);
+            static::assertSame($user->pivot->user_id, $user->id);
         }
 
         $role->detachUser($admin);
 
-        $this->assertFiredEvents(['detaching-user', 'detached-user']);
+        static::assertFiredEvents(['detaching-user', 'detached-user']);
 
-        $this->assertCount(1, $role->users);
-        $this->assertFalse($role->hasUser($admin));
-        $this->assertTrue($role->hasUser($member));
+        static::assertCount(1, $role->users);
+        static::assertFalse($role->hasUser($admin));
+        static::assertTrue($role->hasUser($member));
 
         $role->detachUser($member);
 
-        $this->assertFiredEvents(['detaching-user', 'detached-user']);
+        static::assertFiredEvents(['detaching-user', 'detached-user']);
 
-        $this->assertCount(0, $role->users);
-        $this->assertFalse($role->hasUser($admin));
-        $this->assertFalse($role->hasUser($member));
+        static::assertCount(0, $role->users);
+        static::assertFalse($role->hasUser($admin));
+        static::assertFalse($role->hasUser($member));
     }
 
     /** @test */
@@ -324,7 +323,7 @@ class RoleTest extends ModelsTest
         $role = $this->createRole();
 
         /** @var \Arcanesoft\Contracts\Auth\Models\User $user */
-        $user = User::create([
+        $user = static::createNewUser([
             'username'   => 'john-doe',
             'first_name' => 'John',
             'last_name'  => 'DOE',
@@ -332,12 +331,12 @@ class RoleTest extends ModelsTest
             'password'   => 'PaSsWoRd',
         ]);
 
-        $this->assertCount(0, $role->users);
+        static::assertCount(0, $role->users);
 
         for ($i = 0; $i < 5; $i++) {
             $role->attachUser($user);
-            $this->assertCount(1, $role->users);
-            $this->assertTrue($role->hasUser($user));
+            static::assertCount(1, $role->users);
+            static::assertTrue($role->hasUser($user));
         }
     }
 
@@ -351,10 +350,9 @@ class RoleTest extends ModelsTest
             'description'  => 'Custom role description.',
         ]);
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
-        /** @var  \Arcanesoft\Contracts\Auth\Models\User  $admin */
-        $admin  = User::create([
+        $admin  = static::createNewUser([
             'username'   => 'super-admin',
             'first_name' => 'Super',
             'last_name'  => 'Admin',
@@ -362,8 +360,7 @@ class RoleTest extends ModelsTest
             'password'   => 'SuPeR-PaSsWoRd',
         ]);
 
-        /** @var  \Arcanesoft\Contracts\Auth\Models\User  $member */
-        $member = User::create([
+        $member = static::createNewUser([
             'username'   => 'john-doe',
             'first_name' => 'John',
             'last_name'  => 'DOE',
@@ -371,30 +368,30 @@ class RoleTest extends ModelsTest
             'password'   => 'PaSsWoRd',
         ]);
 
-        $this->assertCount(0, $role->users);
+        static::assertCount(0, $role->users);
 
         $role->attachUser($admin);
 
-        $this->assertFiredEvents(['attaching-user', 'attached-user']);
+        static::assertFiredEvents(['attaching-user', 'attached-user']);
 
-        $this->assertCount(1, $role->users);
-        $this->assertTrue($role->hasUser($admin));
+        static::assertCount(1, $role->users);
+        static::assertTrue($role->hasUser($admin));
 
         $role->attachUser($member);
 
-        $this->assertFiredEvents(['attaching-user', 'attached-user']);
+        static::assertFiredEvents(['attaching-user', 'attached-user']);
 
-        $this->assertCount(2, $role->users);
-        $this->assertTrue($role->hasUser($admin));
-        $this->assertTrue($role->hasUser($member));
+        static::assertCount(2, $role->users);
+        static::assertTrue($role->hasUser($admin));
+        static::assertTrue($role->hasUser($member));
 
         $role->detachAllUsers();
 
-        $this->assertFiredEvents(['detaching-users', 'detached-users']);
+        static::assertFiredEvents(['detaching-users', 'detached-users']);
 
-        $this->assertCount(0, $role->users);
-        $this->assertFalse($role->hasUser($admin));
-        $this->assertFalse($role->hasUser($member));
+        static::assertCount(0, $role->users);
+        static::assertFalse($role->hasUser($admin));
+        static::assertFalse($role->hasUser($member));
     }
 
     /** @test */
@@ -404,56 +401,54 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole();
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
-        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $createUserPermission */
-        $createUserPermission = Permission::create([
+        $createUserPermission = static::createNewPermission([
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
             'description' => 'Create users permission description.',
         ]);
-        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $updateUserPermission */
-        $updateUserPermission = Permission::create([
+        $updateUserPermission = static::createNewPermission([
             'name'        => 'Update users',
             'slug'        => 'auth.users.update',
             'description' => 'Update users permission description.',
         ]);
 
-        $this->assertCount(0, $role->permissions);
+        static::assertCount(0, $role->permissions);
 
         $role->attachPermission($createUserPermission);
 
-        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
-        $this->assertCount(1, $role->permissions);
-        $this->assertTrue($role->hasPermission($createUserPermission));
+        static::assertFiredEvents(['attaching-permission', 'attached-permission']);
+        static::assertCount(1, $role->permissions);
+        static::assertTrue($role->hasPermission($createUserPermission));
 
         $role->attachPermission($updateUserPermission);
 
-        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
-        $this->assertCount(2, $role->permissions);
-        $this->assertTrue($role->hasPermission($createUserPermission));
-        $this->assertTrue($role->hasPermission($updateUserPermission));
+        static::assertFiredEvents(['attaching-permission', 'attached-permission']);
+        static::assertCount(2, $role->permissions);
+        static::assertTrue($role->hasPermission($createUserPermission));
+        static::assertTrue($role->hasPermission($updateUserPermission));
 
         $role->detachPermission($createUserPermission);
 
-        $this->assertFiredEvents(['detaching-permission', 'detached-permission']);
-        $this->assertCount(1, $role->permissions);
-        $this->assertFalse($role->hasPermission($createUserPermission));
-        $this->assertTrue($role->hasPermission($updateUserPermission));
+        static::assertFiredEvents(['detaching-permission', 'detached-permission']);
+        static::assertCount(1, $role->permissions);
+        static::assertFalse($role->hasPermission($createUserPermission));
+        static::assertTrue($role->hasPermission($updateUserPermission));
 
         $role->detachPermission($updateUserPermission);
 
-        $this->assertFiredEvents(['detaching-permission', 'detached-permission']);
-        $this->assertCount(0, $role->permissions);
-        $this->assertFalse($role->hasPermission($createUserPermission));
-        $this->assertFalse($role->hasPermission($updateUserPermission));
+        static::assertFiredEvents(['detaching-permission', 'detached-permission']);
+        static::assertCount(0, $role->permissions);
+        static::assertFalse($role->hasPermission($createUserPermission));
+        static::assertFalse($role->hasPermission($updateUserPermission));
 
         $role->attachPermission($createUserPermission);
 
-        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
-        $this->assertCount(1, $role->permissions);
-        $this->assertTrue($role->hasPermission($createUserPermission));
-        $this->assertFalse($role->hasPermission($updateUserPermission));
+        static::assertFiredEvents(['attaching-permission', 'attached-permission']);
+        static::assertCount(1, $role->permissions);
+        static::assertTrue($role->hasPermission($createUserPermission));
+        static::assertFalse($role->hasPermission($updateUserPermission));
     }
 
     /** @test */
@@ -463,24 +458,23 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole();
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
-        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $createUserPermission */
-        $createUserPermission = Permission::create([
+        $createUserPermission = static::createNewPermission([
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
             'description' => 'Create users permission description.',
         ]);
 
-        $this->assertCount(0, $role->permissions);
+        static::assertCount(0, $role->permissions);
 
         for ($i = 0; $i < 5; $i++) {
             $role->attachPermission($createUserPermission);
-            $this->assertCount(1, $role->permissions);
-            $this->assertTrue($role->hasPermission($createUserPermission));
+            static::assertCount(1, $role->permissions);
+            static::assertTrue($role->hasPermission($createUserPermission));
         }
 
-        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
+        static::assertFiredEvents(['attaching-permission', 'attached-permission']);
     }
 
     /** @test */
@@ -490,35 +484,33 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole();
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
-        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $createUserPermission */
-        $createUserPermission = Permission::create([
+        $createUserPermission = static::createNewPermission([
             'name'        => 'Create users',
             'slug'        => 'auth.users.create',
             'description' => 'Create users permission description.',
         ]);
-        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $updateUserPermission */
-        $updateUserPermission = Permission::create([
+        $updateUserPermission = static::createNewPermission([
             'name'        => 'Update users',
             'slug'        => 'auth.users.update',
             'description' => 'Update users permission description.',
         ]);
 
-        $this->assertCount(0, $role->permissions);
+        static::assertCount(0, $role->permissions);
 
         $role->attachPermission($createUserPermission);
         $role->attachPermission($updateUserPermission);
 
-        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
-        $this->assertCount(2, $role->permissions);
-        $this->assertTrue($role->hasPermission($createUserPermission));
-        $this->assertTrue($role->hasPermission($updateUserPermission));
+        static::assertFiredEvents(['attaching-permission', 'attached-permission']);
+        static::assertCount(2, $role->permissions);
+        static::assertTrue($role->hasPermission($createUserPermission));
+        static::assertTrue($role->hasPermission($updateUserPermission));
 
         $role->detachAllPermissions();
 
-        $this->assertFiredEvents(['detaching-permissions', 'detached-permissions']);
-        $this->assertCount(0, $role->permissions);
+        static::assertFiredEvents(['detaching-permissions', 'detached-permissions']);
+        static::assertCount(0, $role->permissions);
     }
 
     /** @test */
@@ -528,20 +520,19 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole();
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
-        $this->assertFalse($role->can('auth.users.create'));
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFalse($role->can('auth.users.create'));
 
-        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $createUserPermission */
-        $createUserPermission = Permission::create([
-            'name'        => 'Create users',
-            'slug'        => 'auth.users.create',
-            'description' => 'Create users permission description.',
-        ]);
+        $role->attachPermission(
+            static::createNewPermission([
+                'name'        => 'Create users',
+                'slug'        => 'auth.users.create',
+                'description' => 'Create users permission description.',
+            ])
+        );
 
-        $role->attachPermission($createUserPermission);
-
-        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
-        $this->assertTrue($role->can('auth.users.create'));
+        static::assertFiredEvents(['attaching-permission', 'attached-permission']);
+        static::assertTrue($role->can('auth.users.create'));
     }
 
     /** @test */
@@ -551,7 +542,7 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole();
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
         $permissionsToCheck = [
             'auth.users.create',
@@ -560,53 +551,50 @@ class RoleTest extends ModelsTest
         ];
 
         /** @var  \Illuminate\Support\Collection  $failedPermissions */
-        $this->assertFalse($role->canAny($permissionsToCheck, $failedPermissions));
-        $this->assertCount(3, $failedPermissions);
-        $this->assertSame($permissionsToCheck, $failedPermissions->all());
+        static::assertFalse($role->canAny($permissionsToCheck, $failedPermissions));
+        static::assertCount(3, $failedPermissions);
+        static::assertSame($permissionsToCheck, $failedPermissions->all());
 
-        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $createUserPermission */
-        $createUserPermission = Permission::create([
-            'name'        => 'Create users',
-            'slug'        => 'auth.users.create',
-            'description' => 'Create users permission description.',
-        ]);
+        $role->attachPermission(
+            static::createNewPermission([
+                'name'        => 'Create users',
+                'slug'        => 'auth.users.create',
+                'description' => 'Create users permission description.',
+            ])
+        );
 
-        $role->attachPermission($createUserPermission);
-
-        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
-        $this->assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
-        $this->assertCount(2, $failedPermissions);
-        $this->assertSame([
+        static::assertFiredEvents(['attaching-permission', 'attached-permission']);
+        static::assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
+        static::assertCount(2, $failedPermissions);
+        static::assertSame([
             'auth.users.update',
             'auth.users.delete',
         ], $failedPermissions->all());
 
-        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $updateUserPermission */
-        $updateUserPermission = Permission::create([
-            'name'        => 'Update users',
-            'slug'        => 'auth.users.update',
-            'description' => 'Update users permission description.',
-        ]);
+        $role->attachPermission(
+            static::createNewPermission([
+                'name'        => 'Update users',
+                'slug'        => 'auth.users.update',
+                'description' => 'Update users permission description.',
+            ])
+        );
 
-        $role->attachPermission($updateUserPermission);
+        static::assertFiredEvents(['attaching-permission', 'attached-permission']);
+        static::assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
+        static::assertCount(1, $failedPermissions);
+        static::assertSame(['auth.users.delete'], $failedPermissions->all());
 
-        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
-        $this->assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
-        $this->assertCount(1, $failedPermissions);
-        $this->assertSame(['auth.users.delete'], $failedPermissions->all());
+        $role->attachPermission(
+            static::createNewPermission([
+                'name'        => 'Delete users',
+                'slug'        => 'auth.users.delete',
+                'description' => 'Delete users permission description.',
+            ])
+        );
 
-        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $deleteUserPermission */
-        $deleteUserPermission = Permission::create([
-            'name'        => 'Delete users',
-            'slug'        => 'auth.users.delete',
-            'description' => 'Delete users permission description.',
-        ]);
-
-        $role->attachPermission($deleteUserPermission);
-
-        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
-        $this->assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
-        $this->assertEmpty($failedPermissions->all());
+        static::assertFiredEvents(['attaching-permission', 'attached-permission']);
+        static::assertTrue($role->canAny($permissionsToCheck, $failedPermissions));
+        static::assertEmpty($failedPermissions->all());
     }
 
     /** @test */
@@ -616,7 +604,7 @@ class RoleTest extends ModelsTest
 
         $role = $this->createRole();
 
-        $this->assertFiredEvents(['creating', 'created', 'saving', 'saved']);
+        static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
         $permissionsToCheck = [
             'auth.users.create',
@@ -625,53 +613,50 @@ class RoleTest extends ModelsTest
         ];
 
         /** @var  \Illuminate\Support\Collection  $failed */
-        $this->assertFalse($role->canAll($permissionsToCheck, $failed));
-        $this->assertCount(3, $failed);
-        $this->assertSame($permissionsToCheck, $failed->all());
+        static::assertFalse($role->canAll($permissionsToCheck, $failed));
+        static::assertCount(3, $failed);
+        static::assertSame($permissionsToCheck, $failed->all());
 
-        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $createUserPermission */
-        $createUserPermission = Permission::create([
-            'name'        => 'Create users',
-            'slug'        => 'auth.users.create',
-            'description' => 'Create users permission description.',
-        ]);
+        $role->attachPermission(
+            static::createNewPermission([
+                'name'        => 'Create users',
+                'slug'        => 'auth.users.create',
+                'description' => 'Create users permission description.',
+            ])
+        );
 
-        $role->attachPermission($createUserPermission);
-
-        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
-        $this->assertFalse($role->canAll($permissionsToCheck, $failed));
-        $this->assertCount(2, $failed);
-        $this->assertSame([
+        static::assertFiredEvents(['attaching-permission', 'attached-permission']);
+        static::assertFalse($role->canAll($permissionsToCheck, $failed));
+        static::assertCount(2, $failed);
+        static::assertSame([
             'auth.users.update',
             'auth.users.delete',
         ], $failed->all());
 
-        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $updateUserPermission */
-        $updateUserPermission = Permission::create([
-            'name'        => 'Update users',
-            'slug'        => 'auth.users.update',
-            'description' => 'Update users permission description.',
-        ]);
+        $role->attachPermission(
+            static::createNewPermission([
+                'name'        => 'Update users',
+                'slug'        => 'auth.users.update',
+                'description' => 'Update users permission description.',
+            ])
+        );
 
-        $role->attachPermission($updateUserPermission);
+        static::assertFiredEvents(['attaching-permission', 'attached-permission']);
+        static::assertFalse($role->canAll($permissionsToCheck, $failed));
+        static::assertCount(1, $failed);
+        static::assertSame(['auth.users.delete'], $failed->all());
 
-        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
-        $this->assertFalse($role->canAll($permissionsToCheck, $failed));
-        $this->assertCount(1, $failed);
-        $this->assertSame(['auth.users.delete'], $failed->all());
+        $role->attachPermission(
+            static::createNewPermission([
+                'name'        => 'Delete users',
+                'slug'        => 'auth.users.delete',
+                'description' => 'Delete users permission description.',
+            ])
+        );
 
-        /** @var  \Arcanesoft\Contracts\Auth\Models\Permission  $deleteUserPermission */
-        $deleteUserPermission = Permission::create([
-            'name'        => 'Delete users',
-            'slug'        => 'auth.users.delete',
-            'description' => 'Delete users permission description.',
-        ]);
-
-        $role->attachPermission($deleteUserPermission);
-
-        $this->assertFiredEvents(['attaching-permission', 'attached-permission']);
-        $this->assertTrue($role->canAll($permissionsToCheck, $failed));
-        $this->assertEmpty($failed->all());
+        static::assertFiredEvents(['attaching-permission', 'attached-permission']);
+        static::assertTrue($role->canAll($permissionsToCheck, $failed));
+        static::assertEmpty($failed->all());
     }
 
     /* -----------------------------------------------------------------
@@ -683,7 +668,7 @@ class RoleTest extends ModelsTest
      *
      * @param  array  $attributes
      *
-     * @return \Arcanedev\LaravelAuth\Models\Role
+     * @return \Arcanedev\LaravelAuth\Models\Role|mixed
      */
     private function createRole(array $attributes = [])
     {
@@ -691,9 +676,9 @@ class RoleTest extends ModelsTest
             $attributes = $this->getAdminRoleAttributes();
         }
 
-        $role = $this->role->create($attributes);
+        $role = $this->role->newQuery()->create($attributes);
 
-        return $this->role->find($role->id);
+        return $role->refresh();
     }
 
     /**
