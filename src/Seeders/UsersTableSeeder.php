@@ -47,15 +47,15 @@ class UsersTableSeeder extends Seeder
 
         foreach ($data as $user) {
             $users[] = [
-                'username'   => $user['username'],
-                'first_name' => Arr::get($user, 'first_name', null),
-                'last_name'  => Arr::get($user, 'last_name', null),
-                'email'      => $user['email'],
-                'password'   => bcrypt($user['password']),
-                'is_admin'   => true,
-                'is_active'  => true,
-                'created_at' => $now,
-                'updated_at' => $now,
+                'username'     => $user['username'],
+                'first_name'   => Arr::get($user, 'first_name', null),
+                'last_name'    => Arr::get($user, 'last_name', null),
+                'email'        => $user['email'],
+                'password'     => bcrypt($user['password']),
+                'is_admin'     => true,
+                'created_at'   => $now,
+                'updated_at'   => $now,
+                'activated_at' => $now,
             ];
         }
 

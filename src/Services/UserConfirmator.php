@@ -3,7 +3,6 @@
 use Arcanedev\LaravelAuth\Events\Users\ConfirmedUser;
 use Arcanedev\LaravelAuth\Events\Users\ConfirmingUser;
 use Arcanesoft\Contracts\Auth\Models\User as UserContract;
-use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -32,7 +31,7 @@ class UserConfirmator
     /**
      * Confirm user account.
      *
-     * @param  \Arcanesoft\Contracts\Auth\Models\User  $user
+     * @param  \Arcanesoft\Contracts\Auth\Models\User|\Arcanedev\LaravelAuth\Models\User  $user
      *
      * @return \Arcanesoft\Contracts\Auth\Models\User
      */
@@ -40,10 +39,10 @@ class UserConfirmator
     {
         event(new ConfirmingUser($user));
 
-        $user->setAttribute('is_confirmed',      true);
-        $user->setAttribute('confirmation_code', null);
-        $user->setAttribute('confirmed_at',      Carbon::now());
-        $user->save();
+        $user->forceFill([
+            'confirmation_code' => null,
+            'confirmed_at'      => now(),
+        ])->save();
 
         event(new ConfirmedUser($user));
 

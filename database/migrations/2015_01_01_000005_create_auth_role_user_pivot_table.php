@@ -7,6 +7,8 @@ use Illuminate\Database\Schema\Blueprint;
  * Class     CreateRoleUserTable
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @see  \Arcanedev\LaravelAuth\Models\Pivots\RoleUser
  */
 class CreateAuthRoleUserPivotTable extends Migration
 {
@@ -14,6 +16,7 @@ class CreateAuthRoleUserPivotTable extends Migration
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * CreateAuthRoleUserPivotTable constructor.
      */
@@ -28,6 +31,7 @@ class CreateAuthRoleUserPivotTable extends Migration
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Run the migrations.
      */

@@ -7,6 +7,8 @@ use Illuminate\Database\Schema\Blueprint;
  * Class     CreateRolesTable
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @see  \Arcanedev\LaravelAuth\Models\Role
  */
 class CreateAuthRolesTable extends Migration
 {
@@ -14,6 +16,7 @@ class CreateAuthRolesTable extends Migration
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Make a migration instance.
      */
@@ -28,6 +31,7 @@ class CreateAuthRolesTable extends Migration
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Run the migrations.
      */
@@ -38,11 +42,11 @@ class CreateAuthRolesTable extends Migration
             $table->string('name');
             $table->string('slug');
             $table->string('description')->nullable();
-            $table->boolean('is_active')->default(true);
             $table->boolean('is_locked')->default(false);
             $table->timestamps();
+            $table->timestamp('activated_at')->nullable();
 
-            $table->unique('slug');
+            $table->unique(['slug']);
         });
     }
 }

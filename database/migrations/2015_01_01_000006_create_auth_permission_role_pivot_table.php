@@ -7,6 +7,8 @@ use Illuminate\Database\Schema\Blueprint;
  * Class     CreatePermissionRoleTable
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @see  \Arcanedev\LaravelAuth\Models\Pivots\PermissionRole
  */
 class CreateAuthPermissionRolePivotTable extends Migration
 {
@@ -14,6 +16,7 @@ class CreateAuthPermissionRolePivotTable extends Migration
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * CreateAuthPermissionRolePivotTable constructor.
      */
@@ -28,6 +31,7 @@ class CreateAuthPermissionRolePivotTable extends Migration
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Run the migrations.
      */
