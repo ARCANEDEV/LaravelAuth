@@ -55,7 +55,7 @@ class UsersTableSeeder extends Seeder
                 'is_admin'     => true,
                 'created_at'   => $now,
                 'updated_at'   => $now,
-                'activated_at' => $now,
+                'activated_at' => $user['activated_at'] ?? $now,
             ];
         }
 
