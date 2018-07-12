@@ -1,9 +1,8 @@
 <?php namespace Arcanedev\LaravelAuth\Tests;
 
-use Illuminate\Routing\Router;
-use Orchestra\Database\ConsoleServiceProvider;
-use Orchestra\Testbench\TestCase as BaseTestCase;
 use Arcanedev\LaravelAuth\Http\Middleware;
+use Illuminate\Routing\Router;
+use Orchestra\Testbench\TestCase as BaseTestCase;
 
 /**
  * Class     TestCase

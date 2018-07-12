@@ -9,6 +9,8 @@ use Illuminate\Database\Schema\Blueprint;
  * Class     CreateUsersTable
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @see  \Arcanedev\LaravelAuth\Models\User
  */
 class CreateAuthUsersTable extends Migration
 {
@@ -16,6 +18,7 @@ class CreateAuthUsersTable extends Migration
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Make a migration instance.
      */
@@ -30,6 +33,7 @@ class CreateAuthUsersTable extends Migration
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Run the migrations.
      */
@@ -43,18 +47,19 @@ class CreateAuthUsersTable extends Migration
             $this->addCredentialsColumns($table);
             $table->rememberToken();
             $table->boolean('is_admin')->default(0);
-            $table->boolean('is_active')->default(0);
             $this->addConfirmationColumns($table);
             $table->timestamp('last_activity')->nullable();
             $table->timestamps();
+            $table->timestamp('activated_at')->nullable();
             $table->softDeletes();
         });
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Other Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Other Methods
+     | -----------------------------------------------------------------
      */
+
     /**
      * Add credentials columns.
      *
@@ -84,7 +89,6 @@ class CreateAuthUsersTable extends Migration
     private function addConfirmationColumns(Blueprint $table)
     {
         if (UserConfirmator::isEnabled()) {
-            $table->boolean('is_confirmed')->default(0);
             $table->string('confirmation_code', UserConfirmator::getLength())->nullable();
             $table->timestamp('confirmed_at')->nullable();
         }
