@@ -1,26 +1,11 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Events\Roles\AttachedPermissionToRole;
-use Arcanedev\LaravelAuth\Events\Roles\AttachedUserToRole;
-use Arcanedev\LaravelAuth\Events\Roles\AttachingPermissionToRole;
-use Arcanedev\LaravelAuth\Events\Roles\AttachingUserToRole;
-use Arcanedev\LaravelAuth\Events\Roles\CreatedRole;
-use Arcanedev\LaravelAuth\Events\Roles\CreatingRole;
-use Arcanedev\LaravelAuth\Events\Roles\DeletedRole;
-use Arcanedev\LaravelAuth\Events\Roles\DeletingRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachedAllPermissionsFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachedAllUsersFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachedPermissionFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachedUserFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachingAllPermissionsFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachingAllUsersFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachingPermissionFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\DetachingUserFromRole;
-use Arcanedev\LaravelAuth\Events\Roles\SavedRole;
-use Arcanedev\LaravelAuth\Events\Roles\SavingRole;
-use Arcanedev\LaravelAuth\Events\Roles\UpdatedRole;
-use Arcanedev\LaravelAuth\Events\Roles\UpdatingRole;
-use Arcanedev\LaravelAuth\Models\Traits\Activatable;
+use Arcanedev\LaravelAuth\Events\Roles\{
+    AttachedPermissionToRole, AttachedUserToRole, AttachingPermissionToRole, AttachingUserToRole, CreatedRole,
+    CreatingRole, DeletedRole, DeletingRole, DetachedAllPermissionsFromRole, DetachedAllUsersFromRole,
+    DetachedPermissionFromRole, DetachedUserFromRole, DetachingAllPermissionsFromRole, DetachingAllUsersFromRole,
+    DetachingPermissionFromRole, DetachingUserFromRole, SavedRole, SavingRole, UpdatedRole, UpdatingRole
+};
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -36,10 +21,10 @@ use Illuminate\Support\Str;
  * @property  string                                    name
  * @property  string                                    slug
  * @property  string                                    description
- * @property  bool                                      is_active
  * @property  bool                                      is_locked
  * @property  \Carbon\Carbon                            created_at
  * @property  \Carbon\Carbon                            updated_at
+ * @property  \Carbon\Carbon|null                       activated_at
  *
  * @property  \Illuminate\Database\Eloquent\Collection       users
  * @property  \Illuminate\Database\Eloquent\Collection       permissions
@@ -53,7 +38,7 @@ class Role extends AbstractModel implements RoleContract
      | -----------------------------------------------------------------
      */
 
-    use Activatable;
+    use Traits\Activatable;
 
     /* -----------------------------------------------------------------
      |  Properties

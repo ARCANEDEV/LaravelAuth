@@ -15,7 +15,7 @@ abstract class AbstractUserEvent
      | -----------------------------------------------------------------
      */
 
-    /** @var  \Arcanesoft\Contracts\Auth\Models\User */
+    /** @var  \Arcanesoft\Contracts\Auth\Models\User|\Arcanedev\LaravelAuth\Models\User */
     public $user;
 
     /* -----------------------------------------------------------------

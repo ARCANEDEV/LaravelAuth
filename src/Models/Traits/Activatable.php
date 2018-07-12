@@ -6,12 +6,28 @@
  * @package  Arcanedev\LaravelAuth\Traits
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  *
- * @property  bool  is_active
+ * @property  bool                 is_active
+ * @property  \Carbon\Carbon|null  activated_at
  *
  * @method    bool  save(array $options = [])
  */
 trait Activatable
 {
+    /* -----------------------------------------------------------------
+     |  Getters & Setters
+     | -----------------------------------------------------------------
+     */
+
+    /**
+     * Get the `is_active` attribute.
+     *
+     * @return bool
+     */
+    public function getIsActiveAttribute()
+    {
+        return $this->isActive();
+    }
+
     /* -----------------------------------------------------------------
      |  Main Methods
      | -----------------------------------------------------------------
@@ -27,19 +43,10 @@ trait Activatable
      */
     protected function switchActive($active, $save = true)
     {
-        $this->forceFill(['is_active' => boolval($active)]);
+        $this->forceFill(['activated_at' => boolval($active) ? now() : null]);
 
         return $save ? $this->save() : false;
     }
-
-    /**
-     * Fill the model with an array of attributes. Force mass assignment.
-     *
-     * @param  array  $attributes
-     *
-     * @return self
-     */
-    abstract public function forceFill(array $attributes);
 
     /* -----------------------------------------------------------------
      |  Check Methods
@@ -53,6 +60,6 @@ trait Activatable
      */
     public function isActive()
     {
-        return $this->is_active;
+        return ! is_null($this->activated_at);
     }
 }

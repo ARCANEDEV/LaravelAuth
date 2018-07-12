@@ -7,6 +7,8 @@ use Illuminate\Database\Schema\Blueprint;
  * Class     CreatePermissionsTable
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @see  \Arcanedev\LaravelAuth\Models\PermissionsGroup
  */
 class CreateAuthPermissionsGroupsTable extends Migration
 {
@@ -14,6 +16,7 @@ class CreateAuthPermissionsGroupsTable extends Migration
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Make a migration instance.
      */
@@ -28,6 +31,7 @@ class CreateAuthPermissionsGroupsTable extends Migration
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Run the migrations.
      */
@@ -40,7 +44,7 @@ class CreateAuthPermissionsGroupsTable extends Migration
             $table->string('description')->nullable();
             $table->timestamps();
 
-            $table->unique('slug');
+            $table->unique(['slug']);
         });
     }
 }

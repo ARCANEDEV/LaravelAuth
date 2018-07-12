@@ -161,12 +161,10 @@ class RoleTest extends ModelsTest
         static::assertFalse($role->is_locked);
         static::assertFalse($role->isLocked());
 
-        $updatedAttributes = [
+        $role->update($updatedAttributes = [
             'name'        => 'Custom role',
             'description' => 'Custom role description.',
-        ];
-
-        $role->update($updatedAttributes);
+        ]);
 
         static::assertFiredEvents(['updating', 'updated', 'saving', 'saved']);
 
@@ -185,9 +183,9 @@ class RoleTest extends ModelsTest
     {
         Event::fake();
 
-        $attributes = $this->getAdminRoleAttributes();
-
-        $role = $this->createRole($attributes);
+        $role = $this->createRole(
+            $attributes = $this->getAdminRoleAttributes()
+        );
 
         static::assertFiredEvents(['creating', 'created', 'saving', 'saved']);
 
@@ -321,8 +319,6 @@ class RoleTest extends ModelsTest
         Event::fake();
 
         $role = $this->createRole();
-
-        /** @var \Arcanesoft\Contracts\Auth\Models\User $user */
         $user = static::createNewUser([
             'username'   => 'john-doe',
             'first_name' => 'John',
@@ -672,13 +668,10 @@ class RoleTest extends ModelsTest
      */
     private function createRole(array $attributes = [])
     {
-        if (empty($attributes)) {
+        if (empty($attributes))
             $attributes = $this->getAdminRoleAttributes();
-        }
 
-        $role = $this->role->newQuery()->create($attributes);
-
-        return $role->refresh();
+        return static::createNewRole($attributes)->refresh();
     }
 
     /**

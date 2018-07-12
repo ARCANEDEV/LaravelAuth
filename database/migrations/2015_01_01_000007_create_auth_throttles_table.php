@@ -10,10 +10,11 @@ use Illuminate\Database\Schema\Blueprint;
  */
 class CreateAuthThrottlesTable extends Migration
 {
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Constructor
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
+
     /**
      * Make a migration instance.
      */
@@ -24,16 +25,17 @@ class CreateAuthThrottlesTable extends Migration
         $this->setTable(config('laravel-auth.throttles.table', 'throttles'));
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Main Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Main Methods
+     | -----------------------------------------------------------------
      */
+
     /**
      * Run the migrations.
      */
     public function up()
     {
-        if ($this->isThrottlable()) {
+        if ($this->isThrottlable())
             $this->createSchema(function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('user_id')->nullable();
@@ -41,7 +43,6 @@ class CreateAuthThrottlesTable extends Migration
                 $table->string('ip')->nullable();
                 $table->timestamps();
             });
-        }
     }
 
     /**
@@ -49,15 +50,15 @@ class CreateAuthThrottlesTable extends Migration
      */
     public function down()
     {
-        if ($this->isThrottlable()) {
+        if ($this->isThrottlable())
             parent::down();
-        }
     }
 
-    /* ------------------------------------------------------------------------------------------------
-     |  Other Functions
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Other Methods
+     | -----------------------------------------------------------------
      */
+
     /**
      * Check if throttles is enabled.
      *

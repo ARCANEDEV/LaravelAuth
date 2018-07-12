@@ -7,6 +7,8 @@ use Illuminate\Database\Schema\Blueprint;
  * Class     CreatePasswordResetsTable
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @see  \Arcanedev\LaravelAuth\Models\PasswordReset
  */
 class CreateAuthPasswordResetsTable extends Migration
 {
@@ -14,8 +16,9 @@ class CreateAuthPasswordResetsTable extends Migration
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
-     * CreateAuthPasswordResetsTable constructor.
+     * Make a migration instance.
      */
     public function __construct()
     {
@@ -29,6 +32,7 @@ class CreateAuthPasswordResetsTable extends Migration
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Run the migrations.
      */

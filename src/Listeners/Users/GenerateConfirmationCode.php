@@ -25,9 +25,10 @@ class GenerateConfirmationCode
      */
     public function handle(CreatingUser $event)
     {
-        if (UserConfirmator::isEnabled()) {
-            $event->user->confirmation_code = UserConfirmator::generateCode();
-        }
+        if (UserConfirmator::isEnabled())
+            $event->user->forceFill([
+                'confirmation_code' => UserConfirmator::generateCode(),
+            ]);
 
         return $event;
     }
