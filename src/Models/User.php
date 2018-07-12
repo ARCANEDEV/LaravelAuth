@@ -1,35 +1,17 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Events\Users\ActivatedUser;
-use Arcanedev\LaravelAuth\Events\Users\ActivatingUser;
-use Arcanedev\LaravelAuth\Events\Users\AttachedRoleToUser;
-use Arcanedev\LaravelAuth\Events\Users\AttachingRoleToUser;
-use Arcanedev\LaravelAuth\Events\Users\CreatedUser;
-use Arcanedev\LaravelAuth\Events\Users\CreatingUser;
-use Arcanedev\LaravelAuth\Events\Users\DeactivatedUser;
-use Arcanedev\LaravelAuth\Events\Users\DeactivatingUser;
-use Arcanedev\LaravelAuth\Events\Users\DeletedUser;
-use Arcanedev\LaravelAuth\Events\Users\DeletingUser;
-use Arcanedev\LaravelAuth\Events\Users\DetachedRoleFromUser;
-use Arcanedev\LaravelAuth\Events\Users\DetachedRolesFromUser;
-use Arcanedev\LaravelAuth\Events\Users\DetachingRoleFromUser;
-use Arcanedev\LaravelAuth\Events\Users\DetachingRolesFromUser;
-use Arcanedev\LaravelAuth\Events\Users\RestoredUser;
-use Arcanedev\LaravelAuth\Events\Users\RestoringUser;
-use Arcanedev\LaravelAuth\Events\Users\SavedUser;
-use Arcanedev\LaravelAuth\Events\Users\SavingUser;
-use Arcanedev\LaravelAuth\Events\Users\SyncedUserWithRoles;
-use Arcanedev\LaravelAuth\Events\Users\SyncingUserWithRoles;
-use Arcanedev\LaravelAuth\Events\Users\UpdatedUser;
-use Arcanedev\LaravelAuth\Events\Users\UpdatingUser;
-use Arcanedev\LaravelAuth\Exceptions\UserConfirmationException;
-use Arcanedev\LaravelAuth\Models\Traits\Activatable;
-use Arcanedev\LaravelAuth\Models\Traits\Roleable;
+use Arcanedev\LaravelAuth\Events\Users\{
+    ActivatedUser, ActivatingUser, AttachedRoleToUser, AttachingRoleToUser, CreatedUser, CreatingUser,
+    DeactivatedUser, DeactivatingUser, DeletedUser, DeletingUser, DetachedRoleFromUser, DetachedRolesFromUser,
+    DetachingRoleFromUser, DetachingRolesFromUser, RestoredUser, RestoringUser, SavedUser, SavingUser,
+    SyncedUserWithRoles, SyncingUserWithRoles, UpdatedUser, UpdatingUser
+};
 use Arcanedev\LaravelAuth\Services\SocialAuthenticator;
-use Arcanedev\LaravelAuth\Services\UserConfirmator;
-use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
-use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
-use Arcanesoft\Contracts\Auth\Models\User as UserContract;
+use Arcanesoft\Contracts\Auth\Models\{
+    Permission as PermissionContract,
+    Role as RoleContract,
+    User as UserContract
+};
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -56,21 +38,17 @@ use Illuminate\Support\Str;
  * @property  string                                    password
  * @property  string                                    remember_token
  * @property  bool                                      is_admin
- * @property  bool                                      is_active
- * @property  bool                                      is_confirmed       (Optional)
- * @property  string                                    confirmation_code  (Optional)
- * @property  \Carbon\Carbon                            confirmed_at       (Optional)
  * @property  \Carbon\Carbon                            last_activity
  * @property  \Carbon\Carbon                            created_at
  * @property  \Carbon\Carbon                            updated_at
+ * @property  \Carbon\Carbon|null                       activated_at
  * @property  \Carbon\Carbon                            deleted_at
  *
  * @property  \Illuminate\Database\Eloquent\Collection       roles
  * @property  \Illuminate\Support\Collection                 permissions
  * @property  \Arcanedev\LaravelAuth\Models\Pivots\RoleUser  pivot
  *
- * @method    \Illuminate\Database\Eloquent\Builder  unconfirmed(string $code)
- * @method    \Illuminate\Database\Eloquent\Builder  lastActive(int $minutes = null)
+ * @method  static  \Illuminate\Database\Eloquent\Builder  lastActive(int $minutes = null)
  */
 class User
     extends AbstractModel
@@ -81,11 +59,12 @@ class User
      | -----------------------------------------------------------------
      */
 
-    use Roleable,
-        Authenticatable,
+    use Authenticatable,
         Authorizable,
         CanResetPassword,
-        Activatable,
+        Traits\Roleable,
+        Traits\Activatable,
+        Traits\Confirmable,
         SoftDeletes;
 
     /* -----------------------------------------------------------------
@@ -138,6 +117,7 @@ class User
     protected $dates = [
         'confirmed_at',
         'last_activity',
+        'activated_at',
         'deleted_at',
     ];
 
@@ -228,21 +208,6 @@ class User
      |  Scopes
      | -----------------------------------------------------------------
      */
-
-    /**
-     * Scope unconfirmed users by code.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  string                                 $code
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeUnconfirmed($query, $code)
-    {
-        return $query->where('is_confirmed', false)
-                     ->where('confirmation_code', $code)
-                     ->whereNull('confirmed_at');
-    }
 
     /**
      * Scope last active users.
@@ -440,43 +405,6 @@ class User
     }
 
     /**
-     * Confirm the unconfirmed user account by confirmation code.
-     *
-     * @param  string  $code
-     *
-     * @return \Arcanesoft\Contracts\Auth\Models\User
-     *
-     * @throws \Arcanedev\LaravelAuth\Exceptions\UserConfirmationException
-     */
-    public function findUnconfirmed($code)
-    {
-        /** @var  \Arcanesoft\Contracts\Auth\Models\User|null  $unconfirmed */
-        $unconfirmed = static::unconfirmed($code)->first();
-
-        if ( ! $unconfirmed instanceof self)
-            throw (new UserConfirmationException)->setModel(static::class);
-
-        return $unconfirmed;
-    }
-
-    /**
-     * Confirm the new user account.
-     *
-     * @param  \Arcanesoft\Contracts\Auth\Models\User|string  $code
-     *
-     * @return \Arcanesoft\Contracts\Auth\Models\User
-     */
-    public function confirm($code)
-    {
-        if ($code instanceof self)
-            $code = $code->confirmation_code;
-
-        return (new UserConfirmator)->confirm(
-            $this->findUnconfirmed($code)
-        );
-    }
-
-    /**
      * Update the user's last activity.
      *
      * @param  bool  $save
@@ -574,16 +502,6 @@ class User
     public function isMember()
     {
         return ! $this->isAdmin();
-    }
-
-    /**
-     * Check if user has a confirmed account.
-     *
-     * @return bool
-     */
-    public function isConfirmed()
-    {
-        return $this->is_confirmed;
     }
 
     /**

@@ -7,6 +7,8 @@ use Illuminate\Database\Schema\Blueprint;
  * Class     CreatePermissionsTable
  *
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
+ *
+ * @see  \Arcanedev\LaravelAuth\Models\Permission
  */
 class CreateAuthPermissionsTable extends Migration
 {
@@ -14,6 +16,7 @@ class CreateAuthPermissionsTable extends Migration
      |  Constructor
      | -----------------------------------------------------------------
      */
+
     /**
      * Make a migration instance.
      */
@@ -28,6 +31,7 @@ class CreateAuthPermissionsTable extends Migration
      |  Main Methods
      | -----------------------------------------------------------------
      */
+
     /**
      * Run the migrations.
      */
@@ -41,7 +45,7 @@ class CreateAuthPermissionsTable extends Migration
             $table->string('slug');
             $table->timestamps();
 
-            $table->unique('slug');
+            $table->unique(['slug']);
         });
     }
 }

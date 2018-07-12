@@ -65,7 +65,9 @@ abstract class ModelsTest extends TestCase
      */
     protected static function createNewRole(array $attributes)
     {
-        return Role::query()->create($attributes);
+        $attributes = array_merge(['activated_at' => now()], $attributes);
+
+        return Role::query()->forceCreate($attributes);
     }
 
     /**
