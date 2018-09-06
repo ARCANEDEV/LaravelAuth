@@ -2,7 +2,6 @@
 
 use Arcanedev\LaravelAuth\Bases\Migration;
 use Arcanedev\LaravelAuth\Services\SocialAuthenticator;
-use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Illuminate\Database\Schema\Blueprint;
 
 /**
@@ -44,10 +43,11 @@ class CreateAuthUsersTable extends Migration
             $table->string('username');
             $table->string('first_name', 30)->nullable();
             $table->string('last_name', 30)->nullable();
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $this->addCredentialsColumns($table);
             $table->rememberToken();
             $table->boolean('is_admin')->default(0);
-            $this->addConfirmationColumns($table);
             $table->timestamp('last_activity')->nullable();
             $table->timestamps();
             $table->timestamp('activated_at')->nullable();
@@ -67,9 +67,6 @@ class CreateAuthUsersTable extends Migration
      */
     private function addCredentialsColumns(Blueprint $table)
     {
-        // Basic columns
-        $table->string('email')->unique();
-
         if (SocialAuthenticator::isEnabled()) {
             $table->string('password')->nullable();
             // Social network columns
@@ -78,19 +75,6 @@ class CreateAuthUsersTable extends Migration
         }
         else {
             $table->string('password');
-        }
-    }
-
-    /**
-     * Add confirmation columns.
-     *
-     * @param  \Illuminate\Database\Schema\Blueprint  $table
-     */
-    private function addConfirmationColumns(Blueprint $table)
-    {
-        if (UserConfirmator::isEnabled()) {
-            $table->string('confirmation_code', UserConfirmator::getLength())->nullable();
-            $table->timestamp('confirmed_at')->nullable();
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Carbon\Carbon;
+use Arcanedev\Support\Database\Model;
 
 /**
  * Class     PasswordReset
@@ -14,7 +14,7 @@ use Carbon\Carbon;
  *
  * @property  \Arcanedev\LaravelAuth\Models\User  $user
  */
-class PasswordReset extends AbstractModel
+class PasswordReset extends Model
 {
     /* -----------------------------------------------------------------
      |  Properties
@@ -54,10 +54,13 @@ class PasswordReset extends AbstractModel
      */
     public function __construct(array $attributes = [])
     {
-        parent::__construct($attributes);
+        $this->setConnection(null)
+             ->setPrefix(null)
+             ->setTable(
+                 config('auth.passwords.users.table', 'password_resets')
+             );
 
-        $this->setConnection(null)->setPrefix(null);
-        $this->setTable(config('auth.passwords.users.table', 'password_resets'));
+        parent::__construct($attributes);
     }
 
     /* -----------------------------------------------------------------
@@ -107,7 +110,9 @@ class PasswordReset extends AbstractModel
     public function isExpired()
     {
         return $this->created_at->lt(
-            Carbon::now()->subMinutes(config('auth.passwords.users.expire', 60))
+            $this->freshTimestamp()->subMinutes(
+                config('auth.passwords.users.expire', 60)
+            )
         );
     }
 }

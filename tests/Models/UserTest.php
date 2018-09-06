@@ -4,7 +4,6 @@ use Arcanedev\LaravelAuth\Events\Users as UserEvents;
 use Arcanedev\LaravelAuth\Models\Pivots\RoleUser;
 use Arcanedev\LaravelAuth\Models\Role;
 use Arcanedev\LaravelAuth\Models\User;
-use Arcanedev\LaravelAuth\Services\UserConfirmator;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
@@ -138,8 +137,7 @@ class UserTest extends ModelsTest
         static::assertTrue($user->isMember());
         static::assertFalse($user->is_active);
         static::assertFalse($user->isActive());
-        static::assertFalse($user->is_confirmed);
-        static::assertFalse($user->isConfirmed());
+        static::assertFalse($user->hasVerifiedEmail());
 
         static::assertCount(0, $user->roles);
     }
@@ -364,116 +362,6 @@ class UserTest extends ModelsTest
         Event::assertDispatched(UserEvents\AttachedRoleToUser::class);
         Event::assertDispatched(UserEvents\DetachingRolesFromUser::class);
         Event::assertDispatched(UserEvents\DetachedRolesFromUser::class);
-    }
-
-    /** @test */
-    public function it_can_find_an_unconfirmed_user()
-    {
-        $user        = $this->createUser();
-        $unconfirmed = $this->userModel->findUnconfirmed($user->confirmation_code);
-
-        static::assertEquals($user, $unconfirmed);
-    }
-
-    /** @test */
-    public function it_must_throw_an_exception_on_not_found_unconfirmed_user()
-    {
-        $expectations = [
-            \Illuminate\Database\Eloquent\ModelNotFoundException::class,
-            \Arcanedev\LaravelAuth\Exceptions\UserConfirmationException::class,
-        ];
-
-        try {
-            $this->userModel->findUnconfirmed(str_random(30));
-        }
-        catch(\Exception $e) {
-            foreach ($expectations as $expected) {
-                static::assertInstanceOf($expected, $e);
-            }
-
-            static::assertSame('Unconfirmed user was not found.', $e->getMessage());
-        }
-    }
-
-    /** @test */
-    public function it_can_confirm()
-    {
-        Event::fake();
-
-        $user = $this->createUser();
-
-        static::assertConfirmationCodeGenerationListener($user);
-
-        static::assertNull($user->confirmed_at);
-        static::assertFalse($user->is_confirmed);
-        static::assertFalse($user->isConfirmed());
-
-        Event::assertDispatched(UserEvents\CreatedUser::class);
-        Event::assertDispatched(UserEvents\SavingUser::class);
-        Event::assertDispatched(UserEvents\SavedUser::class);
-
-        $user = $this->userModel->confirm($user);
-
-        static::assertTrue($user->is_confirmed);
-        static::assertTrue($user->isConfirmed());
-        static::assertNull($user->confirmation_code);
-        static::assertInstanceOf(\Carbon\Carbon::class, $user->confirmed_at);
-
-        Event::assertDispatched(UserEvents\ConfirmingUser::class);
-        Event::assertDispatched(UserEvents\ConfirmedUser::class);
-        Event::assertDispatched(UserEvents\UpdatingUser::class);
-        Event::assertDispatched(UserEvents\UpdatedUser::class);
-        Event::assertDispatched(UserEvents\SavingUser::class);
-        Event::assertDispatched(UserEvents\SavedUser::class);
-    }
-
-    /** @test */
-    public function it_can_confirm_by_code()
-    {
-        Event::fake();
-
-        $user = $this->createUser();
-
-        static::assertConfirmationCodeGenerationListener($user);
-
-        static::assertFalse($user->is_confirmed);
-        static::assertFalse($user->isConfirmed());
-        static::assertNull($user->confirmed_at);
-
-        Event::assertDispatched(UserEvents\CreatedUser::class);
-        Event::assertDispatched(UserEvents\SavingUser::class);
-        Event::assertDispatched(UserEvents\SavedUser::class);
-
-        $user = $this->userModel->confirm($user->confirmation_code);
-
-        static::assertTrue($user->is_confirmed);
-        static::assertTrue($user->isConfirmed());
-        static::assertNull($user->confirmation_code);
-        static::assertInstanceOf(\Carbon\Carbon::class, $user->confirmed_at);
-
-        Event::assertDispatched(UserEvents\ConfirmingUser::class);
-        Event::assertDispatched(UserEvents\ConfirmedUser::class);
-        Event::assertDispatched(UserEvents\UpdatingUser::class);
-        Event::assertDispatched(UserEvents\UpdatedUser::class);
-        Event::assertDispatched(UserEvents\SavingUser::class);
-        Event::assertDispatched(UserEvents\SavedUser::class);
-    }
-
-    /** @test */
-    public function it_can_filter_confirmed_users_by_scopes()
-    {
-        $user = $this->createUser();
-        $code = $user->confirmation_code;
-
-        static::assertSame(0, User::confirmed()->count());
-        static::assertSame(1, User::unconfirmed()->count());
-        static::assertSame(1, User::unconfirmed($code)->count());
-
-        User::confirm($user);
-
-        static::assertSame(1, User::confirmed()->count());
-        static::assertSame(0, User::unconfirmed()->count());
-        static::assertSame(0, User::unconfirmed($code)->count());
     }
 
     /** @test */
@@ -765,6 +653,20 @@ class UserTest extends ModelsTest
         static::assertFalse($user->mayAll($permissionToCheck, $failed));
         static::assertCount(2, $failed);
         static::assertSame(['auth.users.delete', 'blog.posts.delete'], $failed->all());
+    }
+
+    /** @test */
+    public function it_can_scope_verified_emails()
+    {
+        $user = $this->createUser();
+
+        static::assertSame(1, User::unverifiedEmail()->count());
+        static::assertSame(0, User::verifiedEmail()->count());
+
+        $user->markEmailAsVerified();
+
+        static::assertSame(0, User::unverifiedEmail()->count());
+        static::assertSame(1, User::verifiedEmail()->count());
     }
 
     /** @test */

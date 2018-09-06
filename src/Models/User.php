@@ -12,12 +12,14 @@ use Arcanesoft\Contracts\Auth\Models\{
     Role as RoleContract,
     User as UserContract
 };
-use Carbon\Carbon;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Auth\{
+    Authenticatable, MustVerifyEmail, Passwords\CanResetPassword
+};
+use Illuminate\Contracts\Auth\{
+    Access\Authorizable as AuthorizableContract,
+    Authenticatable as AuthenticatableContract,
+    CanResetPassword as CanResetPasswordContract
+};
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Support\Collection;
@@ -35,6 +37,7 @@ use Illuminate\Support\Str;
  * @property  string                                    last_name
  * @property  string                                    full_name
  * @property  string                                    email
+ * @property  \Carbon\Carbon|null                       email_verified_at
  * @property  string                                    password
  * @property  string                                    remember_token
  * @property  bool                                      is_admin
@@ -48,7 +51,9 @@ use Illuminate\Support\Str;
  * @property  \Illuminate\Support\Collection                 permissions
  * @property  \Arcanedev\LaravelAuth\Models\Pivots\RoleUser  pivot
  *
- * @method  static  \Illuminate\Database\Eloquent\Builder  lastActive(int $minutes = null)
+ * @method  static  \Illuminate\Database\Eloquent\Builder|static  lastActive(int $minutes = null)
+ * @method  static  \Illuminate\Database\Eloquent\Builder|static  unverifiedEmail
+ * @method  static  \Illuminate\Database\Eloquent\Builder|static  verifiedEmail
  */
 class User
     extends AbstractModel
@@ -62,9 +67,9 @@ class User
     use Authenticatable,
         Authorizable,
         CanResetPassword,
+        MustVerifyEmail,
         Traits\Roleable,
         Traits\Activatable,
-        Traits\Confirmable,
         SoftDeletes;
 
     /* -----------------------------------------------------------------
@@ -83,7 +88,6 @@ class User
         'last_name',
         'email',
         'password',
-        'confirmation_code',
     ];
 
     /**
@@ -94,7 +98,6 @@ class User
     protected $hidden   = [
         'password',
         'remember_token',
-        'confirmation_code',
     ];
 
     /**
@@ -115,7 +118,7 @@ class User
      * @var array
      */
     protected $dates = [
-        'confirmed_at',
+        'email_verified_at',
         'last_activity',
         'activated_at',
         'deleted_at',
@@ -151,22 +154,14 @@ class User
      */
     public function __construct(array $attributes = [])
     {
-        parent::__construct($attributes);
-
-        $this->setupModel();
-    }
-
-    /**
-     * Setup the model.
-     */
-    protected function setupModel()
-    {
         $this->setTable(config('laravel-auth.users.table', 'users'));
 
         if (SocialAuthenticator::isEnabled()) {
             $this->hidden   = array_merge($this->hidden, ['social_provider_id']);
             $this->fillable = array_merge($this->fillable, ['social_provider', 'social_provider_id']);
         }
+
+        parent::__construct($attributes);
     }
 
     /* -----------------------------------------------------------------
@@ -219,11 +214,35 @@ class User
      */
     public function scopeLastActive($query, $minutes = null)
     {
-        $date = Carbon::now()->subMinutes(
+        $date = $this->freshTimestamp()->subMinutes(
             $minutes ?: config('laravel_auth.track-activity.minutes', 5)
-        );
+        )->toDateTimeString();
 
-        return $query->where('last_activity', '>=', $date->toDateTimeString());
+        return $query->where('last_activity', '>=', $date);
+    }
+
+    /**
+     * Scope unverified emails' users.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeUnverifiedEmail($query)
+    {
+        return $query->whereNull('email_verified_at');
+    }
+
+    /**
+     * Scope unverified emails' users.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVerifiedEmail($query)
+    {
+        return $query->whereNotNull('email_verified_at');
     }
 
     /* -----------------------------------------------------------------
@@ -411,7 +430,7 @@ class User
      */
     public function updateLastActivity($save = true)
     {
-        $this->forceFill(['last_activity' => Carbon::now()]);
+        $this->forceFill(['last_activity' => $this->freshTimestamp()]);
 
         if ($save) $this->save();
     }

@@ -1,23 +1,12 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachedPermissionsToGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachedPermissionToGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachingPermissionsToGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachingPermissionToGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\CreatedPermissionsGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\CreatingPermissionsGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\DeletedPermissionsGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\DeletingPermissionsGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachedAllPermissions;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachedPermissionFromGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachedPermissionsFromGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachingAllPermissions;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachingPermissionFromGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachingPermissionsFromGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\SavedPermissionsGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\SavingPermissionsGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\UpdatedPermissionsGroup;
-use Arcanedev\LaravelAuth\Events\PermissionsGroups\UpdatingPermissionsGroup;
+use Arcanedev\LaravelAuth\Events\PermissionsGroups\{
+    AttachedPermissionsToGroup, AttachedPermissionToGroup, AttachingPermissionsToGroup, AttachingPermissionToGroup,
+    CreatedPermissionsGroup, CreatingPermissionsGroup, DeletedPermissionsGroup, DeletingPermissionsGroup,
+    DetachedAllPermissions, DetachedPermissionFromGroup, DetachedPermissionsFromGroup, DetachingAllPermissions,
+    DetachingPermissionFromGroup, DetachingPermissionsFromGroup, SavedPermissionsGroup, SavingPermissionsGroup,
+    UpdatedPermissionsGroup, UpdatingPermissionsGroup
+};
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\PermissionsGroup as PermissionsGroupContract;
 use Illuminate\Database\Eloquent\Model as Eloquent;

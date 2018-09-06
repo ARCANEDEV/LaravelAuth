@@ -8,8 +8,8 @@ return [
      */
 
     'database'           => [
-        'connection' => config('database.default'),
-        'prefix'     => 'auth_'
+        'connection' => env('DB_CONNECTION', 'mysql'),
+        'prefix'     => 'auth_',
     ],
 
     /* -----------------------------------------------------------------
@@ -19,40 +19,40 @@ return [
 
     'users'              => [
         'table'          => 'users',
-        'model'          => \Arcanedev\LaravelAuth\Models\User::class,
+        'model'          => Arcanedev\LaravelAuth\Models\User::class,
         'slug-separator' => '.',
     ],
 
     'roles'              => [
         'table'          => 'roles',
-        'model'          => \Arcanedev\LaravelAuth\Models\Role::class,
+        'model'          => Arcanedev\LaravelAuth\Models\Role::class,
         'slug-separator' => '-',
     ],
 
     'role-user'          => [
         'table' => 'role_user',
-        'model' => \Arcanedev\LaravelAuth\Models\Pivots\RoleUser::class,
+        'model' => Arcanedev\LaravelAuth\Models\Pivots\RoleUser::class,
     ],
 
     'permissions-groups' => [
         'table'          => 'permissions_groups',
-        'model'          => \Arcanedev\LaravelAuth\Models\PermissionsGroup::class,
+        'model'          => Arcanedev\LaravelAuth\Models\PermissionsGroup::class,
         'slug-separator' => '-',
     ],
 
     'permissions'        => [
         'table'          => 'permissions',
-        'model'          => \Arcanedev\LaravelAuth\Models\Permission::class,
+        'model'          => Arcanedev\LaravelAuth\Models\Permission::class,
         'slug-separator' => '.',
     ],
 
     'permission-role'    => [
         'table' => 'permission_role',
-        'model' => \Arcanedev\LaravelAuth\Models\Pivots\PermissionRole::class,
+        'model' => Arcanedev\LaravelAuth\Models\Pivots\PermissionRole::class,
     ],
 
     'password-resets' => [
-        'model' => \Arcanedev\LaravelAuth\Models\PasswordReset::class,
+        'model' => Arcanedev\LaravelAuth\Models\PasswordReset::class,
     ],
 
     /* -----------------------------------------------------------------
@@ -67,9 +67,7 @@ return [
             // User Model events & listeners
             //-----------------------------------------------------
             // Eloquent events
-            Arcanedev\LaravelAuth\Events\Users\CreatingUser::class           => [
-                Arcanedev\LaravelAuth\Listeners\Users\GenerateConfirmationCode::class,
-            ],
+            Arcanedev\LaravelAuth\Events\Users\CreatingUser::class           => [],
             Arcanedev\LaravelAuth\Events\Users\CreatedUser::class            => [],
             Arcanedev\LaravelAuth\Events\Users\UpdatingUser::class           => [],
             Arcanedev\LaravelAuth\Events\Users\UpdatedUser::class            => [],
@@ -168,17 +166,6 @@ return [
             Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachingAllPermissions::class       => [],
             Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachedAllPermissions::class        => [],
         ],
-    ],
-
-    /* -----------------------------------------------------------------
-     |  User Confirmation
-     | -----------------------------------------------------------------
-     */
-
-    'user-confirmation'  => [
-        'enabled' => false,
-
-        'length'  => 30,
     ],
 
     /* -----------------------------------------------------------------
