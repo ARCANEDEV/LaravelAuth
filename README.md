@@ -18,10 +18,9 @@ Feel free to check out the [releases](https://github.com/ARCANEDEV/LaravelAuth/r
 
 ### Features
 
-  * Laravel `5.1 | 5.2 | 5.3 | 5.4 | 5.5 | 5.6` are supported.
+  * Laravel `5.1` to `5.7` are supported.
   * CRUD for Roles.
   * CRUD fot Permissions.
-  * User confirmation system.
   * Socialite support.
   * Easy setup &amp; configuration.
   * Well documented &amp; IDE Friendly.
@@ -54,7 +53,7 @@ Any ideas are welcome. Feel free to submit any issues or pull requests, please c
 - [All Contributors][link-contributors]
 
 [badge_license]:   https://img.shields.io/packagist/l/arcanedev/laravel-auth.svg?style=flat-square
-[badge_laravel]:   https://img.shields.io/badge/Laravel-%205.1%20to%205.6-orange.svg?style=flat-square
+[badge_laravel]:   https://img.shields.io/badge/Laravel-%205.1%20to%205.7-orange.svg?style=flat-square
 [badge_build]:     https://img.shields.io/travis/ARCANEDEV/LaravelAuth.svg?style=flat-square
 [badge_coverage]:  https://img.shields.io/scrutinizer/coverage/g/ARCANEDEV/LaravelAuth.svg?style=flat-square
 [badge_quality]:   https://img.shields.io/scrutinizer/g/ARCANEDEV/LaravelAuth.svg?style=flat-square

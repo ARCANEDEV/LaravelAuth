@@ -13,7 +13,8 @@ return [
      | ------------------------------------------------------------------------------------------------
      */
     'database'           => [
-        'connection' => config('database.default'),
+        'connection' => env('DB_CONNECTION', 'mysql'),
+        'prefix'     => 'auth_',
     ],
     
     //...
@@ -30,78 +31,172 @@ These are the auth Models. You can edit the table name, Model Class and also the
 return [
     // ...
     
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Models
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
+
     'users'              => [
-        'table'    => 'users',
-        'model'    => Arcanedev\LaravelAuth\Models\User::class,
-        'observer' => Arcanedev\LaravelAuth\Models\Observers\UserObserver::class,
+        'table'          => 'users',
+        'model'          => Arcanedev\LaravelAuth\Models\User::class,
+        'slug-separator' => '.',
     ],
-    
+
     'roles'              => [
-        'table'    => 'roles',
-        'model'    => Arcanedev\LaravelAuth\Models\Role::class,
-        'observer' => Arcanedev\LaravelAuth\Models\Observers\RoleObserver::class,
+        'table'          => 'roles',
+        'model'          => Arcanedev\LaravelAuth\Models\Role::class,
+        'slug-separator' => '-',
     ],
-    
+
+    'role-user'          => [
+        'table' => 'role_user',
+        'model' => Arcanedev\LaravelAuth\Models\Pivots\RoleUser::class,
+    ],
+
     'permissions-groups' => [
-        'table'    => 'permissions_groups',
-        'model'    => Arcanedev\LaravelAuth\Models\PermissionsGroup::class,
-        'observer' => Arcanedev\LaravelAuth\Models\Observers\PermissionsGroupObserver::class,
+        'table'          => 'permissions_groups',
+        'model'          => Arcanedev\LaravelAuth\Models\PermissionsGroup::class,
+        'slug-separator' => '-',
     ],
-    
+
     'permissions'        => [
-        'table'    => 'permissions',
-        'model'    => Arcanedev\LaravelAuth\Models\Permission::class,
-        'observer' => Arcanedev\LaravelAuth\Models\Observers\PermissionObserver::class,
+        'table'          => 'permissions',
+        'model'          => Arcanedev\LaravelAuth\Models\Permission::class,
+        'slug-separator' => '.',
+    ],
+
+    'permission-role'    => [
+        'table' => 'permission_role',
+        'model' => Arcanedev\LaravelAuth\Models\Pivots\PermissionRole::class,
+    ],
+
+    'password-resets' => [
+        'model' => Arcanedev\LaravelAuth\Models\PasswordReset::class,
     ],
     
     // ...
 ];
 ```
 
-## User Confirmation
-
-You can enable the user confirmation feature by modifying the `enable` value and also you can change the `length` of the generated confirmation code.
+## Events/Listeners
 
 ```php
 <?php
 
 return [
     // ...
-    
-    /* ------------------------------------------------------------------------------------------------
-     |  User Confirmation
-     | ------------------------------------------------------------------------------------------------
+
+    /* -----------------------------------------------------------------
+     |  Events & Listeners
+     | -----------------------------------------------------------------
      */
-    'user-confirmation'  => [
-        'enabled'   => false,
-        'length'    => 30,
-    ],
-    
-    // ...
-];
-```
 
-## User Impersonation
+    'events'      => [
+        'enabled'  => true,
 
-You can enable the user impersonation feature by modifying the `enable` value and also you can change the session `key` used to store the impersonated user id.
+        'listeners' => [
+            // User Model events & listeners
+            //-----------------------------------------------------
+            // Eloquent events
+            Arcanedev\LaravelAuth\Events\Users\CreatingUser::class           => [],
+            Arcanedev\LaravelAuth\Events\Users\CreatedUser::class            => [],
+            Arcanedev\LaravelAuth\Events\Users\UpdatingUser::class           => [],
+            Arcanedev\LaravelAuth\Events\Users\UpdatedUser::class            => [],
+            Arcanedev\LaravelAuth\Events\Users\SavingUser::class             => [],
+            Arcanedev\LaravelAuth\Events\Users\SavedUser::class              => [],
+            Arcanedev\LaravelAuth\Events\Users\DeletingUser::class           => [
+                Arcanedev\LaravelAuth\Listeners\Users\DetachingRoles::class,
+            ],
+            Arcanedev\LaravelAuth\Events\Users\DeletedUser::class            => [],
+            Arcanedev\LaravelAuth\Events\Users\RestoringUser::class          => [],
+            Arcanedev\LaravelAuth\Events\Users\RestoredUser::class           => [],
+            // Custom events
+            Arcanedev\LaravelAuth\Events\Users\ActivatingUser::class         => [],
+            Arcanedev\LaravelAuth\Events\Users\ActivatedUser::class          => [],
+            Arcanedev\LaravelAuth\Events\Users\DeactivatingUser::class       => [],
+            Arcanedev\LaravelAuth\Events\Users\DeactivatedUser::class        => [],
+            Arcanedev\LaravelAuth\Events\Users\AttachingRoleToUser::class    => [],
+            Arcanedev\LaravelAuth\Events\Users\AttachedRoleToUser::class     => [],
+            Arcanedev\LaravelAuth\Events\Users\SyncingUserWithRoles::class   => [],
+            Arcanedev\LaravelAuth\Events\Users\SyncedUserWithRoles::class    => [],
+            Arcanedev\LaravelAuth\Events\Users\DetachingRoleFromUser::class  => [],
+            Arcanedev\LaravelAuth\Events\Users\DetachedRoleFromUser::class   => [],
+            Arcanedev\LaravelAuth\Events\Users\DetachingRolesFromUser::class => [],
+            Arcanedev\LaravelAuth\Events\Users\DetachedRolesFromUser::class  => [],
 
-```php
-<?php
+            // Role Model events & listeners
+            //-----------------------------------------------------
+            Arcanedev\LaravelAuth\Events\Roles\CreatingRole::class => [],
+            Arcanedev\LaravelAuth\Events\Roles\CreatedRole::class  => [],
+            Arcanedev\LaravelAuth\Events\Roles\UpdatingRole::class => [],
+            Arcanedev\LaravelAuth\Events\Roles\UpdatedRole::class  => [],
+            Arcanedev\LaravelAuth\Events\Roles\SavingRole::class   => [],
+            Arcanedev\LaravelAuth\Events\Roles\SavedRole::class    => [],
+            Arcanedev\LaravelAuth\Events\Roles\DeletingRole::class => [
+                Arcanedev\LaravelAuth\Listeners\Roles\DetachingUsers::class,
+                Arcanedev\LaravelAuth\Listeners\Roles\DetachingPermissions::class,
+            ],
+            Arcanedev\LaravelAuth\Events\Roles\DeletedRole::class  => [],
+            // Custom
+            Arcanedev\LaravelAuth\Events\Roles\AttachingUserToRole::class             => [],
+            Arcanedev\LaravelAuth\Events\Roles\AttachedUserToRole::class              => [],
+            Arcanedev\LaravelAuth\Events\Roles\DetachingUserFromRole::class           => [],
+            Arcanedev\LaravelAuth\Events\Roles\DetachedUserFromRole::class            => [],
+            Arcanedev\LaravelAuth\Events\Roles\DetachingAllUsersFromRole::class       => [],
+            Arcanedev\LaravelAuth\Events\Roles\DetachedAllUsersFromRole::class        => [],
+            Arcanedev\LaravelAuth\Events\Roles\AttachingPermissionToRole::class       => [],
+            Arcanedev\LaravelAuth\Events\Roles\AttachedPermissionToRole::class        => [],
+            Arcanedev\LaravelAuth\Events\Roles\DetachingPermissionFromRole::class     => [],
+            Arcanedev\LaravelAuth\Events\Roles\DetachedPermissionFromRole::class      => [],
+            Arcanedev\LaravelAuth\Events\Roles\DetachingAllPermissionsFromRole::class => [],
+            Arcanedev\LaravelAuth\Events\Roles\DetachedAllPermissionsFromRole::class  => [],
 
-return [
-    // ...
-    
-    /* ------------------------------------------------------------------------------------------------
-     |  User Impersonation
-     | ------------------------------------------------------------------------------------------------
-     */
-    'impersonation' => [
-        'enabled' => false,
-        'key'     => 'impersonate',
+            // Permission Model events & listeners
+            //-----------------------------------------------------
+            Arcanedev\LaravelAuth\Events\Permissions\CreatingPermission::class => [],
+            Arcanedev\LaravelAuth\Events\Permissions\CreatedPermission::class  => [],
+            Arcanedev\LaravelAuth\Events\Permissions\UpdatingPermission::class => [],
+            Arcanedev\LaravelAuth\Events\Permissions\UpdatedPermission::class  => [],
+            Arcanedev\LaravelAuth\Events\Permissions\SavingPermission::class   => [],
+            Arcanedev\LaravelAuth\Events\Permissions\SavedPermission::class    => [],
+            Arcanedev\LaravelAuth\Events\Permissions\DeletingPermission::class => [
+                Arcanedev\LaravelAuth\Listeners\Permissions\DetachingRoles::class,
+            ],
+            Arcanedev\LaravelAuth\Events\Permissions\DeletedPermission::class  => [],
+            // Custom
+            Arcanedev\LaravelAuth\Events\Permissions\AttachingRoleToPermission::class       => [],
+            Arcanedev\LaravelAuth\Events\Permissions\AttachedRoleToPermission::class        => [],
+            Arcanedev\LaravelAuth\Events\Permissions\DetachingRoleFromPermission::class     => [],
+            Arcanedev\LaravelAuth\Events\Permissions\DetachedRoleFromPermission::class      => [],
+            Arcanedev\LaravelAuth\Events\Permissions\DetachingAllRolesFromPermission::class => [],
+            Arcanedev\LaravelAuth\Events\Permissions\DetachedAllRolesFromPermission::class  => [],
+            Arcanedev\LaravelAuth\Events\Permissions\SyncingRolesWithPermission::class      => [],
+            Arcanedev\LaravelAuth\Events\Permissions\SyncedRolesWithPermission::class       => [],
+
+            // Permission's Group Model events & listeners
+            //-----------------------------------------------------
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\CreatingPermissionsGroup::class => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\CreatedPermissionsGroup::class  => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\UpdatingPermissionsGroup::class => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\UpdatedPermissionsGroup::class  => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\SavingPermissionsGroup::class   => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\SavedPermissionsGroup::class    => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\DeletingPermissionsGroup::class => [
+                Arcanedev\LaravelAuth\Listeners\PermissionGroups\DetachingPermissions::class,
+            ],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\DeletedPermissionsGroup::class  => [],
+            // Custom
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachingPermissionToGroup::class    => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachedPermissionToGroup::class     => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachingPermissionsToGroup::class   => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\AttachedPermissionsToGroup::class    => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachingPermissionFromGroup::class  => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachedPermissionFromGroup::class   => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachingPermissionsFromGroup::class => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachedPermissionsFromGroup::class  => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachingAllPermissions::class       => [],
+            Arcanedev\LaravelAuth\Events\PermissionsGroups\DetachedAllPermissions::class        => [],
+        ],
     ],
     
     // ...
@@ -118,10 +213,11 @@ You can enable or disable the user `last activity` tracking by modifying the `en
 return [
     // ...
     
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  User Last Activity
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
+
     'track-activity' => [
         'enabled' => true,
 
@@ -134,6 +230,8 @@ return [
 
 ## Socialite
 
+** WORK IN PROGRESS **
+
 You can enable the socialite support by modifying the `enable` value.
 
 You can also manage any supported `drivers` by enable/disable it.
@@ -144,13 +242,14 @@ You can also manage any supported `drivers` by enable/disable it.
 return [
     // ...
     
-    /* ------------------------------------------------------------------------------------------------
-     |  User Impersonation
-     | ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
+     |  Socialite
+     | -----------------------------------------------------------------
      */
-    'socialite' => [
+
+    'socialite'          => [
         'enabled' => false,
-        
+
         'drivers' => [
             'bitbucket' => [
                 'enabled' => false,
@@ -192,12 +291,14 @@ return [
 return [
     // ...
     
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Throttles
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
+
     'throttles'          => [
         'enabled'   => true,
+
         'table'     => 'throttles',
     ],
     
@@ -217,10 +318,11 @@ You can specify the data to seed to your auth tables, for the time being, only t
 return [
     // ...
     
-    /* ------------------------------------------------------------------------------------------------
+    /* -----------------------------------------------------------------
      |  Seeds
-     | ------------------------------------------------------------------------------------------------
+     | -----------------------------------------------------------------
      */
+
     'seeds'              => [
         'users' => [
             [
@@ -232,23 +334,5 @@ return [
     ],
     
     // ...
-];
-```
-
-## Other
-
-You can `enable` or `disable` the model observers by editing the `use-observers` value.  
-
-```php
-<?php
-
-return [
-    // ...
-    
-    /* ------------------------------------------------------------------------------------------------
-     |  Other Stuff
-     | ------------------------------------------------------------------------------------------------
-     */
-    'use-observers'      => true,
 ];
 ```

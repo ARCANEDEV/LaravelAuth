@@ -1,7 +1,6 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\Support\Traits\PrefixedModel;
-use Illuminate\Database\Eloquent\Model;
+use Arcanedev\Support\Database\Model;
 
 /**
  * Class     Model
@@ -11,13 +10,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 abstract class AbstractModel extends Model
 {
-    /* -----------------------------------------------------------------
-     |  Traits
-     | -----------------------------------------------------------------
-     */
-
-    use PrefixedModel;
-
     /* -----------------------------------------------------------------
      |  Constructor
      | -----------------------------------------------------------------
@@ -30,9 +22,9 @@ abstract class AbstractModel extends Model
      */
     public function __construct(array $attributes = [])
     {
-        parent::__construct($attributes);
+        $this->setConnection(config('laravel-auth.database.connection'))
+             ->setPrefix(config('laravel-auth.database.prefix'));
 
-        $this->setConnection(config('laravel-auth.database.connection'));
-        $this->setPrefix(config('laravel-auth.database.prefix'));
+        parent::__construct($attributes);
     }
 }

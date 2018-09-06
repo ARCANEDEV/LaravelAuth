@@ -1,21 +1,11 @@
 <?php namespace Arcanedev\LaravelAuth\Models;
 
-use Arcanedev\LaravelAuth\Events\Permissions\AttachedRoleToPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\AttachingRoleToPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\CreatedPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\CreatingPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\DeletedPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\DeletingPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\DetachedAllRolesFromPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\DetachedRoleFromPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\DetachingAllRolesFromPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\DetachingRoleFromPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\SavedPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\SavingPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\SyncedRolesWithPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\SyncingRolesWithPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\UpdatedPermission;
-use Arcanedev\LaravelAuth\Events\Permissions\UpdatingPermission;
+use Arcanedev\LaravelAuth\Events\Permissions\{
+    AttachedRoleToPermission, AttachingRoleToPermission, CreatedPermission, CreatingPermission, DeletedPermission,
+    DeletingPermission, DetachedAllRolesFromPermission, DetachedRoleFromPermission, DetachingAllRolesFromPermission,
+    DetachingRoleFromPermission, SavedPermission, SavingPermission, SyncedRolesWithPermission, SyncingRolesWithPermission,
+    UpdatedPermission, UpdatingPermission
+};
 use Arcanedev\LaravelAuth\Models\Traits\Roleable;
 use Arcanesoft\Contracts\Auth\Models\Permission as PermissionContract;
 use Arcanesoft\Contracts\Auth\Models\Role as RoleContract;
@@ -58,7 +48,12 @@ class Permission extends AbstractModel implements PermissionContract
      *
      * @var array
      */
-    protected $fillable = ['group_id', 'name', 'slug', 'description'];
+    protected $fillable = [
+        'group_id',
+        'name',
+        'slug',
+        'description',
+    ];
 
     /**
      * The event map for the model.
